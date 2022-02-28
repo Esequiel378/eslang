@@ -7,17 +7,17 @@ import (
 	"strings"
 )
 
-type Program []*Operation
+type Program []Operation
 
 func (p *Program) IsEmpty() bool {
 	return len(*p) == 0
 }
 
-func (p *Program) Push(operation *Operation) {
+func (p *Program) Push(operation Operation) {
 	*p = append(*p, operation)
 }
 
-func (p *Program) Pop() (*Operation, error) {
+func (p *Program) Pop() (Operation, error) {
 	if p.IsEmpty() {
 		return nil, fmt.Errorf("can not perform `Program.Pop()`, program is empty.")
 	}
@@ -32,17 +32,17 @@ func (p *Program) Pop() (*Operation, error) {
 	return operation, nil
 }
 
-type ProgramStack []*Program
+type BlockStack []*BlockOperation
 
-func (ps *ProgramStack) IsEmpty() bool {
+func (ps *BlockStack) IsEmpty() bool {
 	return len(*ps) == 0
 }
 
-func (ps *ProgramStack) Push(value *Program) {
+func (ps *BlockStack) Push(value *BlockOperation) {
 	*ps = append(*ps, value)
 }
 
-func (ps *ProgramStack) Pop() (*Program, error) {
+func (ps *BlockStack) Pop() (*BlockOperation, error) {
 	if ps.IsEmpty() {
 		return nil, fmt.Errorf("can not perform `ProgramStack.Pop()`, stack is empty.")
 	}
@@ -60,7 +60,7 @@ func (ps *ProgramStack) Pop() (*Program, error) {
 func getProgram(lines []string) (*Program, error) {
 	var program Program
 
-	var blocks ProgramStack
+	var blocks BlockStack
 
 	for lineNumber, line := range lines {
 		line = strings.Trim(line, " ")
@@ -74,7 +74,7 @@ func getProgram(lines []string) (*Program, error) {
 		for colNumber, token := range tokens {
 			found := false
 
-			for tokenType, tokenHandler := range REGISTERED_TOKENS {
+			for tokenType, tokenHandler := range REGISTERED_MISC_TOKENS {
 				operation, err := tokenHandler(token)
 
 				if err != nil {
@@ -85,7 +85,16 @@ func getProgram(lines []string) (*Program, error) {
 
 				switch tokenType {
 				case TOKEN_DO:
-					blocks.Push(&Program{})
+					blockOperation := &BlockOperation{
+						_type:     OP_BLOCK,
+						block:     &Program{},
+						elseBlock: &Program{},
+					}
+
+					blocks.Push(blockOperation)
+
+				case TOKEN_ELSE:
+					blocks[blocksLen-1].elseBlock.Push(operation)
 
 				case TOKEN_END:
 					block, err := blocks.Pop()
@@ -94,18 +103,20 @@ func getProgram(lines []string) (*Program, error) {
 						return nil, err
 					}
 
-					operation := Operation{
-						Type:  OP_BLOCK,
-						Value: block,
-					}
-
-					program.Push(&operation)
+					program.Push(block)
 
 				default:
-					if blocksLen != 0 {
-						blocks[blocksLen-1].Push(operation)
-					} else {
+					if blocksLen == 0 {
 						program.Push(operation)
+						break
+					}
+
+					block := blocks[blocksLen-1]
+
+					if len(*block.elseBlock) != 0 {
+						block.elseBlock.Push(operation)
+					} else {
+						block.block.Push(operation)
 					}
 				}
 

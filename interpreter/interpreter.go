@@ -4,7 +4,7 @@ import (
 	"eslang/core"
 )
 
-var REGISTERED_OPERATIONS = map[int]func(*core.Stack, *core.Operation) error{
+var REGISTERED_OPERATIONS = map[int]func(*core.Stack, core.Operation) error{
 	core.OP_PUSH:  OPPush,
 	core.OP_PLUS:  OPPlus,
 	core.OP_MINUS: OPMinus,
@@ -14,10 +14,10 @@ var REGISTERED_OPERATIONS = map[int]func(*core.Stack, *core.Operation) error{
 
 func executeOperations(program *core.Program, stack *core.Stack) error {
 	for _, op := range *program {
-		handler := REGISTERED_OPERATIONS[op.Type]
+		handler := REGISTERED_OPERATIONS[op.Type()]
 
-		if op.Type == core.OP_BLOCK {
-			if err := executeOperations(op.Value.(*core.Program), stack); err != nil {
+		if op.Type() == core.OP_BLOCK {
+			if err := executeOperations(op.Value().(*core.Program), stack); err != nil {
 				return err
 			}
 
