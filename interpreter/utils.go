@@ -19,14 +19,29 @@ func getFloat64(unk interface{}) (float64, error) {
 	return fv.Float(), nil
 }
 
-func normalizeNumbers(lhs, rhs interface{}) (lhsf, rhsf float64, err error) {
+func normalizeNumbers(lhs, rhs interface{}) (lhsf, rhsf float64, keepFloat bool, err error) {
 	lhsf, err = getFloat64(lhs)
 
 	if err != nil {
-		return 0, 0, err
+		return 0, 0, false, err
 	}
 
 	rhsf, err = getFloat64(rhs)
 
-	return lhsf, rhsf, err
+	if err != nil {
+		return lhsf, 0, false, err
+	}
+
+	keepFloat = false
+
+	numbers := []interface{}{lhs, rhs}
+
+	for _, number := range numbers {
+		if _, ok := number.(float64); ok {
+			keepFloat = true
+			break
+		}
+	}
+
+	return lhsf, rhsf, keepFloat, nil
 }
