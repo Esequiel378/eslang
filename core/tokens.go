@@ -8,10 +8,10 @@ import (
 )
 
 var REGISTERED_TOKENS = map[string]func(string) (*Operation, error){
-	"OP_PUSH":  TokenPush,
-	"OP_PLUS":  TokenPlus,
-	"OP_MINUS": TokenMinus,
-	"OP_DUMP":  TokenDump,
+	"PUSH":  TokenPush,
+	"PLUS":  TokenPlus,
+	"MINUS": TokenMinus,
+	"DUMP":  TokenDump,
 }
 
 var IS_DIGIT = regexp.MustCompile(`^[1-9]\d*(\.\d+)?$`)

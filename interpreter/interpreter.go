@@ -2,7 +2,6 @@ package interpreter
 
 import (
 	"eslang/core"
-	"log"
 )
 
 var REGISTERED_OPERATIONS = map[int]func(*core.Stack, *core.Operation) error{
@@ -12,14 +11,16 @@ var REGISTERED_OPERATIONS = map[int]func(*core.Stack, *core.Operation) error{
 	core.OP_DUMP:  OPDump,
 }
 
-func SimulateProgram(program *core.Program) {
+func SimulateProgram(program *core.Program) error {
 	var stack core.Stack
 
 	for _, op := range *program {
 		handler := REGISTERED_OPERATIONS[op.Type]
 
 		if err := handler(&stack, op); err != nil {
-			log.Fatal(err)
+			return err
 		}
 	}
+
+	return nil
 }

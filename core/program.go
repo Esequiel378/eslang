@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strings"
 )
@@ -40,9 +41,10 @@ func NewProgramFromFile(filename string) (*Program, error) {
 
 	var program Program
 
-	for _, line := range strings.Split(string(lines), "\n") {
+	for lineNumber, line := range strings.Split(string(lines), "\n") {
 		for _, token := range strings.Split(line, " ") {
-			// TODO: check for exaustive tokens lookup (for else?)
+			found := false
+
 			for _, tokenHandler := range REGISTERED_TOKENS {
 				operation, err := tokenHandler(token)
 
@@ -51,7 +53,16 @@ func NewProgramFromFile(filename string) (*Program, error) {
 				}
 
 				program.Push(operation)
+				found = true
 				break
+			}
+
+			if !found {
+				log.Fatal(
+					fmt.Errorf("Token error ln:%d/%d - %s is not recognized as a valid token.",
+						lineNumber, strings.Index(line, token)+1, token,
+					),
+				)
 			}
 		}
 	}

@@ -13,5 +13,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	interpreter.SimulateProgram(program)
+	if err := interpreter.SimulateProgram(program); err != nil {
+		log.Fatal(err)
+	}
 }
