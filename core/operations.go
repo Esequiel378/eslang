@@ -8,6 +8,7 @@ const (
 	OP_PUSH  = iota
 	OP_PLUS  = iota
 	OP_MINUS = iota
+	OP_EQUAL = iota
 	OP_DUMP  = iota
 )
 
@@ -20,6 +21,7 @@ var VALID_OPERATIONS = map[int]bool{
 	OP_PUSH:  true,
 	OP_PLUS:  true,
 	OP_MINUS: true,
+	OP_EQUAL: true,
 	OP_DUMP:  true,
 }
 

@@ -43,6 +43,11 @@ func NewProgramFromFile(filename string) (*Program, error) {
 
 	for lineNumber, line := range strings.Split(string(lines), "\n") {
 		for _, token := range strings.Split(line, " ") {
+
+			if line == "" {
+				continue
+			}
+
 			found := false
 
 			for _, tokenHandler := range REGISTERED_TOKENS {
@@ -59,8 +64,8 @@ func NewProgramFromFile(filename string) (*Program, error) {
 
 			if !found {
 				log.Fatal(
-					fmt.Errorf("Token error ln:%d/%d - %s is not recognized as a valid token.",
-						lineNumber, strings.Index(line, token)+1, token,
+					fmt.Errorf("Token error in %d:%d - '%s' is not a valid token.",
+						lineNumber+1, strings.Index(line, token)+1, token,
 					),
 				)
 			}

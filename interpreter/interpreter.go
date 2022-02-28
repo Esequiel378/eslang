@@ -8,6 +8,7 @@ var REGISTERED_OPERATIONS = map[int]func(*core.Stack, *core.Operation) error{
 	core.OP_PUSH:  OPPush,
 	core.OP_PLUS:  OPPlus,
 	core.OP_MINUS: OPMinus,
+	core.OP_EQUAL: OPEqual,
 	core.OP_DUMP:  OPDump,
 }
 

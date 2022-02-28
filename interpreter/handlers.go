@@ -55,6 +55,25 @@ func OPMinus(stack *core.Stack, op *core.Operation) error {
 	return nil
 }
 
+func OPEqual(stack *core.Stack, op *core.Operation) error {
+	lhs, rhs, err := stack.PopLastTwo()
+
+	if err != nil {
+		return err
+	}
+
+	var bitSet int8
+
+	// TODO: at some point this should be using bool type
+	if lhs == rhs {
+		bitSet = 1
+	}
+
+	stack.Push(bitSet)
+
+	return nil
+}
+
 func OPDump(stack *core.Stack, op *core.Operation) error {
 	value, err := stack.Pop()
 

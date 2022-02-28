@@ -11,6 +11,7 @@ var REGISTERED_TOKENS = map[string]func(string) (*Operation, error){
 	"PUSH":  TokenPush,
 	"PLUS":  TokenPlus,
 	"MINUS": TokenMinus,
+	"EQUAL": TokenEqual,
 	"DUMP":  TokenDump,
 }
 
@@ -77,6 +78,18 @@ func TokenMinus(token string) (*Operation, error) {
 
 	operation := Operation{
 		Type: OP_MINUS,
+	}
+
+	return &operation, nil
+}
+
+func TokenEqual(token string) (*Operation, error) {
+	if token != "=" {
+		return nil, fmt.Errorf("Invalid token")
+	}
+
+	operation := Operation{
+		Type: OP_EQUAL,
 	}
 
 	return &operation, nil
