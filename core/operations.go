@@ -9,6 +9,7 @@ const (
 	OP_PLUS  = iota
 	OP_MINUS = iota
 	OP_EQUAL = iota
+	OP_BLOCK = iota
 	OP_DUMP  = iota
 )
 
@@ -17,16 +18,17 @@ type Operation struct {
 	Value interface{}
 }
 
-var VALID_OPERATIONS = map[int]bool{
+var REGISTERED_OPERATIONS = map[int]bool{
 	OP_PUSH:  true,
 	OP_PLUS:  true,
 	OP_MINUS: true,
 	OP_EQUAL: true,
+	OP_BLOCK: true,
 	OP_DUMP:  true,
 }
 
 func NewOP(operation int, value interface{}) *Operation {
-	if !VALID_OPERATIONS[operation] {
+	if !REGISTERED_OPERATIONS[operation] {
 		log.Fatal("invalid operation: ", operation)
 	}
 

@@ -7,12 +7,24 @@ import (
 	"strings"
 )
 
-var REGISTERED_TOKENS = map[string]func(string) (*Operation, error){
-	"PUSH":  TokenPush,
-	"PLUS":  TokenPlus,
-	"MINUS": TokenMinus,
-	"EQUAL": TokenEqual,
-	"DUMP":  TokenDump,
+const (
+	TOKEN_PUSH  = iota
+	TOKEN_PLUS  = iota
+	TOKEN_MINUS = iota
+	TOKEN_EQUAL = iota
+	TOKEN_DUMP  = iota
+	TOKEN_DO    = iota
+	TOKEN_END   = iota
+)
+
+var REGISTERED_TOKENS = map[int]func(string) (*Operation, error){
+	TOKEN_PUSH:  TokenPush,
+	TOKEN_PLUS:  TokenPlus,
+	TOKEN_MINUS: TokenMinus,
+	TOKEN_EQUAL: TokenEqual,
+	TOKEN_DUMP:  TokenDump,
+	TOKEN_DO:    TokenDo,
+	TOKEN_END:   TokenEnd,
 }
 
 var IS_DIGIT = regexp.MustCompile(`^[1-9]\d*(\.\d+)?$`)
@@ -102,6 +114,30 @@ func TokenDump(token string) (*Operation, error) {
 
 	operation := Operation{
 		Type: OP_DUMP,
+	}
+
+	return &operation, nil
+}
+
+func TokenDo(token string) (*Operation, error) {
+	if token != "do" {
+		return nil, fmt.Errorf("Invalid token")
+	}
+
+	operation := Operation{
+		Type: OP_BLOCK,
+	}
+
+	return &operation, nil
+}
+
+func TokenEnd(token string) (*Operation, error) {
+	if token != "end" {
+		return nil, fmt.Errorf("Invalid token")
+	}
+
+	operation := Operation{
+		Type: OP_BLOCK,
 	}
 
 	return &operation, nil
