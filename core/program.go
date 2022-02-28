@@ -2,6 +2,8 @@ package core
 
 import (
 	"fmt"
+	"os"
+	"strings"
 )
 
 type Program []*Operation
@@ -27,4 +29,32 @@ func (p *Program) Pop() (*Operation, error) {
 	*p = (*p)[:index]
 
 	return operation, nil
+}
+
+func NewProgramFromFile(filename string) (*Program, error) {
+	lines, err := os.ReadFile(filename)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var program Program
+
+	for _, line := range strings.Split(string(lines), "\n") {
+		for _, token := range strings.Split(line, " ") {
+			// TODO: check for exaustive tokens lookup (for else?)
+			for _, tokenHandler := range REGISTERED_TOKENS {
+				operation, err := tokenHandler(token)
+
+				if err != nil {
+					continue
+				}
+
+				program.Push(operation)
+				break
+			}
+		}
+	}
+
+	return &program, nil
 }

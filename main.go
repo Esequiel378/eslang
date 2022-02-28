@@ -3,22 +3,15 @@ package main
 import (
 	"eslang/core"
 	"eslang/interpreter"
+	"log"
 )
 
 func main() {
-	var program core.Program
+	program, err := core.NewProgramFromFile("./01-test-read-from-file.esl")
 
-	program.Push(core.NewOP(core.OP_PUSH, 34))
-	program.Push(core.NewOP(core.OP_PUSH, 35))
-	program.Push(core.NewOP(core.OP_PLUS, nil))
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	program.Push(core.NewOP(core.OP_DUMP, nil))
-
-	program.Push(core.NewOP(core.OP_PUSH, 500))
-	program.Push(core.NewOP(core.OP_PUSH, 80))
-	program.Push(core.NewOP(core.OP_MINUS, nil))
-
-	program.Push(core.NewOP(core.OP_DUMP, nil))
-
-	interpreter.SimulateProgram(&program)
+	interpreter.SimulateProgram(program)
 }
