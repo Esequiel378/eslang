@@ -6,7 +6,13 @@ import (
 )
 
 func OPPush(stack *core.Stack, op core.Operation) error {
-	stack.Push(op.Value())
+	value, err := op.Value(stack)
+
+	if err != nil {
+		return err
+	}
+
+	stack.Push(value)
 
 	return nil
 }
@@ -62,7 +68,7 @@ func OPEqual(stack *core.Stack, op core.Operation) error {
 		return err
 	}
 
-	var bitSet int8
+	var bitSet int64
 
 	// TODO: at some point this should be using bool type
 	if lhs == rhs {

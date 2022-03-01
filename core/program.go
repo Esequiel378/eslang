@@ -32,27 +32,31 @@ func (p *Program) Pop() (Operation, error) {
 	return operation, nil
 }
 
-type BlockStack []*BlockOperation
+type BlockStack []BlockOperation
 
-func (ps *BlockStack) IsEmpty() bool {
-	return len(*ps) == 0
+func (bs *BlockStack) IsEmpty() bool {
+	return len(*bs) == 0
 }
 
-func (ps *BlockStack) Push(value *BlockOperation) {
-	*ps = append(*ps, value)
+func (bs *BlockStack) Push(value BlockOperation) {
+	*bs = append(*bs, value)
 }
 
-func (ps *BlockStack) Pop() (*BlockOperation, error) {
-	if ps.IsEmpty() {
+func (bs *BlockStack) Last() BlockOperation {
+	return (*bs)[len(*bs)-1]
+}
+
+func (bs *BlockStack) Pop() (BlockOperation, error) {
+	if bs.IsEmpty() {
 		return nil, fmt.Errorf("can not perform `ProgramStack.Pop()`, stack is empty.")
 	}
 
 	// Get the index of the top most element.
-	index := len(*ps) - 1
+	index := len(*bs) - 1
 	// Index into the slice and obtain the element.
-	value := (*ps)[index]
+	value := (*bs)[index]
 	// Remove it from the stack by slicing it off.
-	*ps = (*ps)[:index]
+	*bs = (*bs)[:index]
 
 	return value, nil
 }
@@ -72,55 +76,29 @@ func getProgram(lines []string) (*Program, error) {
 		tokens := strings.Split(line, " ")
 
 		for colNumber, token := range tokens {
+			token = strings.Trim(token, " ")
 			found := false
 
-			for tokenType, tokenHandler := range REGISTERED_MISC_TOKENS {
-				operation, err := tokenHandler(token)
+			for _, tokenHandler := range REGISTERED_TOKENS {
+				operation, err := tokenHandler(token, &blocks)
 
 				if err != nil {
 					continue
 				}
 
-				blocksLen := len(blocks)
-
-				switch tokenType {
-				case TOKEN_DO:
-					blockOperation := &BlockOperation{
-						_type:     OP_BLOCK,
-						block:     &Program{},
-						elseBlock: &Program{},
-					}
-
-					blocks.Push(blockOperation)
-
-				case TOKEN_ELSE:
-					blocks[blocksLen-1].elseBlock.Push(operation)
-
-				case TOKEN_END:
-					block, err := blocks.Pop()
-
-					if err != nil {
-						return nil, err
-					}
-
-					program.Push(block)
-
-				default:
-					if blocksLen == 0 {
-						program.Push(operation)
-						break
-					}
-
-					block := blocks[blocksLen-1]
-
-					if len(*block.elseBlock) != 0 {
-						block.elseBlock.Push(operation)
-					} else {
-						block.block.Push(operation)
-					}
+				if operation == nil {
+					found = true
+					break
 				}
 
 				found = true
+
+				if blocks.IsEmpty() {
+					program.Push(operation)
+				} else {
+					blocks.Last().PushIntoBlocks(operation)
+				}
+
 				break
 			}
 
@@ -148,6 +126,8 @@ func NewProgramFromFile(filename string) (*Program, error) {
 	lines := strings.Split(string(rawLines), "\n")
 
 	program, err := getProgram(lines)
+
+	// fmt.Println((*program)[1])
 
 	if err != nil {
 		log.Fatal(err)
