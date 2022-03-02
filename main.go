@@ -7,13 +7,13 @@ import (
 )
 
 func main() {
-	program, err := core.NewProgramFromFile("./01-test-read-from-file.esl")
+	var program core.Program
 
-	if err != nil {
+	if err := program.LoadFromFile("./01-test-read-from-file.esl"); err != nil {
 		log.Fatal(err)
 	}
 
-	if err := interpreter.SimulateProgram(program); err != nil {
+	if err := interpreter.SimulateProgram(&program); err != nil {
 		log.Fatal(err)
 	}
 }

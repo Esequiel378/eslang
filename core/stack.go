@@ -42,3 +42,32 @@ func (s *Stack) PopLastTwo() (lhs interface{}, rhs interface{}, err error) {
 
 	return lhs, rhs, nil
 }
+
+type BlockStack []BlockOperation
+
+func (bs *BlockStack) IsEmpty() bool {
+	return len(*bs) == 0
+}
+
+func (bs *BlockStack) Push(value BlockOperation) {
+	*bs = append(*bs, value)
+}
+
+func (bs *BlockStack) Last() BlockOperation {
+	return (*bs)[len(*bs)-1]
+}
+
+func (bs *BlockStack) Pop() (BlockOperation, error) {
+	if bs.IsEmpty() {
+		return nil, fmt.Errorf("can not perform `ProgramStack.Pop()`, stack is empty.")
+	}
+
+	// Get the index of the top most element.
+	index := len(*bs) - 1
+	// Index into the slice and obtain the element.
+	value := (*bs)[index]
+	// Remove it from the stack by slicing it off.
+	*bs = (*bs)[:index]
+
+	return value, nil
+}

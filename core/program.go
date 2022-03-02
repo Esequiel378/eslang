@@ -32,41 +32,10 @@ func (p *Program) Pop() (Operation, error) {
 	return operation, nil
 }
 
-type BlockStack []BlockOperation
-
-func (bs *BlockStack) IsEmpty() bool {
-	return len(*bs) == 0
-}
-
-func (bs *BlockStack) Push(value BlockOperation) {
-	*bs = append(*bs, value)
-}
-
-func (bs *BlockStack) Last() BlockOperation {
-	return (*bs)[len(*bs)-1]
-}
-
-func (bs *BlockStack) Pop() (BlockOperation, error) {
-	if bs.IsEmpty() {
-		return nil, fmt.Errorf("can not perform `ProgramStack.Pop()`, stack is empty.")
-	}
-
-	// Get the index of the top most element.
-	index := len(*bs) - 1
-	// Index into the slice and obtain the element.
-	value := (*bs)[index]
-	// Remove it from the stack by slicing it off.
-	*bs = (*bs)[:index]
-
-	return value, nil
-}
-
-func getProgram(lines []string) (*Program, error) {
-	var program Program
-
+func (p *Program) parseLines(lines []string) error {
 	var blocks BlockStack
 
-	for lineNumber, line := range lines {
+	for lnum, line := range lines {
 		line = strings.Trim(line, " ")
 
 		if line == "" {
@@ -75,7 +44,7 @@ func getProgram(lines []string) (*Program, error) {
 
 		tokens := strings.Split(line, " ")
 
-		for colNumber, token := range tokens {
+		for cnum, token := range tokens {
 			token = strings.Trim(token, " ")
 			found := false
 
@@ -86,15 +55,14 @@ func getProgram(lines []string) (*Program, error) {
 					continue
 				}
 
+				found = true
+
 				if operation == nil {
-					found = true
 					break
 				}
 
-				found = true
-
 				if blocks.IsEmpty() {
-					program.Push(operation)
+					p.Push(operation)
 				} else {
 					blocks.Last().PushIntoBlocks(operation)
 				}
@@ -103,9 +71,9 @@ func getProgram(lines []string) (*Program, error) {
 			}
 
 			if !found {
-				return nil, fmt.Errorf(
+				return fmt.Errorf(
 					"Token error in %d:%d - '%s' is not a valid token.",
-					lineNumber+1, colNumber+1,
+					lnum+1, cnum+1,
 					token,
 				)
 			}
@@ -113,25 +81,23 @@ func getProgram(lines []string) (*Program, error) {
 		}
 	}
 
-	return &program, nil
+	return nil
 }
 
-func NewProgramFromFile(filename string) (*Program, error) {
+func (p *Program) LoadFromFile(filename string) error {
 	rawLines, err := os.ReadFile(filename)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	lines := strings.Split(string(rawLines), "\n")
 
-	program, err := getProgram(lines)
-
-	// fmt.Println((*program)[1])
-
-	if err != nil {
+	if err := p.parseLines(lines); err != nil {
 		log.Fatal(err)
 	}
 
-	return program, nil
+	// fmt.Println((*program)[1])
+
+	return nil
 }
