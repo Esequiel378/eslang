@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"log"
+	"reflect"
 )
 
 const (
@@ -36,6 +37,17 @@ type Operation interface {
 type MiscOperation struct {
 	_type int
 	value interface{}
+}
+
+func NewMiscOperation(operation int, value interface{}) Operation {
+	if !REGISTERED_OPERATIONS[operation] {
+		log.Fatal("invalid operation: ", operation)
+	}
+
+	return MiscOperation{
+		_type: operation,
+		value: value,
+	}
 }
 
 func (mo MiscOperation) Type() int {
@@ -125,7 +137,11 @@ func (b *IfBlockOperation) Value(stack *Stack) (interface{}, error) {
 	truthy, ok := value.(int64)
 
 	if !ok {
-		return nil, fmt.Errorf("error testing the truthy of %s", value)
+		return nil, fmt.Errorf(
+			"error testing the truthy of %s with type %s",
+			value,
+			reflect.TypeOf(value),
+		)
 	}
 
 	if truthy != 0 {
@@ -153,15 +169,4 @@ func (b *IfBlockOperation) HasElseBlock() bool {
 
 func (b *IfBlockOperation) EnableElseBlock() {
 	b.hasElseBlock = true
-}
-
-func NewOP(operation int, value interface{}) Operation {
-	if !REGISTERED_OPERATIONS[operation] {
-		log.Fatal("invalid operation: ", operation)
-	}
-
-	return MiscOperation{
-		_type: operation,
-		value: value,
-	}
 }
