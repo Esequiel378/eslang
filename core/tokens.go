@@ -135,7 +135,7 @@ func TokenDo(token string, blocks *BlockStack) (Operation, error) {
 		return nil, fmt.Errorf("Invalid token")
 	}
 
-	blockOperation := NewMiscBlockOperation(TOKEN_DO, TOKEN_END)
+	blockOperation := NewMiscBlockOperation(OP_BLOCK, TOKEN_DO, TOKEN_END)
 
 	blocks.Push(blockOperation)
 
@@ -147,7 +147,7 @@ func TokenIf(token string, blocks *BlockStack) (Operation, error) {
 		return nil, fmt.Errorf("Invalid token")
 	}
 
-	blockOperation := NewMiscBlockOperation(TOKEN_IF, TOKEN_END)
+	blockOperation := NewMiscBlockOperation(OP_IF, TOKEN_IF, TOKEN_END)
 
 	blocks.Push(blockOperation)
 

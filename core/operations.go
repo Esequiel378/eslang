@@ -29,7 +29,7 @@ var REGISTERED_OPERATIONS = map[int]bool{
 
 type Operation interface {
 	Type() int
-	Value(*Stack) (interface{}, error)
+	Value() interface{}
 	TokenStart() *Token
 	TokenEnd() *Token
 }
@@ -66,8 +66,8 @@ func (mo MiscOperation) Type() int {
 	return mo._type
 }
 
-func (mo MiscOperation) Value(stack *Stack) (interface{}, error) {
-	return mo.value, nil
+func (mo MiscOperation) Value() interface{} {
+	return mo.value
 }
 
 func (mp MiscOperation) TokenStart() *Token {
@@ -79,14 +79,16 @@ func (mp MiscOperation) TokenEnd() *Token {
 }
 
 type BlockOperation interface {
+	// TODO: This are comming from Operation, is there a better way to do it?
 	Type() int
-	Value(*Stack) (interface{}, error)
+	Value() interface{}
 	TokenStart() *Token
 	TokenEnd() *Token
 
 	PushIntoBlocks(Operation)
 	HasElseBlock() bool
 	EnableElseBlock()
+	ElseBlock() *Program
 }
 
 type MiscBlockOperation struct {
@@ -98,9 +100,9 @@ type MiscBlockOperation struct {
 	tokenEnd     *Token
 }
 
-func NewMiscBlockOperation(tokenStart, tokenEnd int) BlockOperation {
+func NewMiscBlockOperation(operation int, tokenStart, tokenEnd int) BlockOperation {
 	return &MiscBlockOperation{
-		_type:        OP_BLOCK,
+		_type:        operation,
 		block:        &Program{},
 		elseBlock:    &Program{},
 		hasElseBlock: false,
@@ -121,8 +123,8 @@ func (b *MiscBlockOperation) Type() int {
 	return b._type
 }
 
-func (b *MiscBlockOperation) Value(stack *Stack) (interface{}, error) {
-	return b.block, nil
+func (b *MiscBlockOperation) Value() interface{} {
+	return b.block
 }
 
 func (b *MiscBlockOperation) TokenStart() *Token {
@@ -149,6 +151,6 @@ func (b *MiscBlockOperation) EnableElseBlock() {
 	b.hasElseBlock = true
 }
 
-func (b *MiscBlockOperation) Token() *Token {
-	return b.tokenStart
+func (b *MiscBlockOperation) ElseBlock() *Program {
+	return b.elseBlock
 }

@@ -14,11 +14,7 @@ var REGISTERED_OPERATIONS = map[int]func(*core.Stack, core.Operation) error{
 }
 
 func OPPush(stack *core.Stack, op core.Operation) error {
-	value, err := op.Value(stack)
-
-	if err != nil {
-		return err
-	}
+	value := op.Value()
 
 	stack.Push(value)
 
