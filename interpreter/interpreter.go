@@ -2,17 +2,16 @@ package interpreter
 
 import (
 	"eslang/core"
+	"fmt"
 )
 
-var REGISTERED_OPERATIONS = map[int]func(*core.Stack, core.Operation) error{
-	core.OP_PUSH:  OPPush,
-	core.OP_PLUS:  OPPlus,
-	core.OP_MINUS: OPMinus,
-	core.OP_EQUAL: OPEqual,
-	core.OP_DUMP:  OPDump,
+func FormatError(op core.Operation, err error) error {
+	line, col := op.TokenStart().Position()
+	token := op.TokenStart().Token()
+
+	return fmt.Errorf("error %s with Token: %d int line: %d/%d", err.Error(), token, line, col)
 }
 
-// TODO: Add line/col numbers for errors
 func executeOperations(program *core.Program, stack *core.Stack) error {
 	for _, op := range *program {
 		handler := REGISTERED_OPERATIONS[op.Type()]
@@ -21,7 +20,7 @@ func executeOperations(program *core.Program, stack *core.Stack) error {
 			program, err := op.Value(stack)
 
 			if err != nil {
-				return err
+				return FormatError(op, err)
 			}
 
 			if program == nil {
@@ -31,19 +30,18 @@ func executeOperations(program *core.Program, stack *core.Stack) error {
 			pp, ok := program.(*core.Program)
 
 			if !ok {
-				// TODO: add a better err msg
-				return nil
+				return FormatError(op, fmt.Errorf("error running block program"))
 			}
 
 			if err := executeOperations(pp, stack); err != nil {
-				return err
+				return FormatError(op, err)
 			}
 
 			continue
 		}
 
 		if err := handler(stack, op); err != nil {
-			return err
+			return FormatError(op, err)
 		}
 	}
 

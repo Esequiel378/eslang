@@ -1,9 +1,7 @@
 package core
 
 import (
-	"fmt"
 	"log"
-	"reflect"
 )
 
 const (
@@ -32,21 +30,35 @@ var REGISTERED_OPERATIONS = map[int]bool{
 type Operation interface {
 	Type() int
 	Value(*Stack) (interface{}, error)
+	TokenStart() *Token
+	TokenEnd() *Token
 }
 
 type MiscOperation struct {
-	_type int
-	value interface{}
+	_type      int
+	value      interface{}
+	tokenStart *Token
+	tokenEnd   *Token
 }
 
-func NewMiscOperation(operation int, value interface{}) Operation {
+func NewMiscOperation(operation int, value interface{}, token int) Operation {
 	if !REGISTERED_OPERATIONS[operation] {
 		log.Fatal("invalid operation: ", operation)
 	}
 
-	return MiscOperation{
+	return &MiscOperation{
 		_type: operation,
 		value: value,
+		tokenStart: &Token{
+			line:  nil,
+			col:   nil,
+			token: token,
+		},
+		tokenEnd: &Token{
+			line:  nil,
+			col:   nil,
+			token: token,
+		},
 	}
 }
 
@@ -58,9 +70,19 @@ func (mo MiscOperation) Value(stack *Stack) (interface{}, error) {
 	return mo.value, nil
 }
 
+func (mp MiscOperation) TokenStart() *Token {
+	return mp.tokenStart
+}
+
+func (mp MiscOperation) TokenEnd() *Token {
+	return mp.tokenEnd
+}
+
 type BlockOperation interface {
 	Type() int
 	Value(*Stack) (interface{}, error)
+	TokenStart() *Token
+	TokenEnd() *Token
 
 	PushIntoBlocks(Operation)
 	HasElseBlock() bool
@@ -72,14 +94,26 @@ type MiscBlockOperation struct {
 	block        *Program
 	elseBlock    *Program
 	hasElseBlock bool
+	tokenStart   *Token
+	tokenEnd     *Token
 }
 
-func NewMiscBlockOperation() MiscBlockOperation {
-	return MiscBlockOperation{
+func NewMiscBlockOperation(tokenStart, tokenEnd int) BlockOperation {
+	return &MiscBlockOperation{
 		_type:        OP_BLOCK,
 		block:        &Program{},
 		elseBlock:    &Program{},
 		hasElseBlock: false,
+		tokenStart: &Token{
+			line:  nil,
+			col:   nil,
+			token: tokenStart,
+		},
+		tokenEnd: &Token{
+			line:  nil,
+			col:   nil,
+			token: tokenEnd,
+		},
 	}
 }
 
@@ -89,6 +123,14 @@ func (b *MiscBlockOperation) Type() int {
 
 func (b *MiscBlockOperation) Value(stack *Stack) (interface{}, error) {
 	return b.block, nil
+}
+
+func (b *MiscBlockOperation) TokenStart() *Token {
+	return b.tokenStart
+}
+
+func (b *MiscBlockOperation) TokenEnd() *Token {
+	return b.tokenEnd
 }
 
 func (b *MiscBlockOperation) PushIntoBlocks(operation Operation) {
@@ -107,66 +149,6 @@ func (b *MiscBlockOperation) EnableElseBlock() {
 	b.hasElseBlock = true
 }
 
-type IfBlockOperation struct {
-	_type        int
-	block        *Program
-	elseBlock    *Program
-	hasElseBlock bool
-}
-
-func NewIfBlockOperation() IfBlockOperation {
-	return IfBlockOperation{
-		_type:        OP_BLOCK,
-		block:        &Program{},
-		elseBlock:    &Program{},
-		hasElseBlock: false,
-	}
-}
-
-func (b *IfBlockOperation) Type() int {
-	return b._type
-}
-
-func (b *IfBlockOperation) Value(stack *Stack) (interface{}, error) {
-	value, err := stack.Pop()
-
-	if err != nil {
-		return nil, err
-	}
-
-	truthy, ok := value.(int64)
-
-	if !ok {
-		return nil, fmt.Errorf(
-			"error testing the truthy of %s with type %s",
-			value,
-			reflect.TypeOf(value),
-		)
-	}
-
-	if truthy != 0 {
-		return b.block, nil
-	}
-
-	if isNil(b.elseBlock) {
-		return nil, nil
-	}
-
-	return b.elseBlock, nil
-}
-
-func (b *IfBlockOperation) PushIntoBlocks(operation Operation) {
-	if b.HasElseBlock() {
-		b.elseBlock.Push(operation)
-	} else {
-		b.block.Push(operation)
-	}
-}
-
-func (b *IfBlockOperation) HasElseBlock() bool {
-	return b.hasElseBlock
-}
-
-func (b *IfBlockOperation) EnableElseBlock() {
-	b.hasElseBlock = true
+func (b *MiscBlockOperation) Token() *Token {
+	return b.tokenStart
 }

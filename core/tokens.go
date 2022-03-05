@@ -33,6 +33,28 @@ var REGISTERED_TOKENS = map[int]func(string, *BlockStack) (Operation, error){
 
 var IS_DIGIT = regexp.MustCompile(`^[0-9]\d*(\.\d+)?$`)
 
+type Token struct {
+	line  *int
+	col   *int
+	token int
+}
+
+func (t *Token) Token() int {
+	return t.token
+}
+
+func (t *Token) Position() (int, int) {
+	return *t.line, *t.col
+}
+
+func (t *Token) Col(col int) {
+	t.col = &col
+}
+
+func (t *Token) Line(line int) {
+	t.line = &line
+}
+
 func tokenPushFloat64(token string) (Operation, error) {
 	value, err := strconv.ParseFloat(token, 64)
 
@@ -40,7 +62,7 @@ func tokenPushFloat64(token string) (Operation, error) {
 		return nil, fmt.Errorf("error parsing token '%s' to float: %s", token, err.Error())
 	}
 
-	operation := NewMiscOperation(OP_PUSH, value)
+	operation := NewMiscOperation(OP_PUSH, value, TOKEN_PUSH)
 
 	return operation, nil
 }
@@ -52,7 +74,7 @@ func tokenPushInt64(token string) (Operation, error) {
 		return nil, fmt.Errorf("error parsing token '%s' to int: %s", token, err.Error())
 	}
 
-	operation := NewMiscOperation(OP_PUSH, value)
+	operation := NewMiscOperation(OP_PUSH, value, TOKEN_PUSH)
 
 	return operation, nil
 }
@@ -74,7 +96,7 @@ func TokenPlus(token string, blocks *BlockStack) (Operation, error) {
 		return nil, fmt.Errorf("Invalid token")
 	}
 
-	operation := NewMiscOperation(OP_PLUS, nil)
+	operation := NewMiscOperation(OP_PLUS, nil, TOKEN_PLUS)
 
 	return operation, nil
 }
@@ -84,7 +106,7 @@ func TokenMinus(token string, blocks *BlockStack) (Operation, error) {
 		return nil, fmt.Errorf("Invalid token")
 	}
 
-	operation := NewMiscOperation(OP_MINUS, nil)
+	operation := NewMiscOperation(OP_MINUS, nil, TOKEN_MINUS)
 
 	return operation, nil
 }
@@ -94,7 +116,7 @@ func TokenEqual(token string, blocks *BlockStack) (Operation, error) {
 		return nil, fmt.Errorf("Invalid token")
 	}
 
-	operation := NewMiscOperation(OP_EQUAL, nil)
+	operation := NewMiscOperation(OP_EQUAL, nil, TOKEN_EQUAL)
 
 	return operation, nil
 }
@@ -103,7 +125,7 @@ func TokenDump(token string, blocks *BlockStack) (Operation, error) {
 	if token != "." {
 		return nil, fmt.Errorf("Invalid token")
 	}
-	operation := NewMiscOperation(OP_DUMP, nil)
+	operation := NewMiscOperation(OP_DUMP, nil, TOKEN_DUMP)
 
 	return operation, nil
 }
@@ -113,9 +135,9 @@ func TokenDo(token string, blocks *BlockStack) (Operation, error) {
 		return nil, fmt.Errorf("Invalid token")
 	}
 
-	blockOperation := NewMiscBlockOperation()
+	blockOperation := NewMiscBlockOperation(TOKEN_DO, TOKEN_END)
 
-	blocks.Push(&blockOperation)
+	blocks.Push(blockOperation)
 
 	return nil, nil
 }
@@ -125,9 +147,9 @@ func TokenIf(token string, blocks *BlockStack) (Operation, error) {
 		return nil, fmt.Errorf("Invalid token")
 	}
 
-	ifBlockOperation := NewIfBlockOperation()
+	blockOperation := NewMiscBlockOperation(TOKEN_IF, TOKEN_END)
 
-	blocks.Push(&ifBlockOperation)
+	blocks.Push(blockOperation)
 
 	return nil, nil
 }
@@ -137,7 +159,9 @@ func TokenElse(token string, blocks *BlockStack) (Operation, error) {
 		return nil, fmt.Errorf("Invalid token")
 	}
 
-	blocks.Last().EnableElseBlock()
+	block := blocks.Last()
+
+	block.EnableElseBlock()
 
 	return nil, nil
 }

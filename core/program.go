@@ -21,16 +21,20 @@ func (p *Program) parseLines(lines []string) error {
 	var blocks BlockStack
 
 	for lnum, line := range lines {
-		line = strings.Trim(line, " ")
-
-		if line == "" {
+		if len(strings.Trim(line, " ")) == 0 {
 			continue
 		}
 
 		tokens := strings.Split(line, " ")
 
-		for cnum, token := range tokens {
+		for _, token := range tokens {
 			token = strings.Trim(token, " ")
+
+			if len(token) == 0 {
+				continue
+			}
+
+			cnum := strings.Index(line, token)
 			found := false
 
 			for _, tokenHandler := range REGISTERED_TOKENS {
@@ -43,8 +47,13 @@ func (p *Program) parseLines(lines []string) error {
 				found = true
 
 				if operation == nil {
+					blocks.Last().TokenStart().Line(lnum)
+					blocks.Last().TokenStart().Col(cnum)
 					break
 				}
+
+				operation.TokenStart().Line(lnum)
+				operation.TokenStart().Col(cnum)
 
 				if blocks.IsEmpty() {
 					p.Push(operation)

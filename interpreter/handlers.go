@@ -5,6 +5,14 @@ import (
 	"fmt"
 )
 
+var REGISTERED_OPERATIONS = map[int]func(*core.Stack, core.Operation) error{
+	core.OP_PUSH:  OPPush,
+	core.OP_PLUS:  OPPlus,
+	core.OP_MINUS: OPMinus,
+	core.OP_EQUAL: OPEqual,
+	core.OP_DUMP:  OPDump,
+}
+
 func OPPush(stack *core.Stack, op core.Operation) error {
 	value, err := op.Value(stack)
 
@@ -91,3 +99,31 @@ func OPDump(stack *core.Stack, op core.Operation) error {
 
 	return nil
 }
+
+// func (b *IfBlockOperation) Value(stack *Stack) (interface{}, error) {
+// 	value, err := stack.Pop()
+
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	truthy, ok := value.(int64)
+
+// 	if !ok {
+// 		return nil, fmt.Errorf(
+// 			"error testing the truthy of %s with type %s",
+// 			value,
+// 			reflect.TypeOf(value),
+// 		)
+// 	}
+
+// 	if truthy != 0 {
+// 		return b.block, nil
+// 	}
+
+// 	if isNil(b.elseBlock) {
+// 		return nil, nil
+// 	}
+
+// 	return b.elseBlock, nil
+// }
