@@ -23,6 +23,8 @@ func (p *Program) parseLines(lines []string) error {
 	var blocks BlockStack
 
 	for lnum, line := range lines {
+		line = strings.Split(line, "//")[0]
+
 		if len(strings.Trim(line, " ")) == 0 {
 			continue
 		}
