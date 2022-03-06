@@ -63,12 +63,9 @@ func (t *Token) Position() (int, int) {
 	return *t.line, *t.col
 }
 
-func (t *Token) Col(col int) {
-	t.col = &col
-}
-
-func (t *Token) Line(line int) {
+func (t *Token) SetPostition(line, col int) {
 	t.line = &line
+	t.col = &col
 }
 
 func tokenPushFloat64(token string) (Operation, error) {
@@ -108,8 +105,7 @@ func TokenPush(token, line string, lnum int, blocks *BlockStack) (op Operation, 
 
 	cnum := strings.Index(line, token)
 
-	op.TokenStart().Line(lnum + 1)
-	op.TokenStart().Col(cnum + 1)
+	op.TokenStart().SetPostition(lnum+1, cnum+1)
 
 	return op, err
 
@@ -123,8 +119,7 @@ func TokenPlus(token, line string, lnum int, blocks *BlockStack) (Operation, err
 	op := NewMiscOperation(OP_PLUS, nil, TOKEN_PLUS)
 	cnum := strings.Index(line, token)
 
-	op.TokenStart().Line(lnum + 1)
-	op.TokenStart().Col(cnum + 1)
+	op.TokenStart().SetPostition(lnum+1, cnum+1)
 
 	return op, nil
 }
@@ -137,8 +132,7 @@ func TokenMinus(token, line string, lnum int, blocks *BlockStack) (Operation, er
 	op := NewMiscOperation(OP_MINUS, nil, TOKEN_MINUS)
 	cnum := strings.Index(line, token)
 
-	op.TokenStart().Line(lnum + 1)
-	op.TokenStart().Col(cnum + 1)
+	op.TokenStart().SetPostition(lnum+1, cnum+1)
 
 	return op, nil
 }
@@ -151,8 +145,7 @@ func TokenEqual(token, line string, lnum int, blocks *BlockStack) (Operation, er
 	op := NewMiscOperation(OP_EQUAL, nil, TOKEN_EQUAL)
 	cnum := strings.Index(line, token)
 
-	op.TokenStart().Line(lnum + 1)
-	op.TokenStart().Col(cnum + 1)
+	op.TokenStart().SetPostition(lnum+1, cnum+1)
 
 	return op, nil
 }
@@ -165,8 +158,7 @@ func TokenDump(token, line string, lnum int, blocks *BlockStack) (Operation, err
 	op := NewMiscOperation(OP_DUMP, nil, TOKEN_DUMP)
 	cnum := strings.Index(line, token)
 
-	op.TokenStart().Line(lnum + 1)
-	op.TokenStart().Col(cnum + 1)
+	op.TokenStart().SetPostition(lnum+1, cnum+1)
 
 	return op, nil
 }
@@ -181,8 +173,7 @@ func TokenDo(token, line string, lnum int, blocks *BlockStack) (Operation, error
 
 	cnum := strings.Index(line, token)
 
-	block.TokenStart().Line(lnum + 1)
-	block.TokenStart().Col(cnum + 1)
+	block.TokenStart().SetPostition(lnum+1, cnum+1)
 
 	return nil, nil
 }
@@ -193,13 +184,11 @@ func TokenIf(token, line string, lnum int, blocks *BlockStack) (Operation, error
 	}
 
 	blockOperation := NewMiscBlockOperation(OP_IF, TOKEN_IF, TOKEN_END)
-
 	blocks.Push(blockOperation)
 
 	cnum := strings.Index(line, token)
 
-	blocks.Last().TokenStart().Line(lnum + 1)
-	blocks.Last().TokenStart().Col(cnum + 1)
+	blocks.Last().TokenStart().SetPostition(lnum+1, cnum+1)
 
 	return nil, nil
 }
@@ -209,9 +198,18 @@ func TokenElse(token, line string, lnum int, blocks *BlockStack) (Operation, err
 		return nil, fmt.Errorf("Invalid token")
 	}
 
+	cnum := strings.Index(line, token)
+
+	elseBlock := NewMiscBlockOperation(OP_ELSE, TOKEN_ELSE, TOKEN_END)
+	elseBlock.TokenStart().SetPostition(lnum+1, cnum+1)
+
 	block := blocks.Last()
 
-	block.EnableElseBlock()
+	if b := block.LastBlock(); block != nil {
+		b.TokenEnd().SetPostition(lnum+1, cnum+1)
+	}
+
+	block.SetRefBlock(elseBlock)
 
 	return nil, nil
 }
@@ -229,8 +227,9 @@ func TokenEnd(token, line string, lnum int, blocks *BlockStack) (Operation, erro
 
 	cnum := strings.Index(line, token)
 
-	block.TokenEnd().Line(lnum + 1)
-	block.TokenEnd().Col(cnum + 1)
+	if b := block.LastBlock(); b != nil {
+		b.TokenEnd().SetPostition(lnum+1, cnum+1)
+	}
 
 	return block, nil
 }

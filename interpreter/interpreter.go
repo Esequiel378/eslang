@@ -62,11 +62,11 @@ func executeOperations(program *core.Program, stack *core.Stack) error {
 				break
 			}
 
-			if isNil(block.ElseBlock()) {
+			if isNil(block.RefBlock()) {
 				break
 			}
 
-			program := block.ElseBlock()
+			program := block.RefBlock().Block()
 
 			if err := executeOperations(program, stack); err != nil {
 				return FormatError(op, err)

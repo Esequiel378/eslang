@@ -7,6 +7,7 @@ import (
 const (
 	OP_BLOCK = iota
 	OP_DUMP  = iota
+	OP_ELSE  = iota
 	OP_EQUAL = iota
 	OP_IF    = iota
 	OP_MINUS = iota
@@ -17,6 +18,7 @@ const (
 var REGISTERED_OPERATIONS = map[int]bool{
 	OP_BLOCK: true,
 	OP_DUMP:  true,
+	OP_ELSE:  true,
 	OP_EQUAL: true,
 	OP_IF:    true,
 	OP_MINUS: true,
@@ -82,19 +84,19 @@ type BlockOperation interface {
 	TokenStart() *Token
 	TokenEnd() *Token
 
-	PushIntoBlocks(Operation)
-	HasElseBlock() bool
-	EnableElseBlock()
-	ElseBlock() *Program
+	Block() *Program
+	HasRefBlock() bool
+	SetRefBlock(BlockOperation)
+	RefBlock() BlockOperation
+	LastBlock() BlockOperation
 }
 
 type MiscBlockOperation struct {
-	_type        int
-	block        *Program
-	elseBlock    *Program
-	hasElseBlock bool
-	tokenStart   *Token
-	tokenEnd     *Token
+	_type      int
+	block      *Program
+	refBlock   BlockOperation
+	tokenStart *Token
+	tokenEnd   *Token
 }
 
 func NewMiscBlockOperation(operation int, tokenStart, tokenEnd int) BlockOperation {
@@ -103,10 +105,9 @@ func NewMiscBlockOperation(operation int, tokenStart, tokenEnd int) BlockOperati
 	}
 
 	return &MiscBlockOperation{
-		_type:        operation,
-		block:        &Program{},
-		elseBlock:    &Program{},
-		hasElseBlock: false,
+		_type:    operation,
+		block:    &Program{},
+		refBlock: nil,
 		tokenStart: &Token{
 			line:  nil,
 			col:   nil,
@@ -136,22 +137,26 @@ func (b *MiscBlockOperation) TokenEnd() *Token {
 	return b.tokenEnd
 }
 
-func (b *MiscBlockOperation) PushIntoBlocks(operation Operation) {
-	if b.HasElseBlock() {
-		b.elseBlock.Push(operation)
-	} else {
-		b.block.Push(operation)
+func (b *MiscBlockOperation) Block() *Program {
+	return b.block
+}
+
+func (b *MiscBlockOperation) HasRefBlock() bool {
+	return b.refBlock != nil
+}
+
+func (b *MiscBlockOperation) SetRefBlock(block BlockOperation) {
+	b.refBlock = block
+}
+
+func (b *MiscBlockOperation) RefBlock() BlockOperation {
+	return b.refBlock
+}
+
+func (b *MiscBlockOperation) LastBlock() BlockOperation {
+	if b.HasRefBlock() {
+		return b.RefBlock().LastBlock()
 	}
-}
 
-func (b *MiscBlockOperation) HasElseBlock() bool {
-	return b.hasElseBlock
-}
-
-func (b *MiscBlockOperation) EnableElseBlock() {
-	b.hasElseBlock = true
-}
-
-func (b *MiscBlockOperation) ElseBlock() *Program {
-	return b.elseBlock
+	return b
 }

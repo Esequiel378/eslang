@@ -55,11 +55,13 @@ func (p *Program) parseLines(lines []string) error {
 
 				if blocks.IsEmpty() {
 					p.Push(operation)
-				} else {
-					blocks.Last().PushIntoBlocks(operation)
+					break
 				}
 
-				break
+				if b := blocks.Last().LastBlock(); b != nil {
+					b.Block().Push(operation)
+					break
+				}
 			}
 
 			if !found {

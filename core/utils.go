@@ -8,8 +8,6 @@ import (
 	"github.com/TwiN/go-color"
 )
 
-const LoggerTimeFormat = "2006/01/02 15:04:05"
-
 func PrintProgram(program *Program, ident int) error {
 	for _, op := range *program {
 		lnum, cnum := op.TokenStart().Position()
@@ -23,7 +21,11 @@ func PrintProgram(program *Program, ident int) error {
 
 		switch op.Type() {
 		case OP_BLOCK, OP_IF:
-			fmt.Printf("%s%s in line %s:%s\n", spacing, token, line, col)
+			lnum, cnum := op.TokenEnd().Position()
+			eline := color.InBold(strconv.Itoa(lnum))
+			ecol := color.InBold(strconv.Itoa(cnum))
+
+			fmt.Printf("%s%s in lines [%s:%s:%s:%s]\n", spacing, token, line, col, eline, ecol)
 
 			if err := PrintProgram(op.Value().(*Program), ident+1); err != nil {
 				return err
@@ -31,19 +33,23 @@ func PrintProgram(program *Program, ident int) error {
 
 			block := op.(BlockOperation)
 
-			if block.HasElseBlock() {
+			if block.HasRefBlock() {
 				token := color.InYellow(TOKEN_MAPPING[TOKEN_ELSE])
 
-				fmt.Printf("%s%s in line %s:%s\n", spacing, token, line, col)
+				lnum, cnum := block.RefBlock().TokenEnd().Position()
+				eline := color.InBold(strconv.Itoa(lnum))
+				ecol := color.InBold(strconv.Itoa(cnum))
 
-				if err := PrintProgram(block.ElseBlock(), ident+1); err != nil {
+				fmt.Printf("%s%s in lines [%s:%s:%s:%s]\n", spacing, token, line, col, eline, ecol)
+
+				if err := PrintProgram(block.RefBlock().Block(), ident+1); err != nil {
 					return err
 				}
 			}
 
 			endToken := color.InYellow(TOKEN_MAPPING[TOKEN_END])
 
-			lnum, cnum := op.TokenEnd().Position()
+			lnum, cnum = block.LastBlock().TokenEnd().Position()
 			line := color.InBold(strconv.Itoa(lnum))
 			col := color.InBold(strconv.Itoa(cnum))
 
