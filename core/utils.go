@@ -44,6 +44,11 @@ func PrintProgram(program *Program, ident int) error {
 			}
 
 			endToken := color.InYellow(TOKEN_MAPPING[TOKEN_END])
+
+			lnum, cnum := op.TokenEnd().Position()
+			line := color.InBold(strconv.Itoa(lnum))
+			col := color.InBold(strconv.Itoa(cnum))
+
 			fmt.Printf("%s%s on line %s:%s\n", spacing, endToken, line, col)
 
 			fmt.Println()
@@ -53,7 +58,7 @@ func PrintProgram(program *Program, ident int) error {
 
 			if op.Type() == OP_PUSH {
 				v := fmt.Sprint(op.Value())
-				value = fmt.Sprintf(" %s ", color.InBold(v))
+				value = fmt.Sprintf(" %s ", color.InCyan(v))
 			}
 
 			fmt.Printf("%s%s%son line %s:%s\n", spacing, token, value, line, col)

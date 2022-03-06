@@ -36,11 +36,10 @@ func (p *Program) parseLines(lines []string) error {
 				continue
 			}
 
-			cnum := strings.Index(line, token)
 			found := false
 
 			for _, tokenHandler := range REGISTERED_TOKENS {
-				operation, err := tokenHandler(token, &blocks)
+				operation, err := tokenHandler(token, line, lnum, &blocks)
 
 				if err != nil {
 					continue
@@ -49,13 +48,8 @@ func (p *Program) parseLines(lines []string) error {
 				found = true
 
 				if operation == nil {
-					blocks.Last().TokenStart().Line(lnum + 1)
-					blocks.Last().TokenStart().Col(cnum + 1)
 					break
 				}
-
-				operation.TokenStart().Line(lnum + 1)
-				operation.TokenStart().Col(cnum + 1)
 
 				if blocks.IsEmpty() {
 					p.Push(operation)
@@ -67,6 +61,8 @@ func (p *Program) parseLines(lines []string) error {
 			}
 
 			if !found {
+				cnum := strings.Index(line, token)
+
 				return fmt.Errorf(
 					"Token error in %d:%d - '%s' is not a valid token.",
 					lnum+1, cnum+1,
