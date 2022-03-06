@@ -14,10 +14,6 @@ const (
 	OP_DUMP  = iota
 )
 
-var BLOCK_ATTACH_OPERATIONS = map[int]bool{
-	OP_IF: true,
-}
-
 var REGISTERED_OPERATIONS = map[int]bool{
 	OP_PUSH:  true,
 	OP_PLUS:  true,

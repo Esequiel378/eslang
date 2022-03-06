@@ -8,9 +8,9 @@ import (
 
 func FormatError(op core.Operation, err error) error {
 	line, col := op.TokenStart().Position()
-	token := op.TokenStart().Token()
+	token := op.TokenStart().TokenAlias()
 
-	return fmt.Errorf("error %s with Token: %d int line: %d/%d", err.Error(), token, line, col)
+	return fmt.Errorf("error %s with Token: %s int line: %d/%d", err.Error(), token, line, col)
 }
 
 func executeOperations(program *core.Program, stack *core.Stack) error {

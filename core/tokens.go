@@ -31,6 +31,18 @@ var REGISTERED_TOKENS = map[int]func(string, *BlockStack) (Operation, error){
 	TOKEN_END:   TokenEnd,
 }
 
+var TOKEN_MAPPING = map[int]string{
+	TOKEN_PUSH:  "PUSH",
+	TOKEN_PLUS:  "PLUS",
+	TOKEN_MINUS: "MINUS",
+	TOKEN_EQUAL: "EQUAL",
+	TOKEN_DUMP:  "DUMP",
+	TOKEN_DO:    "DO",
+	TOKEN_IF:    "IF",
+	TOKEN_ELSE:  "ELSE",
+	TOKEN_END:   "END",
+}
+
 var IS_DIGIT = regexp.MustCompile(`^[0-9]\d*(\.\d+)?$`)
 
 type Token struct {
@@ -41,6 +53,10 @@ type Token struct {
 
 func (t *Token) Token() int {
 	return t.token
+}
+
+func (t *Token) TokenAlias() string {
+	return TOKEN_MAPPING[t.token]
 }
 
 func (t *Token) Position() (int, int) {

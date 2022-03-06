@@ -16,4 +16,8 @@ func main() {
 	if err := interpreter.SimulateProgram(&program); err != nil {
 		log.Fatal(err)
 	}
+
+	if err := core.PrintProgram(&program, 0); err != nil {
+		log.Fatal(err)
+	}
 }

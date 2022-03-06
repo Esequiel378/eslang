@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 	"strings"
+
+	"github.com/TwiN/go-color"
 )
 
 type Program []Operation
@@ -47,13 +49,13 @@ func (p *Program) parseLines(lines []string) error {
 				found = true
 
 				if operation == nil {
-					blocks.Last().TokenStart().Line(lnum)
-					blocks.Last().TokenStart().Col(cnum)
+					blocks.Last().TokenStart().Line(lnum + 1)
+					blocks.Last().TokenStart().Col(cnum + 1)
 					break
 				}
 
-				operation.TokenStart().Line(lnum)
-				operation.TokenStart().Col(cnum)
+				operation.TokenStart().Line(lnum + 1)
+				operation.TokenStart().Col(cnum + 1)
 
 				if blocks.IsEmpty() {
 					p.Push(operation)
@@ -73,6 +75,21 @@ func (p *Program) parseLines(lines []string) error {
 			}
 
 		}
+	}
+
+	if !blocks.IsEmpty() {
+		block := blocks.Last()
+
+		tokenStart := block.TokenStart().TokenAlias()
+		tokenEnd := block.TokenEnd().TokenAlias()
+		lnum, cnum := block.TokenStart().Position()
+
+		return fmt.Errorf(
+			"%s missing %s closing token in line %d:%d",
+			color.InYellow(tokenStart),
+			color.InYellow(tokenEnd),
+			lnum, cnum,
+		)
 	}
 
 	return nil
