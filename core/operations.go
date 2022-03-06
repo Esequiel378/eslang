@@ -5,22 +5,23 @@ import (
 )
 
 const (
-	OP_PUSH  = iota
-	OP_PLUS  = iota
-	OP_MINUS = iota
-	OP_EQUAL = iota
 	OP_BLOCK = iota
-	OP_IF    = iota
 	OP_DUMP  = iota
+	OP_EQUAL = iota
+	OP_IF    = iota
+	OP_MINUS = iota
+	OP_PLUS  = iota
+	OP_PUSH  = iota
 )
 
 var REGISTERED_OPERATIONS = map[int]bool{
-	OP_PUSH:  true,
-	OP_PLUS:  true,
-	OP_MINUS: true,
-	OP_EQUAL: true,
 	OP_BLOCK: true,
 	OP_DUMP:  true,
+	OP_EQUAL: true,
+	OP_IF:    true,
+	OP_MINUS: true,
+	OP_PLUS:  true,
+	OP_PUSH:  true,
 }
 
 type Operation interface {
@@ -97,6 +98,10 @@ type MiscBlockOperation struct {
 }
 
 func NewMiscBlockOperation(operation int, tokenStart, tokenEnd int) BlockOperation {
+	if !REGISTERED_OPERATIONS[operation] {
+		log.Fatal("invalid operation: ", operation)
+	}
+
 	return &MiscBlockOperation{
 		_type:        operation,
 		block:        &Program{},

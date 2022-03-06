@@ -8,39 +8,39 @@ import (
 )
 
 const (
-	TOKEN_PUSH  = iota
-	TOKEN_PLUS  = iota
-	TOKEN_MINUS = iota
-	TOKEN_EQUAL = iota
-	TOKEN_DUMP  = iota
 	TOKEN_DO    = iota
-	TOKEN_IF    = iota
+	TOKEN_DUMP  = iota
 	TOKEN_ELSE  = iota
 	TOKEN_END   = iota
+	TOKEN_EQUAL = iota
+	TOKEN_IF    = iota
+	TOKEN_MINUS = iota
+	TOKEN_PLUS  = iota
+	TOKEN_PUSH  = iota
 )
 
 var REGISTERED_TOKENS = map[int]func(token, line string, lnum int, blocks *BlockStack) (Operation, error){
-	TOKEN_PUSH:  TokenPush,
-	TOKEN_PLUS:  TokenPlus,
-	TOKEN_MINUS: TokenMinus,
-	TOKEN_EQUAL: TokenEqual,
-	TOKEN_DUMP:  TokenDump,
 	TOKEN_DO:    TokenDo,
-	TOKEN_IF:    TokenIf,
+	TOKEN_DUMP:  TokenDump,
 	TOKEN_ELSE:  TokenElse,
 	TOKEN_END:   TokenEnd,
+	TOKEN_EQUAL: TokenEqual,
+	TOKEN_IF:    TokenIf,
+	TOKEN_MINUS: TokenMinus,
+	TOKEN_PLUS:  TokenPlus,
+	TOKEN_PUSH:  TokenPush,
 }
 
 var TOKEN_MAPPING = map[int]string{
-	TOKEN_PUSH:  "PUSH",
-	TOKEN_PLUS:  "PLUS",
-	TOKEN_MINUS: "MINUS",
-	TOKEN_EQUAL: "EQUAL",
-	TOKEN_DUMP:  "DUMP",
 	TOKEN_DO:    "DO",
-	TOKEN_IF:    "IF",
+	TOKEN_DUMP:  "DUMP",
 	TOKEN_ELSE:  "ELSE",
 	TOKEN_END:   "END",
+	TOKEN_EQUAL: "EQUAL",
+	TOKEN_IF:    "IF",
+	TOKEN_MINUS: "MINUS",
+	TOKEN_PLUS:  "PLUS",
+	TOKEN_PUSH:  "PUSH",
 }
 
 var IS_DIGIT = regexp.MustCompile(`^[0-9]\d*(\.\d+)?$`)
