@@ -22,10 +22,8 @@ func PrintProgram(program *Program, ident int) error {
 		col := color.InBold(strconv.Itoa(cnum))
 
 		switch op.Type() {
-		case OP_BLOCK:
-		case OP_IF:
-
-			fmt.Printf("%s%s on line %s:%s\n", spacing, token, line, col)
+		case OP_BLOCK, OP_IF:
+			fmt.Printf("%s%s in line %s:%s\n", spacing, token, line, col)
 
 			if err := PrintProgram(op.Value().(*Program), ident+1); err != nil {
 				return err
@@ -36,9 +34,9 @@ func PrintProgram(program *Program, ident int) error {
 			if block.HasElseBlock() {
 				token := color.InYellow(TOKEN_MAPPING[TOKEN_ELSE])
 
-				fmt.Printf("%s%s on line %s:%s\n", spacing, token, line, col)
+				fmt.Printf("%s%s in line %s:%s\n", spacing, token, line, col)
 
-				if err := PrintProgram(op.Value().(*Program), ident+1); err != nil {
+				if err := PrintProgram(block.ElseBlock(), ident+1); err != nil {
 					return err
 				}
 			}
@@ -49,19 +47,18 @@ func PrintProgram(program *Program, ident int) error {
 			line := color.InBold(strconv.Itoa(lnum))
 			col := color.InBold(strconv.Itoa(cnum))
 
-			fmt.Printf("%s%s on line %s:%s\n", spacing, endToken, line, col)
-
-			fmt.Println()
+			fmt.Printf("%s%s in line %s:%s\n", spacing, endToken, line, col)
 
 		default:
 			value := " "
 
 			if op.Type() == OP_PUSH {
-				v := fmt.Sprint(op.Value())
-				value = fmt.Sprintf(" %s ", color.InCyan(v))
+				v := op.Value().(int64)
+				value = fmt.Sprintf("%v", v)
+				value = fmt.Sprintf(" %s ", color.InCyan(value))
 			}
 
-			fmt.Printf("%s%s%son line %s:%s\n", spacing, token, value, line, col)
+			fmt.Printf("%s%s%sin line %s:%s\n", spacing, token, value, line, col)
 		}
 	}
 

@@ -106,7 +106,5 @@ func (p *Program) LoadFromFile(filename string) error {
 		log.Fatal(err)
 	}
 
-	// fmt.Println((*program)[1])
-
 	return nil
 }
