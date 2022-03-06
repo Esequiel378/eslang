@@ -1,0 +1,25 @@
+*.attr
+*.exe
+*.log
+*.old
+*.swp
+*.test
+.env
+.gotools
+.vagrant/
+/pkg
+bin/
+changelog.tmp
+exit-code
+Thumbs.db
+tmp
+01-input.esl
+
+# MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+.fseventsd
+
+# Crash log files
+crash.log
