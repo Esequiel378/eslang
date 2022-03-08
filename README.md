@@ -1,12 +1,12 @@
-# eslang
+# Eslang
 
-> Is like [porth](https://gitlab.com/tsoding/porth) but in Golang :)
+> Is a [Concatenative](https://en.wikipedia.org/wiki/Concatenative_programming_language) [Stack-Oriented](https://en.wikipedia.org/wiki/Stack-oriented_programming) Programming Language
 
 ### CLI
 
-eslang has two modes to run: `-i` interpret and `-v` visual
+eslang has two modes to run
 
-1. Interpret mode
+1. Interpret mode `-i`
 
 > Will interpret the program and output the results
 
@@ -14,7 +14,7 @@ eslang has two modes to run: `-i` interpret and `-v` visual
 $ go run main.go -m i
 ```
 
-2. Visual mode
+2. Visual mode `-v`
 
 > Will print the program stack tree
 
@@ -73,7 +73,6 @@ Input
 Output (The new line character is a bug, will be fixed soon)
 
 ```pascal
-1
 2
 3
 4
@@ -82,7 +81,7 @@ Output (The new line character is a bug, will be fixed soon)
 Intended Output
 
 ```pascal
-1234
+234
 ```
 
 Stack tree
