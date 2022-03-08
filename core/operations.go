@@ -4,25 +4,20 @@ import (
 	"log"
 )
 
-// TODO: Use custom int type to make it more type safe
-
-// type OPTYPE in
-// const OP_BLOCK OPTYPE = iota
-
-// Same for tokens and any iotas
+type OperationType int
 
 const (
-	OP_BLOCK = iota
-	OP_DUMP  = iota
-	OP_ELSE  = iota
-	OP_EQUAL = iota
-	OP_IF    = iota
-	OP_MINUS = iota
-	OP_PLUS  = iota
-	OP_PUSH  = iota
+	OP_BLOCK OperationType = iota
+	OP_DUMP                = iota
+	OP_ELSE                = iota
+	OP_EQUAL               = iota
+	OP_IF                  = iota
+	OP_MINUS               = iota
+	OP_PLUS                = iota
+	OP_PUSH                = iota
 )
 
-var REGISTERED_OPERATIONS = map[int]bool{
+var REGISTERED_OPERATIONS = map[OperationType]bool{
 	OP_BLOCK: true,
 	OP_DUMP:  true,
 	OP_ELSE:  true,
@@ -34,20 +29,20 @@ var REGISTERED_OPERATIONS = map[int]bool{
 }
 
 type Operation interface {
-	Type() int
+	Type() OperationType
 	Value() interface{}
 	TokenStart() *Token
 	TokenEnd() *Token
 }
 
 type MiscOperation struct {
-	_type      int
+	_type      OperationType
 	value      interface{}
 	tokenStart *Token
 	tokenEnd   *Token
 }
 
-func NewMiscOperation(operation int, value interface{}, token int) Operation {
+func NewMiscOperation(operation OperationType, value interface{}, token TokenType) Operation {
 	if !REGISTERED_OPERATIONS[operation] {
 		log.Fatal("invalid operation: ", operation)
 	}
@@ -68,7 +63,7 @@ func NewMiscOperation(operation int, value interface{}, token int) Operation {
 	}
 }
 
-func (mo MiscOperation) Type() int {
+func (mo MiscOperation) Type() OperationType {
 	return mo._type
 }
 
@@ -86,7 +81,7 @@ func (mp MiscOperation) TokenEnd() *Token {
 
 type BlockOperation interface {
 	// TODO: This are comming from Operation, is there a better way to do it?
-	Type() int
+	Type() OperationType
 	Value() interface{}
 	TokenStart() *Token
 	TokenEnd() *Token
@@ -99,14 +94,14 @@ type BlockOperation interface {
 }
 
 type MiscBlockOperation struct {
-	_type      int
+	_type      OperationType
 	block      *Program
 	refBlock   BlockOperation
 	tokenStart *Token
 	tokenEnd   *Token
 }
 
-func NewMiscBlockOperation(operation int, tokenStart, tokenEnd int) BlockOperation {
+func NewMiscBlockOperation(operation OperationType, tokenStart, tokenEnd TokenType) BlockOperation {
 	if !REGISTERED_OPERATIONS[operation] {
 		log.Fatal("invalid operation: ", operation)
 	}
@@ -128,7 +123,7 @@ func NewMiscBlockOperation(operation int, tokenStart, tokenEnd int) BlockOperati
 	}
 }
 
-func (b *MiscBlockOperation) Type() int {
+func (b *MiscBlockOperation) Type() OperationType {
 	return b._type
 }
 

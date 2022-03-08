@@ -7,19 +7,21 @@ import (
 	"strings"
 )
 
+type TokenType int
+
 const (
-	TOKEN_DO    = iota
-	TOKEN_DUMP  = iota
-	TOKEN_ELSE  = iota
-	TOKEN_END   = iota
-	TOKEN_EQUAL = iota
-	TOKEN_IF    = iota
-	TOKEN_MINUS = iota
-	TOKEN_PLUS  = iota
-	TOKEN_PUSH  = iota
+	TOKEN_DO    TokenType = iota
+	TOKEN_DUMP            = iota
+	TOKEN_ELSE            = iota
+	TOKEN_END             = iota
+	TOKEN_EQUAL           = iota
+	TOKEN_IF              = iota
+	TOKEN_MINUS           = iota
+	TOKEN_PLUS            = iota
+	TOKEN_PUSH            = iota
 )
 
-var REGISTERED_TOKENS = map[int]func(token, line string, lnum int, blocks *BlockStack) (Operation, error){
+var REGISTERED_TOKENS = map[TokenType]func(token, line string, lnum int, blocks *BlockStack) (Operation, error){
 	TOKEN_DO:    TokenDo,
 	TOKEN_DUMP:  TokenDump,
 	TOKEN_ELSE:  TokenElse,
@@ -31,7 +33,7 @@ var REGISTERED_TOKENS = map[int]func(token, line string, lnum int, blocks *Block
 	TOKEN_PUSH:  TokenPush,
 }
 
-var TOKEN_MAPPING = map[int]string{
+var TOKEN_MAPPING = map[TokenType]string{
 	TOKEN_DO:    "DO",
 	TOKEN_DUMP:  "DUMP",
 	TOKEN_ELSE:  "ELSE",
@@ -48,10 +50,10 @@ var IS_DIGIT = regexp.MustCompile(`^[0-9]\d*(\.\d+)?$`)
 type Token struct {
 	line  *int
 	col   *int
-	token int
+	token TokenType
 }
 
-func (t *Token) Token() int {
+func (t *Token) Token() TokenType {
 	return t.token
 }
 
