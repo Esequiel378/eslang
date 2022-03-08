@@ -91,35 +91,8 @@ func OPDump(stack *core.Stack, op core.Operation) error {
 		return err
 	}
 
+	// TODO: Remove the new line character
 	fmt.Println(value)
 
 	return nil
 }
-
-// func (b *IfBlockOperation) Value(stack *Stack) (interface{}, error) {
-// 	value, err := stack.Pop()
-
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	truthy, ok := value.(int64)
-
-// 	if !ok {
-// 		return nil, fmt.Errorf(
-// 			"error testing the truthy of %s with type %s",
-// 			value,
-// 			reflect.TypeOf(value),
-// 		)
-// 	}
-
-// 	if truthy != 0 {
-// 		return b.block, nil
-// 	}
-
-// 	if isNil(b.elseBlock) {
-// 		return nil, nil
-// 	}
-
-// 	return b.elseBlock, nil
-// }
