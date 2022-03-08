@@ -188,7 +188,7 @@ func TokenIf(token, line string, lnum int, blocks *BlockStack) (Operation, error
 
 	cnum := strings.Index(line, token)
 
-	blocks.Last().TokenStart().SetPostition(lnum+1, cnum+1)
+	blocks.Tail().TokenStart().SetPostition(lnum+1, cnum+1)
 
 	return nil, nil
 }
@@ -203,9 +203,9 @@ func TokenElse(token, line string, lnum int, blocks *BlockStack) (Operation, err
 	elseBlock := NewMiscBlockOperation(OP_ELSE, TOKEN_ELSE, TOKEN_END)
 	elseBlock.TokenStart().SetPostition(lnum+1, cnum+1)
 
-	block := blocks.Last()
+	block := blocks.Tail()
 
-	if b := block.LastBlock(); block != nil {
+	if b := block.Tail(); block != nil {
 		b.TokenEnd().SetPostition(lnum+1, cnum+1)
 	}
 
@@ -227,7 +227,7 @@ func TokenEnd(token, line string, lnum int, blocks *BlockStack) (Operation, erro
 
 	cnum := strings.Index(line, token)
 
-	if b := block.LastBlock(); b != nil {
+	if b := block.Tail(); b != nil {
 		b.TokenEnd().SetPostition(lnum+1, cnum+1)
 	}
 

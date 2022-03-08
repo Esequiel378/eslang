@@ -27,7 +27,7 @@ func (s *Stack) Pop() (interface{}, error) {
 	return value, nil
 }
 
-func (s *Stack) PopLastTwo() (lhs interface{}, rhs interface{}, err error) {
+func (s *Stack) PopTwo() (lhs interface{}, rhs interface{}, err error) {
 	rhs, err = s.Pop()
 
 	if err != nil {
@@ -53,7 +53,7 @@ func (bs *BlockStack) Push(value BlockOperation) {
 	*bs = append(*bs, value)
 }
 
-func (bs *BlockStack) Last() BlockOperation {
+func (bs *BlockStack) Tail() BlockOperation {
 	return (*bs)[len(*bs)-1]
 }
 

@@ -58,7 +58,7 @@ func (p *Program) parseLines(lines []string) error {
 					break
 				}
 
-				if b := blocks.Last().LastBlock(); b != nil {
+				if b := blocks.Tail().Tail(); b != nil {
 					b.Block().Push(operation)
 					break
 				}
@@ -73,12 +73,11 @@ func (p *Program) parseLines(lines []string) error {
 					token,
 				)
 			}
-
 		}
 	}
 
 	if !blocks.IsEmpty() {
-		block := blocks.Last()
+		block := blocks.Tail()
 
 		tokenStart := block.TokenStart().TokenAlias()
 		tokenEnd := block.TokenEnd().TokenAlias()

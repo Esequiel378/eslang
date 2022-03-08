@@ -49,7 +49,7 @@ func PrintProgram(program *Program, ident int) error {
 
 			endToken := color.InYellow(TOKEN_MAPPING[TOKEN_END])
 
-			lnum, cnum = block.LastBlock().TokenEnd().Position()
+			lnum, cnum = block.Tail().TokenEnd().Position()
 			line := color.InBold(strconv.Itoa(lnum))
 			col := color.InBold(strconv.Itoa(cnum))
 

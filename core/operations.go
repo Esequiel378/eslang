@@ -4,6 +4,13 @@ import (
 	"log"
 )
 
+// TODO: Use custom int type to make it more type safe
+
+// type OPTYPE in
+// const OP_BLOCK OPTYPE = iota
+
+// Same for tokens and any iotas
+
 const (
 	OP_BLOCK = iota
 	OP_DUMP  = iota
@@ -88,7 +95,7 @@ type BlockOperation interface {
 	HasRefBlock() bool
 	SetRefBlock(BlockOperation)
 	RefBlock() BlockOperation
-	LastBlock() BlockOperation
+	Tail() BlockOperation
 }
 
 type MiscBlockOperation struct {
@@ -153,9 +160,9 @@ func (b *MiscBlockOperation) RefBlock() BlockOperation {
 	return b.refBlock
 }
 
-func (b *MiscBlockOperation) LastBlock() BlockOperation {
+func (b *MiscBlockOperation) Tail() BlockOperation {
 	if b.HasRefBlock() {
-		return b.RefBlock().LastBlock()
+		return b.RefBlock().Tail()
 	}
 
 	return b

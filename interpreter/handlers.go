@@ -22,7 +22,7 @@ func OPPush(stack *core.Stack, op core.Operation) error {
 }
 
 func OPPlus(stack *core.Stack, op core.Operation) error {
-	lhs, rhs, err := stack.PopLastTwo()
+	lhs, rhs, err := stack.PopTwo()
 
 	if err != nil {
 		return err
@@ -44,7 +44,7 @@ func OPPlus(stack *core.Stack, op core.Operation) error {
 }
 
 func OPMinus(stack *core.Stack, op core.Operation) error {
-	lhs, rhs, err := stack.PopLastTwo()
+	lhs, rhs, err := stack.PopTwo()
 
 	if err != nil {
 		return err
@@ -66,7 +66,7 @@ func OPMinus(stack *core.Stack, op core.Operation) error {
 }
 
 func OPEqual(stack *core.Stack, op core.Operation) error {
-	lhs, rhs, err := stack.PopLastTwo()
+	lhs, rhs, err := stack.PopTwo()
 
 	if err != nil {
 		return err
