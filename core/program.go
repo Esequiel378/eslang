@@ -24,8 +24,9 @@ func (p *Program) parseLines(lines []string) error {
 
 	for lnum, line := range lines {
 		line = strings.Split(line, "//")[0]
+		line = strings.Trim(line, " ")
 
-		if len(strings.Trim(line, " ")) == 0 {
+		if len(line) == 0 {
 			continue
 		}
 
@@ -42,7 +43,6 @@ func (p *Program) parseLines(lines []string) error {
 
 			for _, tokenHandler := range REGISTERED_TOKENS {
 				operation, err := tokenHandler(token, line, lnum, &blocks)
-
 				if err != nil {
 					continue
 				}
@@ -68,7 +68,7 @@ func (p *Program) parseLines(lines []string) error {
 				cnum := strings.Index(line, token)
 
 				return fmt.Errorf(
-					"Token error in %d:%d - '%s' is not a valid token.",
+					"Token error in %d:%d - '%s' is not a valid token",
 					lnum+1, cnum+1,
 					token,
 				)

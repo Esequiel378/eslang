@@ -20,7 +20,7 @@ func PrintProgram(program *Program, ident int) error {
 		col := color.InBold(strconv.Itoa(cnum))
 
 		switch op.Type() {
-		case OP_BLOCK, OP_IF:
+		case OP_BLOCK:
 			lnum, cnum := op.TokenEnd().Position()
 			eline := color.InBold(strconv.Itoa(lnum))
 			ecol := color.InBold(strconv.Itoa(cnum))

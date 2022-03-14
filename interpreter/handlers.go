@@ -21,15 +21,13 @@ func OPPush(stack *core.Stack, op core.Operation) error {
 	return nil
 }
 
-func OPPlus(stack *core.Stack, op core.Operation) error {
+func OPPlus(stack *core.Stack, _ core.Operation) error {
 	lhs, rhs, err := stack.PopTwo()
-
 	if err != nil {
 		return err
 	}
 
 	lhsf, rhsf, keepFloat, err := normalizeNumbers(lhs, rhs)
-
 	if err != nil {
 		return err
 	}
@@ -43,15 +41,13 @@ func OPPlus(stack *core.Stack, op core.Operation) error {
 	return nil
 }
 
-func OPMinus(stack *core.Stack, op core.Operation) error {
+func OPMinus(stack *core.Stack, _ core.Operation) error {
 	lhs, rhs, err := stack.PopTwo()
-
 	if err != nil {
 		return err
 	}
 
 	lhsf, rhsf, keepFloat, err := normalizeNumbers(lhs, rhs)
-
 	if err != nil {
 		return err
 	}
@@ -65,9 +61,8 @@ func OPMinus(stack *core.Stack, op core.Operation) error {
 	return nil
 }
 
-func OPEqual(stack *core.Stack, op core.Operation) error {
+func OPEqual(stack *core.Stack, _ core.Operation) error {
 	lhs, rhs, err := stack.PopTwo()
-
 	if err != nil {
 		return err
 	}
@@ -84,9 +79,8 @@ func OPEqual(stack *core.Stack, op core.Operation) error {
 	return nil
 }
 
-func OPDump(stack *core.Stack, op core.Operation) error {
+func OPDump(stack *core.Stack, _ core.Operation) error {
 	value, err := stack.Pop()
-
 	if err != nil {
 		return err
 	}
