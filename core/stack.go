@@ -14,7 +14,7 @@ func (s *Stack) Push(value interface{}) {
 
 func (s *Stack) Pop() (interface{}, error) {
 	if s.IsEmpty() {
-		return nil, fmt.Errorf("can not perform `Stack.Pop()`, stack is empty.")
+		return nil, fmt.Errorf("can not perform `Stack.Pop()`, stack is empty")
 	}
 
 	// Get the index of the top most element.
@@ -59,7 +59,7 @@ func (bs *BlockStack) Tail() BlockOperation {
 
 func (bs *BlockStack) Pop() (BlockOperation, error) {
 	if bs.IsEmpty() {
-		return nil, fmt.Errorf("can not perform `ProgramStack.Pop()`, stack is empty.")
+		return nil, fmt.Errorf("can not perform `ProgramStack.Pop()`, stack is empty")
 	}
 
 	// Get the index of the top most element.
