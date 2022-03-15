@@ -7,21 +7,61 @@ import (
 	"strings"
 
 	"github.com/TwiN/go-color"
+	"github.com/anmitsu/go-shlex"
 )
 
-type Program []Operation
+type Program []*Operation
 
 func (p *Program) IsEmpty() bool {
 	return len(*p) == 0
 }
 
-func (p *Program) Push(operation Operation) {
-	*p = append(*p, operation)
+func (p *Program) Push(op *Operation) {
+	if !p.IsEmpty() {
+		lastOp := p.Last()
+		// Get the last block within the operation
+		block := lastOp.Value().Block().Last()
+
+		// Push the op to the last nested block if its open
+		if lastOp.Type() == OP_BLOCK && block.IsOpen() {
+			block.Current().Push(op)
+			return
+		}
+	}
+
+	*p = append(*p, op)
 }
 
-func (p *Program) parseLines(lines []string) error {
-	var blocks BlockStack
+func (p *Program) CloseLastBlock(line, col int) error {
+	if p.IsEmpty() {
+		return fmt.Errorf("no open block to close")
+	}
 
+	lastOp := p.Last()
+
+	if lastOp.Type() != OP_BLOCK {
+		return fmt.Errorf("no open block to close")
+	}
+
+	// Get the last block within the operation
+	block := lastOp.Value().Block().Last()
+
+	block.TokenEnd().SetPostition(line, col)
+	lastOp.TokenEnd().SetPostition(line, col)
+
+	return nil
+}
+
+func (p *Program) Last() *Operation {
+	if p.IsEmpty() {
+		return nil
+	}
+
+	return (*p)[len(*p)-1]
+}
+
+// TODO: Make parseLines an util not a method of Program
+func (p *Program) parseLines(lines []string) error {
 	for lnum, line := range lines {
 		line = strings.Split(line, "//")[0]
 		line = strings.Trim(line, " ")
@@ -30,7 +70,10 @@ func (p *Program) parseLines(lines []string) error {
 			continue
 		}
 
-		tokens := strings.Split(line, " ")
+		tokens, err := shlex.Split(line, false)
+		if err != nil {
+			return err
+		}
 
 		for _, token := range tokens {
 			token = strings.Trim(token, " ")
@@ -42,26 +85,12 @@ func (p *Program) parseLines(lines []string) error {
 			found := false
 
 			for _, tokenHandler := range REGISTERED_TOKENS {
-				operation, err := tokenHandler(token, line, lnum, &blocks)
-				if err != nil {
+				if err := tokenHandler(token, line, lnum, p); err != nil {
 					continue
 				}
 
 				found = true
-
-				if operation == nil {
-					break
-				}
-
-				if blocks.IsEmpty() {
-					p.Push(operation)
-					break
-				}
-
-				if b := blocks.Tail().Tail(); b != nil {
-					b.Block().Push(operation)
-					break
-				}
+				break
 			}
 
 			if !found {
@@ -76,9 +105,12 @@ func (p *Program) parseLines(lines []string) error {
 		}
 	}
 
-	if !blocks.IsEmpty() {
-		block := blocks.Tail()
+	lastOp := p.Last()
+	// Get the last block within the operation
+	block := lastOp.Value().Block().Last()
 
+	// Check for un-closed blocks
+	if lastOp.Type() == OP_BLOCK && block.IsOpen() {
 		tokenStart := block.TokenStart().TokenAlias()
 		tokenEnd := block.TokenEnd().TokenAlias()
 		lnum, cnum := block.TokenStart().Position()

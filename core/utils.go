@@ -27,29 +27,29 @@ func PrintProgram(program *Program, ident int) error {
 
 			fmt.Printf("%s%s in lines [%s:%s:%s:%s]\n", spacing, token, line, col, eline, ecol)
 
-			if err := PrintProgram(op.Value().(*Program), ident+1); err != nil {
+			if err := PrintProgram(op.Value().Block().Current(), ident+1); err != nil {
 				return err
 			}
 
-			block := op.(BlockOperation)
+			block := op.Value().Block()
 
-			if block.HasRefBlock() {
+			if block.HasNext() {
 				token := color.InYellow(TOKEN_MAPPING[TOKEN_ELSE])
 
-				lnum, cnum := block.RefBlock().TokenEnd().Position()
+				lnum, cnum := block.Next().TokenEnd().Position()
 				eline := color.InBold(strconv.Itoa(lnum))
 				ecol := color.InBold(strconv.Itoa(cnum))
 
 				fmt.Printf("%s%s in lines [%s:%s:%s:%s]\n", spacing, token, line, col, eline, ecol)
 
-				if err := PrintProgram(block.RefBlock().Block(), ident+1); err != nil {
+				if err := PrintProgram(block.Next().Current(), ident+1); err != nil {
 					return err
 				}
 			}
 
 			endToken := color.InYellow(TOKEN_MAPPING[TOKEN_END])
 
-			lnum, cnum = block.Tail().TokenEnd().Position()
+			lnum, cnum = block.Last().TokenEnd().Position()
 			line := color.InBold(strconv.Itoa(lnum))
 			col := color.InBold(strconv.Itoa(cnum))
 
@@ -59,7 +59,7 @@ func PrintProgram(program *Program, ident int) error {
 			value := " "
 
 			if op.Type() == OP_PUSH {
-				v := op.Value().(int64)
+				v := op.Value().Int()
 				value = fmt.Sprintf("%v", v)
 				value = fmt.Sprintf(" %s ", color.InCyan(value))
 			}

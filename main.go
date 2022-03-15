@@ -2,7 +2,6 @@ package main
 
 import (
 	"eslang/core"
-	"eslang/interpreter"
 	"flag"
 	"log"
 )
@@ -19,14 +18,13 @@ func main() {
 	}
 
 	switch *mode {
-	case "i":
-		if err := interpreter.SimulateProgram(&program); err != nil {
-			log.Fatal(err)
-		}
+	// case "i":
+	// 	if err := interpreter.SimulateProgram(&program); err != nil {
+	// 		log.Fatal(err)
+	// 	}
 	case "v":
 		if err := core.PrintProgram(&program, 0); err != nil {
 			log.Fatal(err)
 		}
 	}
-
 }

@@ -1,9 +1,5 @@
 package core
 
-import (
-	"log"
-)
-
 type OperationType int
 
 const (
@@ -13,144 +9,139 @@ const (
 	OP_PUSH                = iota
 )
 
-var REGISTERED_OPERATIONS = map[OperationType]bool{
-	OP_BLOCK: true,
-	OP_DUMP:  true,
-	OP_MOP:   true,
-	OP_PUSH:  true,
-}
-
-type Operation interface {
-	Type() OperationType
-	Value() interface{}
-	TokenStart() *Token
-	TokenEnd() *Token
-}
-
-type MiscOperation struct {
-	_type      OperationType
-	value      interface{}
+type Block struct {
+	current    *Program
+	next       *Block
 	tokenStart *Token
 	tokenEnd   *Token
 }
 
-func NewMiscOperation(operation OperationType, value interface{}, token TokenType) Operation {
-	if !REGISTERED_OPERATIONS[operation] {
-		log.Fatal("invalid operation: ", operation)
-	}
-
-	return &MiscOperation{
-		_type: operation,
-		value: value,
-		tokenStart: &Token{
-			line:  nil,
-			col:   nil,
-			token: token,
-		},
-		tokenEnd: &Token{
-			line:  nil,
-			col:   nil,
-			token: token,
-		},
+func NewEmptyBlock() *Block {
+	return &Block{
+		current:    &Program{},
+		next:       &Block{},
+		tokenStart: &Token{},
+		tokenEnd:   &Token{},
 	}
 }
 
-func (mo MiscOperation) Type() OperationType {
-	return mo._type
-}
-
-func (mo MiscOperation) Value() interface{} {
-	return mo.value
-}
-
-func (mp MiscOperation) TokenStart() *Token {
-	return mp.tokenStart
-}
-
-func (mp MiscOperation) TokenEnd() *Token {
-	return mp.tokenEnd
-}
-
-type BlockOperation interface {
-	// TODO: This are comming from Operation, is there a better way to do it?
-	Type() OperationType
-	Value() interface{}
-	TokenStart() *Token
-	TokenEnd() *Token
-
-	Block() *Program
-	HasRefBlock() bool
-	SetRefBlock(BlockOperation)
-	RefBlock() BlockOperation
-	Tail() BlockOperation
-}
-
-type MiscBlockOperation struct {
-	_type      OperationType
-	block      *Program
-	refBlock   BlockOperation
-	tokenStart *Token
-	tokenEnd   *Token
-}
-
-func NewMiscBlockOperation(operation OperationType, tokenStart, tokenEnd TokenType) BlockOperation {
-	if !REGISTERED_OPERATIONS[operation] {
-		log.Fatal("invalid operation: ", operation)
-	}
-
-	return &MiscBlockOperation{
-		_type:    operation,
-		block:    &Program{},
-		refBlock: nil,
-		tokenStart: &Token{
-			line:  nil,
-			col:   nil,
-			token: tokenStart,
-		},
-		tokenEnd: &Token{
-			line:  nil,
-			col:   nil,
-			token: tokenEnd,
-		},
+func NewBlock(tokenStart, tokenEnd TokenType) *Block {
+	return &Block{
+		current:    &Program{},
+		next:       &Block{},
+		tokenStart: &Token{token: tokenStart},
+		tokenEnd:   &Token{token: tokenEnd},
 	}
 }
 
-func (b *MiscBlockOperation) Type() OperationType {
-	return b._type
+func (b *Block) Current() *Program {
+	return b.current
 }
 
-func (b *MiscBlockOperation) Value() interface{} {
-	return b.block
+func (b *Block) SetNext(next *Block) {
+	b.next = next
 }
 
-func (b *MiscBlockOperation) TokenStart() *Token {
-	return b.tokenStart
+func (b *Block) HasNext() bool {
+	return b.next != nil
 }
 
-func (b *MiscBlockOperation) TokenEnd() *Token {
-	return b.tokenEnd
+func (b *Block) Next() *Block {
+	return b.next
 }
 
-func (b *MiscBlockOperation) Block() *Program {
-	return b.block
-}
-
-func (b *MiscBlockOperation) HasRefBlock() bool {
-	return b.refBlock != nil
-}
-
-func (b *MiscBlockOperation) SetRefBlock(block BlockOperation) {
-	b.refBlock = block
-}
-
-func (b *MiscBlockOperation) RefBlock() BlockOperation {
-	return b.refBlock
-}
-
-func (b *MiscBlockOperation) Tail() BlockOperation {
-	if b.HasRefBlock() {
-		return b.RefBlock().Tail()
+func (b *Block) Last() *Block {
+	if b.HasNext() {
+		return b.Next().Last()
 	}
 
 	return b
+}
+
+func (b *Block) IsClose() bool {
+	return !b.IsOpen()
+}
+
+func (b *Block) IsOpen() bool {
+	line, col := b.tokenEnd.Position()
+
+	return line == 0 && col == 0
+}
+
+func (b *Block) TokenStart() *Token {
+	return b.tokenStart
+}
+
+func (b *Block) TokenEnd() *Token {
+	return b.tokenEnd
+}
+
+type OperationValue struct {
+	intValue   int64
+	floatValue float64
+	block      *Block
+}
+
+func NewOperationValue() *OperationValue {
+	return &OperationValue{
+		intValue:   0,
+		floatValue: 0,
+		block:      NewEmptyBlock(),
+	}
+}
+
+func (o *OperationValue) Int() int64 {
+	return o.intValue
+}
+
+func (o *OperationValue) SetInt(value int64) *OperationValue {
+	o.intValue = value
+
+	return o
+}
+
+func (o *OperationValue) Float() float64 {
+	return o.floatValue
+}
+
+func (o *OperationValue) SetFloat(value float64) *OperationValue {
+	o.floatValue = value
+
+	return o
+}
+
+func (o *OperationValue) Block() *Block {
+	return o.block
+}
+
+type Operation struct {
+	opType     OperationType
+	opValue    *OperationValue
+	tokenStart *Token
+	tokenEnd   *Token
+}
+
+func NewOperation(op OperationType, value *OperationValue, tokenStart, tokenEnd TokenType) *Operation {
+	return &Operation{
+		opType:     op,
+		opValue:    value,
+		tokenStart: &Token{token: tokenStart},
+		tokenEnd:   &Token{token: tokenEnd},
+	}
+}
+
+func (o Operation) Type() OperationType {
+	return o.opType
+}
+
+func (o Operation) Value() *OperationValue {
+	return o.opValue
+}
+
+func (o Operation) TokenStart() *Token {
+	return o.tokenStart
+}
+
+func (o Operation) TokenEnd() *Token {
+	return o.tokenEnd
 }

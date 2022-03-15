@@ -7,7 +7,10 @@ import (
 	"strings"
 )
 
-type TokenType int
+type (
+	TokenType    int
+	TokenHandler func(token, line string, lnum int, program *Program) error
+)
 
 const (
 	TOKEN_DO    TokenType = iota
@@ -21,7 +24,7 @@ const (
 	TOKEN_PUSH            = iota
 )
 
-var REGISTERED_TOKENS = map[TokenType]func(token, line string, lnum int, blocks *BlockStack) (Operation, error){
+var REGISTERED_TOKENS = map[TokenType]TokenHandler{
 	TOKEN_DO:    TokenDo,
 	TOKEN_DUMP:  TokenDump,
 	TOKEN_ELSE:  TokenElse,
@@ -48,8 +51,8 @@ var TOKEN_MAPPING = map[TokenType]string{
 var IS_DIGIT = regexp.MustCompile(`^[0-9]\d*(\.\d+)?$`)
 
 type Token struct {
-	line  *int
-	col   *int
+	line  int
+	col   int
 	token TokenType
 }
 
@@ -62,40 +65,45 @@ func (t *Token) TokenAlias() string {
 }
 
 func (t *Token) Position() (int, int) {
-	return *t.line, *t.col
+	return t.line, t.col
 }
 
 func (t *Token) SetPostition(line, col int) {
-	t.line = &line
-	t.col = &col
+	t.line = line
+	t.col = col
 }
 
-func tokenPushFloat64(token string) (Operation, error) {
+func tokenPushFloat64(token string) (*Operation, error) {
 	value, err := strconv.ParseFloat(token, 64)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing token '%s' to float: %s", token, err.Error())
 	}
 
-	operation := NewMiscOperation(OP_PUSH, value, TOKEN_PUSH)
+	opValue := NewOperationValue().SetFloat(value)
+	op := NewOperation(OP_PUSH, opValue, TOKEN_PUSH, TOKEN_PUSH)
 
-	return operation, nil
+	return op, nil
 }
 
-func tokenPushInt64(token string) (Operation, error) {
+func tokenPushInt64(token string) (*Operation, error) {
 	value, err := strconv.ParseInt(token, 10, 64)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing token '%s' to int: %s", token, err.Error())
 	}
 
-	operation := NewMiscOperation(OP_PUSH, value, TOKEN_PUSH)
+	opValue := NewOperationValue().SetInt(value)
+	op := NewOperation(OP_PUSH, opValue, TOKEN_PUSH, TOKEN_PUSH)
 
-	return operation, nil
+	return op, nil
 }
 
-func TokenPush(token, line string, lnum int, _ *BlockStack) (op Operation, err error) {
+func TokenPush(token, line string, lnum int, program *Program) error {
 	if !IS_DIGIT.MatchString(token) {
-		return nil, fmt.Errorf("invalid token")
+		return fmt.Errorf("invalid token")
 	}
+
+	var op *Operation
+	var err error
 
 	if strings.Contains(token, ".") {
 		op, err = tokenPushFloat64(token)
@@ -103,131 +111,147 @@ func TokenPush(token, line string, lnum int, _ *BlockStack) (op Operation, err e
 		op, err = tokenPushInt64(token)
 	}
 
-	cnum := strings.Index(line, token)
+	if err != nil {
+		return err
+	}
 
+	cnum := strings.Index(line, token)
 	op.TokenStart().SetPostition(lnum+1, cnum+1)
 
-	return op, err
+	program.Push(op)
+
+	return nil
 }
 
-func TokenPlus(token, line string, lnum int, _ *BlockStack) (Operation, error) {
+func TokenPlus(token, line string, lnum int, program *Program) error {
 	if token != "+" {
-		return nil, fmt.Errorf("invalid token")
+		return fmt.Errorf("invalid token")
 	}
 
-	op := NewMiscOperation(OP_MOP, nil, TOKEN_PLUS)
-	cnum := strings.Index(line, token)
+	opValue := NewOperationValue()
+	op := NewOperation(OP_MOP, opValue, TOKEN_PLUS, TOKEN_PLUS)
 
+	cnum := strings.Index(line, token)
 	op.TokenStart().SetPostition(lnum+1, cnum+1)
 
-	return op, nil
+	program.Push(op)
+
+	return nil
 }
 
-func TokenMinus(token, line string, lnum int, _ *BlockStack) (Operation, error) {
+func TokenMinus(token, line string, lnum int, program *Program) error {
 	if token != "-" {
-		return nil, fmt.Errorf("invalid token")
+		return fmt.Errorf("invalid token")
 	}
 
-	op := NewMiscOperation(OP_MOP, nil, TOKEN_MINUS)
-	cnum := strings.Index(line, token)
+	opValue := NewOperationValue()
+	op := NewOperation(OP_MOP, opValue, TOKEN_MINUS, TOKEN_MINUS)
 
+	cnum := strings.Index(line, token)
 	op.TokenStart().SetPostition(lnum+1, cnum+1)
 
-	return op, nil
+	program.Push(op)
+
+	return nil
 }
 
-func TokenEqual(token, line string, lnum int, _ *BlockStack) (Operation, error) {
+func TokenEqual(token, line string, lnum int, program *Program) error {
 	if token != "=" {
-		return nil, fmt.Errorf("invalid token")
+		return fmt.Errorf("invalid token")
 	}
 
-	op := NewMiscOperation(OP_MOP, nil, TOKEN_EQUAL)
-	cnum := strings.Index(line, token)
+	opValue := NewOperationValue()
+	op := NewOperation(OP_MOP, opValue, TOKEN_EQUAL, TOKEN_EQUAL)
 
+	cnum := strings.Index(line, token)
 	op.TokenStart().SetPostition(lnum+1, cnum+1)
 
-	return op, nil
+	program.Push(op)
+
+	return nil
 }
 
-func TokenDump(token, line string, lnum int, _ *BlockStack) (Operation, error) {
+func TokenDump(token, line string, lnum int, program *Program) error {
 	if token != "." {
-		return nil, fmt.Errorf("invalid token")
+		return fmt.Errorf("invalid token")
 	}
 
-	op := NewMiscOperation(OP_DUMP, nil, TOKEN_DUMP)
-	cnum := strings.Index(line, token)
+	opValue := NewOperationValue()
+	op := NewOperation(OP_DUMP, opValue, TOKEN_DUMP, TOKEN_DUMP)
 
+	cnum := strings.Index(line, token)
 	op.TokenStart().SetPostition(lnum+1, cnum+1)
 
-	return op, nil
+	program.Push(op)
+
+	return nil
 }
 
-func TokenDo(token, line string, lnum int, blocks *BlockStack) (Operation, error) {
+func TokenDo(token, line string, lnum int, program *Program) error {
 	if token != "do" {
-		return nil, fmt.Errorf("invalid token")
+		return fmt.Errorf("invalid token")
 	}
-
-	block := NewMiscBlockOperation(OP_BLOCK, TOKEN_DO, TOKEN_END)
-	blocks.Push(block)
 
 	cnum := strings.Index(line, token)
 
+	opValue := NewOperationValue()
+	opValue.Block().TokenStart().SetPostition(lnum+1, cnum+1)
+
+	op := NewOperation(OP_BLOCK, opValue, TOKEN_DO, TOKEN_END)
+	op.TokenStart().SetPostition(lnum+1, cnum+1)
+
+	program.Push(op)
+
+	return nil
+}
+
+func TokenIf(token, line string, lnum int, program *Program) error {
+	if token != "if" {
+		return fmt.Errorf("invalid token")
+	}
+
+	cnum := strings.Index(line, token)
+
+	opValue := NewOperationValue()
+	opValue.Block().TokenStart().SetPostition(lnum+1, cnum+1)
+
+	op := NewOperation(OP_BLOCK, opValue, TOKEN_IF, TOKEN_END)
+	op.TokenStart().SetPostition(lnum+1, cnum+1)
+
+	program.Push(op)
+
+	return nil
+}
+
+func TokenElse(token, line string, lnum int, program *Program) error {
+	if token != "else" {
+		return fmt.Errorf("invalid token")
+	}
+
+	cnum := strings.Index(line, token)
+
+	if err := program.CloseLastBlock(lnum+1, cnum+1); err != nil {
+		return err
+	}
+
+	block := NewBlock(TOKEN_ELSE, TOKEN_END)
 	block.TokenStart().SetPostition(lnum+1, cnum+1)
 
-	return nil, nil
+	program.Last().Value().Block().SetNext(block)
+
+	return nil
 }
 
-func TokenIf(token, line string, lnum int, blocks *BlockStack) (Operation, error) {
-	if token != "if" {
-		return nil, fmt.Errorf("invalid token")
-	}
-
-	blockOperation := NewMiscBlockOperation(OP_BLOCK, TOKEN_IF, TOKEN_END)
-	blocks.Push(blockOperation)
-
-	cnum := strings.Index(line, token)
-
-	blocks.Tail().TokenStart().SetPostition(lnum+1, cnum+1)
-
-	return nil, nil
-}
-
-func TokenElse(token, line string, lnum int, blocks *BlockStack) (Operation, error) {
-	if token != "else" {
-		return nil, fmt.Errorf("invalid token")
-	}
-
-	cnum := strings.Index(line, token)
-
-	elseBlock := NewMiscBlockOperation(OP_BLOCK, TOKEN_ELSE, TOKEN_END)
-	elseBlock.TokenStart().SetPostition(lnum+1, cnum+1)
-
-	block := blocks.Tail()
-
-	if b := block.Tail(); block != nil {
-		b.TokenEnd().SetPostition(lnum+1, cnum+1)
-	}
-
-	block.SetRefBlock(elseBlock)
-
-	return nil, nil
-}
-
-func TokenEnd(token, line string, lnum int, blocks *BlockStack) (Operation, error) {
+func TokenEnd(token, line string, lnum int, program *Program) error {
 	if token != "end" {
-		return nil, fmt.Errorf("invalid token")
-	}
-
-	block, err := blocks.Pop()
-	if err != nil {
-		return nil, err
+		return fmt.Errorf("invalid token")
 	}
 
 	cnum := strings.Index(line, token)
 
-	if b := block.Tail(); b != nil {
-		b.TokenEnd().SetPostition(lnum+1, cnum+1)
+	if err := program.CloseLastBlock(lnum+1, cnum+1); err != nil {
+		return err
 	}
 
-	return block, nil
+	return nil
 }
