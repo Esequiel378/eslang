@@ -74,12 +74,12 @@ func executeOperations(program *core.Program, stack *core.Stack) error {
 				}
 
 			}
+
 		default:
 			if err := handler(stack, op); err != nil {
 				return FormatError(op, err)
 			}
 		}
-
 	}
 
 	return nil

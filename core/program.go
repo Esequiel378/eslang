@@ -96,7 +96,6 @@ func (p *Program) parseLines(lines []string) error {
 
 func (p *Program) LoadFromFile(filename string) error {
 	rawLines, err := os.ReadFile(filename)
-
 	if err != nil {
 		return err
 	}

@@ -9,18 +9,14 @@ type OperationType int
 const (
 	OP_BLOCK OperationType = iota
 	OP_DUMP                = iota
-	OP_EQUAL               = iota
-	OP_MINUS               = iota
-	OP_PLUS                = iota
+	OP_MOP                 = iota
 	OP_PUSH                = iota
 )
 
 var REGISTERED_OPERATIONS = map[OperationType]bool{
 	OP_BLOCK: true,
 	OP_DUMP:  true,
-	OP_EQUAL: true,
-	OP_MINUS: true,
-	OP_PLUS:  true,
+	OP_MOP:   true,
 	OP_PUSH:  true,
 }
 

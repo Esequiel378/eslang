@@ -115,7 +115,7 @@ func TokenPlus(token, line string, lnum int, _ *BlockStack) (Operation, error) {
 		return nil, fmt.Errorf("invalid token")
 	}
 
-	op := NewMiscOperation(OP_PLUS, nil, TOKEN_PLUS)
+	op := NewMiscOperation(OP_MOP, nil, TOKEN_PLUS)
 	cnum := strings.Index(line, token)
 
 	op.TokenStart().SetPostition(lnum+1, cnum+1)
@@ -128,7 +128,7 @@ func TokenMinus(token, line string, lnum int, _ *BlockStack) (Operation, error) 
 		return nil, fmt.Errorf("invalid token")
 	}
 
-	op := NewMiscOperation(OP_MINUS, nil, TOKEN_MINUS)
+	op := NewMiscOperation(OP_MOP, nil, TOKEN_MINUS)
 	cnum := strings.Index(line, token)
 
 	op.TokenStart().SetPostition(lnum+1, cnum+1)
@@ -141,7 +141,7 @@ func TokenEqual(token, line string, lnum int, _ *BlockStack) (Operation, error) 
 		return nil, fmt.Errorf("invalid token")
 	}
 
-	op := NewMiscOperation(OP_EQUAL, nil, TOKEN_EQUAL)
+	op := NewMiscOperation(OP_MOP, nil, TOKEN_EQUAL)
 	cnum := strings.Index(line, token)
 
 	op.TokenStart().SetPostition(lnum+1, cnum+1)
