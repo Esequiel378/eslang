@@ -39,7 +39,7 @@ func OPDump(stack *Stack, _ *core.Operation) error {
 		return err
 	}
 
-	fmt.Print(v)
+	fmt.Println(v)
 
 	return nil
 }

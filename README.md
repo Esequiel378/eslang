@@ -72,18 +72,12 @@ Input
 3 4 . .
 ```
 
-Output (The new line character is a bug, will be fix soon)
+Output
 
 ```pascal
 2
 4
 3
-```
-
-Intended Output
-
-```pascal
-234
 ```
 
 <details>
@@ -99,7 +93,6 @@ Intended Output
     DUMP in line 2:5
     ```
 </details>
-
 
 ### Operations <a name="operations" />
 
