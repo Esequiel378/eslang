@@ -76,10 +76,19 @@ func (b *Block) TokenEnd() *Token {
 	return b.tokenEnd
 }
 
+type Type int
+
+const (
+	Nil   Type = iota
+	Int        = iota
+	Float      = iota
+)
+
 type OperationValue struct {
 	intValue   int64
 	floatValue float64
 	block      *Block
+	_type      Type
 }
 
 func NewOperationValue() *OperationValue {
@@ -87,7 +96,12 @@ func NewOperationValue() *OperationValue {
 		intValue:   0,
 		floatValue: 0,
 		block:      NewEmptyBlock(),
+		_type:      Nil,
 	}
+}
+
+func (o *OperationValue) Type() Type {
+	return o._type
 }
 
 func (o *OperationValue) Int() int64 {
@@ -96,6 +110,7 @@ func (o *OperationValue) Int() int64 {
 
 func (o *OperationValue) SetInt(value int64) *OperationValue {
 	o.intValue = value
+	o._type = Int
 
 	return o
 }
@@ -106,6 +121,7 @@ func (o *OperationValue) Float() float64 {
 
 func (o *OperationValue) SetFloat(value float64) *OperationValue {
 	o.floatValue = value
+	o._type = Float
 
 	return o
 }
