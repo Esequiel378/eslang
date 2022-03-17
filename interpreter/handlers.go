@@ -5,39 +5,52 @@ import (
 	"fmt"
 )
 
-var REGISTERED_OPERATIONS = map[core.OperationType]func(*core.Stack, core.Operation) error{
+var REGISTERED_OPERATIONS = map[core.OperationType]func(*Stack, *core.Operation) error{
 	core.OP_PUSH: OPPush,
 	core.OP_MOP:  OPMop,
 	core.OP_DUMP: OPDump,
 }
 
-func OPPush(stack *core.Stack, op core.Operation) error {
+func OPPush(stack *Stack, op *core.Operation) error {
 	value := op.Value()
 
-	stack.Push(value)
+	sValue := NewStackValue()
+
+	switch value.Type() {
+	case core.Int:
+		sValue.SetInt(value.Int())
+	case core.Float:
+		sValue.SetFloat(value.Float())
+	}
+
+	stack.Push(sValue)
 
 	return nil
 }
 
-func OPDump(stack *core.Stack, _ core.Operation) error {
-	value, err := stack.Pop()
+func OPDump(stack *Stack, _ *core.Operation) error {
+	sValue, err := stack.Pop()
 	if err != nil {
 		return err
 	}
 
-	// TODO: Remove the new line character
-	fmt.Println(value)
+	v, err := sValue.Value()
+	if err != nil {
+		return err
+	}
+
+	fmt.Print(v)
 
 	return nil
 }
 
-var REGISTERED_MOPS = map[core.TokenType]func(*core.Stack, core.Operation) error{
+var REGISTERED_MOPS = map[core.TokenType]func(*Stack, *core.Operation) error{
 	core.TOKEN_EQUAL: OPEqual,
 	core.TOKEN_MINUS: OPMinus,
 	core.TOKEN_PLUS:  OPPlus,
 }
 
-func OPMop(stack *core.Stack, op core.Operation) error {
+func OPMop(stack *Stack, op *core.Operation) error {
 	handler, ok := REGISTERED_MOPS[op.TokenStart().Token()]
 
 	if !ok {
@@ -51,60 +64,74 @@ func OPMop(stack *core.Stack, op core.Operation) error {
 	return nil
 }
 
-func OPPlus(stack *core.Stack, _ core.Operation) error {
+func OPPlus(stack *Stack, _ *core.Operation) error {
 	lhs, rhs, err := stack.PopTwo()
 	if err != nil {
 		return err
 	}
 
-	lhsf, rhsf, keepFloat, err := normalizeNumbers(lhs, rhs)
-	if err != nil {
-		return err
+	normalizeNumbers(lhs, rhs)
+
+	sValue := NewStackValue()
+
+	switch lhs.Type() {
+	case core.Int:
+		sValue.SetInt(lhs.Int() + rhs.Int())
+	case core.Float:
+		sValue.SetFloat(lhs.Float() + rhs.Float())
 	}
 
-	if keepFloat {
-		stack.Push(lhsf + rhsf)
-	} else {
-		stack.Push(int64(lhsf + rhsf))
-	}
+	stack.Push(sValue)
 
 	return nil
 }
 
-func OPMinus(stack *core.Stack, _ core.Operation) error {
+func OPMinus(stack *Stack, _ *core.Operation) error {
 	lhs, rhs, err := stack.PopTwo()
 	if err != nil {
 		return err
 	}
 
-	lhsf, rhsf, keepFloat, err := normalizeNumbers(lhs, rhs)
-	if err != nil {
-		return err
+	normalizeNumbers(lhs, rhs)
+
+	sValue := NewStackValue()
+
+	switch lhs.Type() {
+	case core.Int:
+		sValue.SetInt(lhs.Int() - rhs.Int())
+	case core.Float:
+		sValue.SetFloat(lhs.Float() - rhs.Float())
 	}
 
-	if keepFloat {
-		stack.Push(lhsf - rhsf)
-	} else {
-		stack.Push(int64(lhsf - rhsf))
-	}
+	stack.Push(sValue)
 
 	return nil
 }
 
-func OPEqual(stack *core.Stack, _ core.Operation) error {
-	lhs, rhs, err := stack.PopTwo()
+func OPEqual(stack *Stack, _ *core.Operation) error {
+	_lhs, _rhs, err := stack.PopTwo()
 	if err != nil {
 		return err
 	}
 
-	var bitSet int64
+	lhs, err := _lhs.Value()
+	if err != nil {
+		return err
+	}
+
+	rhs, err := _rhs.Value()
+	if err != nil {
+		return err
+	}
+
+	sValue := NewStackValue()
 
 	// TODO: at some point this should be using bool type
 	if lhs == rhs {
-		bitSet = 1
+		sValue.SetInt(1)
 	}
 
-	stack.Push(bitSet)
+	stack.Push(sValue)
 
 	return nil
 }

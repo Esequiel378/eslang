@@ -1,6 +1,7 @@
 package interpreter
 
 import (
+	"eslang/core"
 	"fmt"
 	"reflect"
 )
@@ -19,31 +20,13 @@ func getFloat64(unk interface{}) (float64, error) {
 	return fv.Float(), nil
 }
 
-func normalizeNumbers(lhs, rhs interface{}) (lhsf, rhsf float64, keepFloat bool, err error) {
-	lhsf, err = getFloat64(lhs)
+func normalizeNumbers(lhs, rhs *StackValue) {
+	parseFloat := lhs.Type() == core.Float || rhs.Type() == core.Float
 
-	if err != nil {
-		return 0, 0, false, err
+	if parseFloat {
+		lhs.SetFloat(float64(lhs.Int()))
+		rhs.SetFloat(float64(rhs.Int()))
 	}
-
-	rhsf, err = getFloat64(rhs)
-
-	if err != nil {
-		return lhsf, 0, false, err
-	}
-
-	keepFloat = false
-
-	numbers := []interface{}{lhs, rhs}
-
-	for _, number := range numbers {
-		if _, ok := number.(float64); ok {
-			keepFloat = true
-			break
-		}
-	}
-
-	return lhsf, rhsf, keepFloat, nil
 }
 
 func isNil(i interface{}) bool {
@@ -57,4 +40,11 @@ func isNil(i interface{}) bool {
 	}
 
 	return false
+}
+
+func FormatError(op *core.Operation, err error) error {
+	line, col := op.TokenStart().Position()
+	token := op.TokenStart().TokenAlias()
+
+	return fmt.Errorf("error `%s` with Token: %s in line %d:%d", err.Error(), token, line, col)
 }
