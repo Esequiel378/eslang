@@ -22,33 +22,39 @@ const (
 	TOKEN_MINUS
 	TOKEN_PLUS
 	TOKEN_PUSH
+	TOKEN_PUSH_STR
 )
 
 var REGISTERED_TOKENS = map[TokenType]TokenHandler{
-	TOKEN_DO:    TokenDo,
-	TOKEN_DUMP:  TokenDump,
-	TOKEN_ELSE:  TokenElse,
-	TOKEN_END:   TokenEnd,
-	TOKEN_EQUAL: TokenEqual,
-	TOKEN_IF:    TokenIf,
-	TOKEN_MINUS: TokenMinus,
-	TOKEN_PLUS:  TokenPlus,
-	TOKEN_PUSH:  TokenPush,
+	TOKEN_DO:       TokenDo,
+	TOKEN_DUMP:     TokenDump,
+	TOKEN_ELSE:     TokenElse,
+	TOKEN_END:      TokenEnd,
+	TOKEN_EQUAL:    TokenEqual,
+	TOKEN_IF:       TokenIf,
+	TOKEN_MINUS:    TokenMinus,
+	TOKEN_PLUS:     TokenPlus,
+	TOKEN_PUSH:     TokenPush,
+	TOKEN_PUSH_STR: TokenPushStr,
 }
 
 var TOKEN_MAPPING = map[TokenType]string{
-	TOKEN_DO:    "DO",
-	TOKEN_DUMP:  "DUMP",
-	TOKEN_ELSE:  "ELSE",
-	TOKEN_END:   "END",
-	TOKEN_EQUAL: "EQUAL",
-	TOKEN_IF:    "IF",
-	TOKEN_MINUS: "MINUS",
-	TOKEN_PLUS:  "PLUS",
-	TOKEN_PUSH:  "PUSH",
+	TOKEN_DO:       "DO",
+	TOKEN_DUMP:     "DUMP",
+	TOKEN_ELSE:     "ELSE",
+	TOKEN_END:      "END",
+	TOKEN_EQUAL:    "EQUAL",
+	TOKEN_IF:       "IF",
+	TOKEN_MINUS:    "MINUS",
+	TOKEN_PLUS:     "PLUS",
+	TOKEN_PUSH:     "PUSH",
+	TOKEN_PUSH_STR: "PUSH_STR",
 }
 
-var IS_DIGIT = regexp.MustCompile(`^[0-9]\d*(\.\d+)?$`)
+var (
+	IS_DIGIT = regexp.MustCompile(`^[0-9]\d*(\.\d+)?$`)
+	IS_STR   = regexp.MustCompile(`^".+"$`)
+)
 
 type Token struct {
 	line  int
@@ -114,6 +120,22 @@ func TokenPush(token, line string, lnum int, program *Program) error {
 	if err != nil {
 		return err
 	}
+
+	cnum := strings.Index(line, token)
+	op.TokenStart().SetPostition(lnum+1, cnum+1)
+
+	program.Push(op)
+
+	return nil
+}
+
+func TokenPushStr(token, line string, lnum int, program *Program) error {
+	if !IS_STR.MatchString(token) {
+		return fmt.Errorf("invalid token")
+	}
+
+	opValue := NewOperationValue().SetStr(token)
+	op := NewOperation(OP_PUSH_STR, opValue, TOKEN_PUSH_STR, TOKEN_PUSH_STR)
 
 	cnum := strings.Index(line, token)
 	op.TokenStart().SetPostition(lnum+1, cnum+1)

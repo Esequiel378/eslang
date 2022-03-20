@@ -5,10 +5,20 @@ import (
 	"fmt"
 )
 
-var REGISTERED_OPERATIONS = map[core.OperationType]func(*Stack, *core.Operation) error{
-	core.OP_PUSH: OPPush,
-	core.OP_MOP:  OPMop,
-	core.OP_DUMP: OPDump,
+type OPHandler func(*Stack, *core.Operation) error
+
+var REGISTERED_OPERATIONS = map[core.OperationType]OPHandler{
+	core.OP_PUSH:     OPPush,
+	core.OP_PUSH_STR: OPPushStr,
+	core.OP_MOP:      OPMop,
+	core.OP_DUMP:     OPDump,
+}
+
+func OPPushStr(stack *Stack, op *core.Operation) error {
+	sValue := NewStackValue().SetStr(op.Value().Str())
+	stack.Push(sValue)
+
+	return nil
 }
 
 func OPPush(stack *Stack, op *core.Operation) error {

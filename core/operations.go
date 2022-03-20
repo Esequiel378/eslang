@@ -7,6 +7,7 @@ const (
 	OP_DUMP
 	OP_MOP
 	OP_PUSH
+	OP_PUSH_STR
 )
 
 type Block struct {
@@ -82,11 +83,13 @@ const (
 	Nil Type = iota
 	Int
 	Float
+	Str
 )
 
 type OperationValue struct {
 	intValue   int64
 	floatValue float64
+	strValue   string
 	block      *Block
 	_type      Type
 }
@@ -95,6 +98,7 @@ func NewOperationValue() *OperationValue {
 	return &OperationValue{
 		intValue:   0,
 		floatValue: 0,
+		strValue:   "",
 		block:      NewEmptyBlock(),
 		_type:      Nil,
 	}
@@ -102,6 +106,17 @@ func NewOperationValue() *OperationValue {
 
 func (o *OperationValue) Type() Type {
 	return o._type
+}
+
+func (o *OperationValue) Str() string {
+	return o.strValue
+}
+
+func (o *OperationValue) SetStr(str string) *OperationValue {
+	o._type = Str
+	o.strValue = str
+
+	return o
 }
 
 func (o *OperationValue) Int() int64 {

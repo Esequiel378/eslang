@@ -8,6 +8,7 @@ import (
 type StackValue struct {
 	intValue   int64
 	floatValue float64
+	strValue   string
 	_type      core.Type
 }
 
@@ -28,9 +29,22 @@ func (sv *StackValue) Value() (interface{}, error) {
 		return sv.Int(), nil
 	case core.Float:
 		return sv.Float(), nil
+	case core.Str:
+		return sv.Str(), nil
 	}
 
 	return nil, fmt.Errorf("exaustive type handiling for `%d`", sv._type)
+}
+
+func (sv *StackValue) Str() string {
+	return sv.strValue
+}
+
+func (sv *StackValue) SetStr(str string) *StackValue {
+	sv.strValue = str
+	sv._type = core.Str
+
+	return sv
 }
 
 func (sv *StackValue) Int() int64 {

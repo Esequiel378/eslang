@@ -56,12 +56,19 @@ func PrintProgram(program *Program, ident int) error {
 			fmt.Printf("%s%s in line %s:%s\n", spacing, endToken, line, col)
 
 		default:
-			value := " "
+			var value string
 
-			if op.Type() == OP_PUSH {
+			switch op.Type() {
+			case OP_PUSH_STR:
+				v := op.Value().Str()
+				value = fmt.Sprintf("%v", v)
+				value = fmt.Sprintf(" %s ", color.InCyan(value))
+			case OP_PUSH:
 				v := op.Value().Int()
 				value = fmt.Sprintf("%v", v)
 				value = fmt.Sprintf(" %s ", color.InCyan(value))
+			default:
+				value = " "
 			}
 
 			fmt.Printf("%s%s%sin line %s:%s\n", spacing, token, value, line, col)
