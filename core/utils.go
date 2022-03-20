@@ -34,7 +34,7 @@ func PrintProgram(program *Program, ident int) error {
 			block := op.Value().Block()
 
 			if block.HasNext() {
-				token := color.InYellow(TOKEN_MAPPING[TOKEN_ELSE])
+				token := color.InYellow(TOKEN_ALIASES[TOKEN_ELSE])
 
 				lnum, cnum := block.Next().TokenEnd().Position()
 				eline := color.InBold(strconv.Itoa(lnum))
@@ -47,7 +47,7 @@ func PrintProgram(program *Program, ident int) error {
 				}
 			}
 
-			endToken := color.InYellow(TOKEN_MAPPING[TOKEN_END])
+			endToken := color.InYellow(TOKEN_ALIASES[TOKEN_END])
 
 			lnum, cnum = block.Last().TokenEnd().Position()
 			line := color.InBold(strconv.Itoa(lnum))

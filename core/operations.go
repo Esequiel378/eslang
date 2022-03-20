@@ -87,6 +87,13 @@ const (
 	Str
 )
 
+var TYPE_ALIASES = map[Type]string{
+	Nil:   "nil",
+	Int:   "int",
+	Float: "float",
+	Str:   "str",
+}
+
 type OperationValue struct {
 	intValue   int64
 	floatValue float64

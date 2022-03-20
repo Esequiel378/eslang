@@ -78,6 +78,10 @@ func OPPlus(stack *Stack, _ *core.Operation) error {
 		return err
 	}
 
+	if !lhs.IsNumber() || !rhs.IsNumber() {
+		return fmt.Errorf("can not add `%s` with `%s`", lhs.TypeAlias(), rhs.TypeAlias())
+	}
+
 	normalizeNumbers(lhs, rhs)
 
 	sValue := NewStackValue()

@@ -18,9 +18,12 @@ func NewStackValue() *StackValue {
 	}
 }
 
-// TODO: Create a TypeAlias like Token alias
 func (sv *StackValue) Type() core.Type {
 	return sv._type
+}
+
+func (sv *StackValue) TypeAlias() string {
+	return core.TYPE_ALIASES[sv._type]
 }
 
 func (sv *StackValue) Value() (interface{}, error) {
@@ -34,6 +37,10 @@ func (sv *StackValue) Value() (interface{}, error) {
 	}
 
 	return nil, fmt.Errorf("exaustive type handiling for `%d`", sv._type)
+}
+
+func (sv StackValue) IsNumber() bool {
+	return sv._type == core.Int || sv._type == core.Float
 }
 
 func (sv *StackValue) Str() string {

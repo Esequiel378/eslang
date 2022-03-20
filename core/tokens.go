@@ -40,7 +40,7 @@ var REGISTERED_TOKENS = map[TokenType]TokenHandler{
 	TOKEN_PUSH_STR:   TokenPushStr,
 }
 
-var TOKEN_MAPPING = map[TokenType]string{
+var TOKEN_ALIASES = map[TokenType]string{
 	TOKEN_DO:         "DO",
 	TOKEN_DUMP:       "DUMP",
 	TOKEN_ELSE:       "ELSE",
@@ -71,7 +71,7 @@ func (t *Token) Token() TokenType {
 }
 
 func (t *Token) TokenAlias() string {
-	return TOKEN_MAPPING[t.token]
+	return TOKEN_ALIASES[t.token]
 }
 
 func (t *Token) Position() (int, int) {
