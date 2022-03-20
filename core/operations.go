@@ -19,7 +19,7 @@ type Block struct {
 func NewEmptyBlock() *Block {
 	return &Block{
 		current:    &Program{},
-		next:       &Block{},
+		next:       nil,
 		tokenStart: &Token{},
 		tokenEnd:   &Token{},
 	}
@@ -28,7 +28,7 @@ func NewEmptyBlock() *Block {
 func NewBlock(tokenStart, tokenEnd TokenType) *Block {
 	return &Block{
 		current:    &Program{},
-		next:       &Block{},
+		next:       nil,
 		tokenStart: &Token{token: tokenStart},
 		tokenEnd:   &Token{token: tokenEnd},
 	}
