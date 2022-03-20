@@ -81,7 +81,7 @@ func (s *Stack) Push(op *StackValue) {
 
 func (s *Stack) Pop() (*StackValue, error) {
 	if s.IsEmpty() {
-		return nil, fmt.Errorf("can not perform `Stack.Pop()`, stack is empty.")
+		return nil, fmt.Errorf("can not perform `Stack.Pop()`, stack is empty")
 	}
 
 	// Get the index of the top most element.

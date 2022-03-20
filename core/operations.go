@@ -6,7 +6,8 @@ const (
 	OP_BLOCK OperationType = iota
 	OP_DUMP
 	OP_MOP
-	OP_PUSH
+	OP_PUSH_INT
+	OP_PUSH_FLOAT
 	OP_PUSH_STR
 )
 

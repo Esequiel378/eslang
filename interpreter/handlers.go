@@ -8,31 +8,29 @@ import (
 type OPHandler func(*Stack, *core.Operation) error
 
 var REGISTERED_OPERATIONS = map[core.OperationType]OPHandler{
-	core.OP_PUSH:     OPPush,
-	core.OP_PUSH_STR: OPPushStr,
-	core.OP_MOP:      OPMop,
-	core.OP_DUMP:     OPDump,
+	core.OP_PUSH_INT:   OPPushInt,
+	core.OP_PUSH_FLOAT: OPPushFloat,
+	core.OP_PUSH_STR:   OPPushStr,
+	core.OP_MOP:        OPMop,
+	core.OP_DUMP:       OPDump,
 }
 
-func OPPushStr(stack *Stack, op *core.Operation) error {
-	sValue := NewStackValue().SetStr(op.Value().Str())
+func OPPushFloat(stack *Stack, op *core.Operation) error {
+	sValue := NewStackValue().SetFloat(op.Value().Float())
 	stack.Push(sValue)
 
 	return nil
 }
 
-func OPPush(stack *Stack, op *core.Operation) error {
-	value := op.Value()
+func OPPushInt(stack *Stack, op *core.Operation) error {
+	sValue := NewStackValue().SetInt(op.Value().Int())
+	stack.Push(sValue)
 
-	sValue := NewStackValue()
+	return nil
+}
 
-	switch value.Type() {
-	case core.Int:
-		sValue.SetInt(value.Int())
-	case core.Float:
-		sValue.SetFloat(value.Float())
-	}
-
+func OPPushStr(stack *Stack, op *core.Operation) error {
+	sValue := NewStackValue().SetStr(op.Value().Str())
 	stack.Push(sValue)
 
 	return nil

@@ -63,7 +63,11 @@ func PrintProgram(program *Program, ident int) error {
 				v := op.Value().Str()
 				value = fmt.Sprintf("%v", v)
 				value = fmt.Sprintf(" %s ", color.InCyan(value))
-			case OP_PUSH:
+			case OP_PUSH_INT:
+				v := op.Value().Int()
+				value = fmt.Sprintf("%v", v)
+				value = fmt.Sprintf(" %s ", color.InCyan(value))
+			case OP_PUSH_FLOAT:
 				v := op.Value().Int()
 				value = fmt.Sprintf("%v", v)
 				value = fmt.Sprintf(" %s ", color.InCyan(value))

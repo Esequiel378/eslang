@@ -21,38 +21,42 @@ const (
 	TOKEN_IF
 	TOKEN_MINUS
 	TOKEN_PLUS
-	TOKEN_PUSH
+	TOKEN_PUSH_INT
+	TOKEN_PUSH_FLOAT
 	TOKEN_PUSH_STR
 )
 
 var REGISTERED_TOKENS = map[TokenType]TokenHandler{
-	TOKEN_DO:       TokenDo,
-	TOKEN_DUMP:     TokenDump,
-	TOKEN_ELSE:     TokenElse,
-	TOKEN_END:      TokenEnd,
-	TOKEN_EQUAL:    TokenEqual,
-	TOKEN_IF:       TokenIf,
-	TOKEN_MINUS:    TokenMinus,
-	TOKEN_PLUS:     TokenPlus,
-	TOKEN_PUSH:     TokenPush,
-	TOKEN_PUSH_STR: TokenPushStr,
+	TOKEN_DO:         TokenDo,
+	TOKEN_DUMP:       TokenDump,
+	TOKEN_ELSE:       TokenElse,
+	TOKEN_END:        TokenEnd,
+	TOKEN_EQUAL:      TokenEqual,
+	TOKEN_IF:         TokenIf,
+	TOKEN_MINUS:      TokenMinus,
+	TOKEN_PLUS:       TokenPlus,
+	TOKEN_PUSH_INT:   TokenPushInt,
+	TOKEN_PUSH_FLOAT: TokenPushFloat,
+	TOKEN_PUSH_STR:   TokenPushStr,
 }
 
 var TOKEN_MAPPING = map[TokenType]string{
-	TOKEN_DO:       "DO",
-	TOKEN_DUMP:     "DUMP",
-	TOKEN_ELSE:     "ELSE",
-	TOKEN_END:      "END",
-	TOKEN_EQUAL:    "EQUAL",
-	TOKEN_IF:       "IF",
-	TOKEN_MINUS:    "MINUS",
-	TOKEN_PLUS:     "PLUS",
-	TOKEN_PUSH:     "PUSH",
-	TOKEN_PUSH_STR: "PUSH_STR",
+	TOKEN_DO:         "DO",
+	TOKEN_DUMP:       "DUMP",
+	TOKEN_ELSE:       "ELSE",
+	TOKEN_END:        "END",
+	TOKEN_EQUAL:      "EQUAL",
+	TOKEN_IF:         "IF",
+	TOKEN_MINUS:      "MINUS",
+	TOKEN_PLUS:       "PLUS",
+	TOKEN_PUSH_INT:   "PUSH_INT",
+	TOKEN_PUSH_STR:   "PUSH_STR",
+	TOKEN_PUSH_FLOAT: "PUSH_FLOAT",
 }
 
 var (
-	IS_DIGIT = regexp.MustCompile(`^[0-9]\d*(\.\d+)?$`)
+	IS_INT   = regexp.MustCompile(`^\d+$`)
+	IS_FLOAT = regexp.MustCompile(`^\d+\.\d+$`)
 	IS_STR   = regexp.MustCompile(`^".+"$`)
 )
 
@@ -79,47 +83,39 @@ func (t *Token) SetPostition(line, col int) {
 	t.col = col
 }
 
-func tokenPushFloat64(token string) (*Operation, error) {
-	value, err := strconv.ParseFloat(token, 64)
-	if err != nil {
-		return nil, fmt.Errorf("error parsing token '%s' to float: %s", token, err.Error())
-	}
-
-	opValue := NewOperationValue().SetFloat(value)
-	op := NewOperation(OP_PUSH, opValue, TOKEN_PUSH, TOKEN_PUSH)
-
-	return op, nil
-}
-
-func tokenPushInt64(token string) (*Operation, error) {
-	value, err := strconv.ParseInt(token, 10, 64)
-	if err != nil {
-		return nil, fmt.Errorf("error parsing token '%s' to int: %s", token, err.Error())
-	}
-
-	opValue := NewOperationValue().SetInt(value)
-	op := NewOperation(OP_PUSH, opValue, TOKEN_PUSH, TOKEN_PUSH)
-
-	return op, nil
-}
-
-func TokenPush(token, line string, lnum int, program *Program) error {
-	if !IS_DIGIT.MatchString(token) {
+func TokenPushInt(token, line string, lnum int, program *Program) error {
+	if !IS_INT.MatchString(token) {
 		return fmt.Errorf("invalid token")
 	}
 
-	var op *Operation
-	var err error
-
-	if strings.Contains(token, ".") {
-		op, err = tokenPushFloat64(token)
-	} else {
-		op, err = tokenPushInt64(token)
-	}
-
+	value, err := strconv.ParseInt(token, 10, 64)
 	if err != nil {
-		return err
+		return fmt.Errorf("error parsing token '%s' to int: %s", token, err.Error())
 	}
+
+	opValue := NewOperationValue().SetInt(value)
+	op := NewOperation(OP_PUSH_INT, opValue, TOKEN_PUSH_INT, TOKEN_PUSH_INT)
+
+	cnum := strings.Index(line, token)
+	op.TokenStart().SetPostition(lnum+1, cnum+1)
+
+	program.Push(op)
+
+	return nil
+}
+
+func TokenPushFloat(token, line string, lnum int, program *Program) error {
+	if !IS_FLOAT.MatchString(token) {
+		return fmt.Errorf("invalid token")
+	}
+
+	value, err := strconv.ParseFloat(token, 64)
+	if err != nil {
+		return fmt.Errorf("error parsing token '%s' to float: %s", token, err.Error())
+	}
+
+	opValue := NewOperationValue().SetFloat(value)
+	op := NewOperation(OP_PUSH_FLOAT, opValue, TOKEN_PUSH_FLOAT, TOKEN_PUSH_FLOAT)
 
 	cnum := strings.Index(line, token)
 	op.TokenStart().SetPostition(lnum+1, cnum+1)
