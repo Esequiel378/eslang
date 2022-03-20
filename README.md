@@ -80,8 +80,8 @@ PUSH_STR "Hello world" in line 0:1
 Input
 
 ```pascal
-1 2 .
-3 4 . .
+1 2 dump
+3 4 dump dump
 ```
 
 Output
@@ -111,8 +111,8 @@ DUMP in line 2:5
 Input
 
 ```pascal
-1 2 + .
-3 2 - .
+1 2 + dump
+3 2 - dump
 ```
 
 Output
@@ -146,7 +146,7 @@ Input
 
 ```pascal
 do
-    1 2 + .
+    1 2 + dump
 end
 ```
 
@@ -175,9 +175,9 @@ Input
 
 ```pascal
 1 if
-    1 .
+    1 dump
 else
-    0 .
+    0 dump
 end
 ```
 

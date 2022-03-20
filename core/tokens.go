@@ -190,7 +190,7 @@ func TokenEqual(token, line string, lnum int, program *Program) error {
 }
 
 func TokenDump(token, line string, lnum int, program *Program) error {
-	if token != "." {
+	if token != "dump" {
 		return fmt.Errorf("invalid token")
 	}
 
