@@ -52,10 +52,10 @@ Input
     <summary>Stack tree</summary>
   
 ```pascal
-PUSH 1 in line 1:1
-PUSH 2 in line 1:3
-PUSH 3 in line 1:5
-PUSH 4 in line 1:7
+PUSH_INT 1 in line 1:1
+PUSH_INT 2 in line 1:3
+PUSH_INT 3 in line 1:5
+PUSH_INT 4 in line 1:7
 ```
 </details>
 
@@ -96,11 +96,11 @@ Output
   <summary>Stack tree</summary>
   
 ```pascal
-PUSH 1 in line 1:1
-PUSH 2 in line 1:3
+PUSH_INT 1 in line 1:1
+PUSH_INT 2 in line 1:3
 DUMP in line 1:5
-PUSH 3 in line 2:1
-PUSH 4 in line 2:3
+PUSH_INT 3 in line 2:1
+PUSH_INT 4 in line 2:3
 DUMP in line 2:5
 DUMP in line 2:5
 ```
@@ -126,12 +126,12 @@ Output
   <summary>Stack tree</summary>
   
 ```pascal
-PUSH 1 in line 1:1
-PUSH 2 in line 1:3
+PUSH_INT 1 in line 1:1
+PUSH_INT 2 in line 1:3
 PLUS in line 1:5
 DUMP in line 1:7
-PUSH 3 in line 2:1
-PUSH 2 in line 2:3
+PUSH_INT 3 in line 2:1
+PUSH_INT 2 in line 2:3
 MINUS in line 2:5
 DUMP in line 2:7
 ```
@@ -161,10 +161,10 @@ Output
   
 ```pascal
 DO in lines [1:1:3:1]
-        PUSH 1 in line 2:5
-        PUSH 2 in line 2:7
-        PLUS in line 2:9
-        DUMP in line 2:11
+        PUSH_INT 1 in line 2:1
+        PUSH_INT 2 in line 2:3
+        PLUS in line 2:5
+        DUMP in line 2:7
 END in line 3:1
 ```
 </details>
@@ -191,13 +191,13 @@ Output
   <summary>Stack tree</summary>
   
 ```pascal
-PUSH 1 in line 1:1
-IF in lines [1:3:3:1]
-        PUSH 1 in line 2:5
-        DUMP in line 2:7
+PUSH_INT 1 in line 1:1
+IF in lines [1:3:5:1]
+        PUSH_INT 1 in line 2:1
+        DUMP in line 2:3
 ELSE in lines [1:3:5:1]
-        PUSH 0 in line 4:5
-        DUMP in line 4:7
+        PUSH_INT 0 in line 4:1
+        DUMP in line 4:3
 END in line 5:1
 ```
 </details>
