@@ -4,9 +4,9 @@ type OperationType int
 
 const (
 	OP_BLOCK OperationType = iota
-	OP_DUMP                = iota
-	OP_MOP                 = iota
-	OP_PUSH                = iota
+	OP_DUMP
+	OP_MOP
+	OP_PUSH
 )
 
 type Block struct {
@@ -79,9 +79,9 @@ func (b *Block) TokenEnd() *Token {
 type Type int
 
 const (
-	Nil   Type = iota
-	Int        = iota
-	Float      = iota
+	Nil Type = iota
+	Int
+	Float
 )
 
 type OperationValue struct {

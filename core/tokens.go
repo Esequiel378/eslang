@@ -13,15 +13,15 @@ type (
 )
 
 const (
-	TOKEN_DO    TokenType = iota
-	TOKEN_DUMP            = iota
-	TOKEN_ELSE            = iota
-	TOKEN_END             = iota
-	TOKEN_EQUAL           = iota
-	TOKEN_IF              = iota
-	TOKEN_MINUS           = iota
-	TOKEN_PLUS            = iota
-	TOKEN_PUSH            = iota
+	TOKEN_DO TokenType = iota
+	TOKEN_DUMP
+	TOKEN_ELSE
+	TOKEN_END
+	TOKEN_EQUAL
+	TOKEN_IF
+	TOKEN_MINUS
+	TOKEN_PLUS
+	TOKEN_PUSH
 )
 
 var REGISTERED_TOKENS = map[TokenType]TokenHandler{
