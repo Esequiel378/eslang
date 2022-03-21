@@ -228,9 +228,3 @@ func (o Operation) TokenStart() *Token {
 func (o Operation) TokenEnd() *Token {
 	return o.tokenEnd
 }
-
-func (o Operation) BeforeRun() {
-}
-
-func (o Operation) AfterRun() {
-}

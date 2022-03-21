@@ -5,15 +5,6 @@ import (
 	"fmt"
 )
 
-func normalizeNumbers(lhs, rhs *StackValue) {
-	parseFloat := lhs.Type() == core.Float || rhs.Type() == core.Float
-
-	if parseFloat {
-		lhs.SetFloat(float64(lhs.Int()))
-		rhs.SetFloat(float64(rhs.Int()))
-	}
-}
-
 func FormatError(op *core.Operation, err error) error {
 	line, col := op.TokenStart().Position()
 	token := op.TokenStart().TokenAlias()
