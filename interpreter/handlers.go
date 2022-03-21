@@ -81,11 +81,9 @@ func OPPlus(stack *Stack, _ *core.Operation) error {
 		return err
 	}
 
-	if !lhs.IsNumber() || !rhs.IsNumber() {
+	if !lhs.IsNumber() || !rhs.IsNumber() || lhs.Type() != rhs.Type() {
 		return fmt.Errorf("can not add `%s` with `%s`", lhs.TypeAlias(), rhs.TypeAlias())
 	}
-
-	normalizeNumbers(lhs, rhs)
 
 	sValue := NewStackValue()
 
@@ -203,6 +201,18 @@ func OPVarWrite(stack *Stack, _ *core.Operation) error {
 		}
 
 		sValue.SetInt(lhs.Int())
+	case core.Float:
+		if lhs.Type() != core.Float {
+			return fmt.Errorf("can not assign an `%s` value to a `%s` variable", lhs.TypeAlias(), rhs.TypeAlias())
+		}
+
+		sValue.SetFloat(lhs.Float())
+	case core.Str:
+		if lhs.Type() != core.Str {
+			return fmt.Errorf("can not assign an `%s` value to a `%s` variable", lhs.TypeAlias(), rhs.TypeAlias())
+		}
+
+		sValue.SetStr(lhs.Str())
 	}
 
 	stack.SetVariable(rhs.Name(), sValue)

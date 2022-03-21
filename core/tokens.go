@@ -19,8 +19,8 @@ const (
 	TOKEN_ELSE
 	TOKEN_END
 	TOKEN_EQUAL
+	TOKEN_FLOAT
 	TOKEN_IF
-	TOKEN_INT
 	TOKEN_MINUS
 	TOKEN_PLUS
 	TOKEN_PUSH_FLOAT
@@ -28,6 +28,7 @@ const (
 	TOKEN_PUSH_STR
 	TOKEN_VAR
 	TOKEN_VAR_READ
+	TOKEN_VAR_TYPE
 	TOKEN_VAR_WRITE
 )
 
@@ -38,7 +39,6 @@ var REGISTERED_TOKENS = map[TokenType]TokenHandler{
 	TOKEN_END:        TokenEnd,
 	TOKEN_EQUAL:      TokenEqual,
 	TOKEN_IF:         TokenIf,
-	TOKEN_INT:        TokenInt,
 	TOKEN_MINUS:      TokenMinus,
 	TOKEN_PLUS:       TokenPlus,
 	TOKEN_PUSH_FLOAT: TokenPushFloat,
@@ -46,6 +46,7 @@ var REGISTERED_TOKENS = map[TokenType]TokenHandler{
 	TOKEN_PUSH_STR:   TokenPushStr,
 	TOKEN_VAR:        TokenVar,
 	TOKEN_VAR_READ:   TokenVarRead,
+	TOKEN_VAR_TYPE:   TokenVarType,
 	TOKEN_VAR_WRITE:  TokenVarWrite,
 }
 
@@ -154,8 +155,16 @@ func TokenPushStr(token, line string, lnum int, program *Program) (bool, error) 
 	return true, nil
 }
 
-func TokenInt(token, line string, lnum int, program *Program) (bool, error) {
-	if token != "int" {
+var ALIASES_TO_TYPE = map[string]Type{
+	"int":   Int,
+	"float": Float,
+	"str":   Str,
+}
+
+func TokenVarType(token, line string, lnum int, program *Program) (bool, error) {
+	t, ok := ALIASES_TO_TYPE[token]
+
+	if !ok {
 		return false, nil
 	}
 
@@ -163,10 +172,10 @@ func TokenInt(token, line string, lnum int, program *Program) (bool, error) {
 
 	if lastOP == nil || lastOP.Type() != OP_VAR {
 		cnum := strings.Index(line, token)
-		return true, fmt.Errorf("error: using type `int` out of context at line %d:%d", lnum+1, cnum+1)
+		return true, fmt.Errorf("error: using type `%s` out of context at line %d:%d", token, lnum+1, cnum+1)
 	}
 
-	lastOP.Value().SetType(Int)
+	lastOP.Value().SetType(t)
 
 	return true, nil
 }
