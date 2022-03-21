@@ -5,21 +5,21 @@ type OperationType int
 const (
 	OP_BLOCK OperationType = iota
 	OP_DUMP
-	OP_MEM
 	OP_MOP
 	OP_PUSH_FLOAT
 	OP_PUSH_INT
 	OP_PUSH_STR
+	OP_VAR
 )
 
 var OPERATION_TYPE_ALIASES = map[OperationType]string{
 	OP_BLOCK:      "OP_BLOCK",
 	OP_DUMP:       "OP_DUMP",
-	OP_MEM:        "OP_MEM",
 	OP_MOP:        "OP_MOP",
 	OP_PUSH_FLOAT: "OP_PUSH_FLOAT",
 	OP_PUSH_INT:   "OP_PUSH_INT",
 	OP_PUSH_STR:   "OP_PUSH_STR",
+	OP_VAR:        "OP_VAR",
 }
 
 var RESERVED_WORDS = map[string]bool{

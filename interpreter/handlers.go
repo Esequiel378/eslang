@@ -13,7 +13,7 @@ var REGISTERED_OPERATIONS = map[core.OperationType]OPHandler{
 	core.OP_PUSH_STR:   OPPushStr,
 	core.OP_MOP:        OPMop,
 	core.OP_DUMP:       OPDump,
-	core.OP_MEM:        OPMem,
+	core.OP_VAR:        OPMem,
 }
 
 func OPPushFloat(stack *Stack, op *core.Operation) error {

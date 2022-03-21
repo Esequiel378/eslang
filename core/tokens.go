@@ -21,12 +21,12 @@ const (
 	TOKEN_EQUAL
 	TOKEN_IF
 	TOKEN_INT
-	TOKEN_MEM
 	TOKEN_MINUS
 	TOKEN_PLUS
 	TOKEN_PUSH_FLOAT
 	TOKEN_PUSH_INT
 	TOKEN_PUSH_STR
+	TOKEN_VAR
 )
 
 var REGISTERED_TOKENS = map[TokenType]TokenHandler{
@@ -37,12 +37,12 @@ var REGISTERED_TOKENS = map[TokenType]TokenHandler{
 	TOKEN_EQUAL:      TokenEqual,
 	TOKEN_IF:         TokenIf,
 	TOKEN_INT:        TokenInt,
-	TOKEN_MEM:        TokenMem,
 	TOKEN_MINUS:      TokenMinus,
 	TOKEN_PLUS:       TokenPlus,
 	TOKEN_PUSH_FLOAT: TokenPushFloat,
 	TOKEN_PUSH_INT:   TokenPushInt,
 	TOKEN_PUSH_STR:   TokenPushStr,
+	TOKEN_VAR:        TokenVar,
 }
 
 var TOKEN_ALIASES = map[TokenType]string{
@@ -52,12 +52,12 @@ var TOKEN_ALIASES = map[TokenType]string{
 	TOKEN_END:        "END",
 	TOKEN_EQUAL:      "EQUAL",
 	TOKEN_IF:         "IF",
-	TOKEN_MEM:        "MEM",
 	TOKEN_MINUS:      "MINUS",
 	TOKEN_PLUS:       "PLUS",
 	TOKEN_PUSH_FLOAT: "PUSH_FLOAT",
 	TOKEN_PUSH_INT:   "PUSH_INT",
 	TOKEN_PUSH_STR:   "PUSH_STR",
+	TOKEN_VAR:        "VAR",
 }
 
 var (
@@ -155,7 +155,7 @@ func TokenInt(token, line string, lnum int, program *Program) (bool, error) {
 
 	lastOP := program.Last()
 
-	if lastOP == nil || lastOP.Type() != OP_MEM {
+	if lastOP == nil || lastOP.Type() != OP_VAR {
 		cnum := strings.Index(line, token)
 		return true, fmt.Errorf("error: using type `int` out of context at line %d:%d", lnum+1, cnum+1)
 	}
@@ -181,13 +181,13 @@ func TokenPlus(token, line string, lnum int, program *Program) (bool, error) {
 	return true, nil
 }
 
-func TokenMem(token, line string, lnum int, program *Program) (bool, error) {
+func TokenVar(token, line string, lnum int, program *Program) (bool, error) {
 	if !IS_VALID_VARIABLE.MatchString(token) || RESERVED_WORDS[token] {
 		return false, nil
 	}
 
 	opValue := NewOperationValue().SetName(token)
-	op := NewOperation(OP_MEM, opValue, TOKEN_MEM, TOKEN_MEM)
+	op := NewOperation(OP_VAR, opValue, TOKEN_VAR, TOKEN_VAR)
 
 	cnum := strings.Index(line, token)
 	op.TokenStart().SetPostition(lnum+1, cnum+1)
