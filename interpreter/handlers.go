@@ -81,7 +81,7 @@ func OPPlus(stack *Stack, _ *core.Operation) error {
 		return err
 	}
 
-	if !lhs.IsNumber() || !rhs.IsNumber() || lhs.Type() != rhs.Type() {
+	if lhs.Type() != rhs.Type() {
 		return fmt.Errorf("can not add `%s` with `%s`", lhs.TypeAlias(), rhs.TypeAlias())
 	}
 
@@ -92,6 +92,8 @@ func OPPlus(stack *Stack, _ *core.Operation) error {
 		sValue.SetInt(lhs.Int() + rhs.Int())
 	case core.Float:
 		sValue.SetFloat(lhs.Float() + rhs.Float())
+	case core.Str:
+		sValue.SetStr(lhs.Str() + rhs.Str())
 	}
 
 	stack.Push(sValue)
@@ -105,7 +107,9 @@ func OPMinus(stack *Stack, _ *core.Operation) error {
 		return err
 	}
 
-	normalizeNumbers(lhs, rhs)
+	if !lhs.IsNumber() || !rhs.IsNumber() || lhs.Type() != rhs.Type() {
+		return fmt.Errorf("can not add `%s` with `%s`", lhs.TypeAlias(), rhs.TypeAlias())
+	}
 
 	sValue := NewStackValue()
 
