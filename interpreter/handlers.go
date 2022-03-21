@@ -60,13 +60,13 @@ func OPBlockIf(stack *Stack, op *core.Operation) (*core.Program, error) {
 		return program, nil
 	}
 
-	// If does not have else block
-	if !block.HasNext() {
-		return nil, nil
+	// Else block
+	if block.HasNext() {
+		return block.Next().Current(), nil
 	}
 
-	// Else block
-	return block.Next().Current(), nil
+	// End block
+	return nil, nil
 }
 
 var REGISTERED_OPERATIONS = map[core.OperationType]OPHandler{

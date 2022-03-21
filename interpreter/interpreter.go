@@ -171,6 +171,10 @@ func executeProgram(program *core.Program, stack *Stack) error {
 				return FormatError(op, err)
 			}
 
+			if program == nil {
+				break
+			}
+
 			if err := executeProgram(program, stack); err != nil {
 				return FormatError(op, err)
 			}
