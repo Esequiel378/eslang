@@ -13,7 +13,9 @@ var REGISTERED_OPERATIONS = map[core.OperationType]OPHandler{
 	core.OP_PUSH_STR:   OPPushStr,
 	core.OP_MOP:        OPMop,
 	core.OP_DUMP:       OPDump,
-	core.OP_VAR:        OPMem,
+	core.OP_VAR:        OPVar,
+	core.OP_VAR_READ:   OPVarRead,
+	core.OP_VAR_WRITE:  OPVarWrite,
 }
 
 func OPPushFloat(stack *Stack, op *core.Operation) error {
@@ -149,12 +151,63 @@ func OPEqual(stack *Stack, _ *core.Operation) error {
 	return nil
 }
 
-func OPMem(stack *Stack, op *core.Operation) error {
+func OPVar(stack *Stack, op *core.Operation) error {
 	opValue := op.Value()
 
-	sValue := NewStackValue().SetType(opValue.Type())
+	name := op.Value().Name()
+	variable, found := stack.GetVariable(name)
 
-	stack.SetVariable("temp", sValue)
+	if !found {
+		variable = NewStackValue().SetName(name).SetType(opValue.Type())
+		stack.SetVariable(name, variable)
+	}
+
+	stack.Push(variable)
+
+	return nil
+}
+
+func OPVarRead(stack *Stack, _ *core.Operation) error {
+	variable, err := stack.Pop()
+	if err != nil {
+		return err
+	}
+
+	sValue, found := stack.GetVariable(variable.Name())
+
+	if !found {
+		return fmt.Errorf("variable with name `%s` does not exist", variable.Name())
+	}
+
+	stack.Push(sValue)
+
+	return nil
+}
+
+func OPVarWrite(stack *Stack, _ *core.Operation) error {
+	lhs, rhs, err := stack.PopTwo()
+	if err != nil {
+		return err
+	}
+
+	sValue := NewStackValue().SetName(rhs.Name())
+
+	if rhs.Name() == "" {
+		return fmt.Errorf("error writing variable, invalid parameters order")
+	}
+
+	switch rhs.Type() {
+	case core.Int:
+		if lhs.Type() != core.Int {
+			return fmt.Errorf("can not assign an `%s` value to a `%s` variable", lhs.TypeAlias(), rhs.TypeAlias())
+		}
+
+		sValue.SetInt(lhs.Int())
+	}
+
+	stack.SetVariable(rhs.Name(), sValue)
+
+	stack.Push(sValue)
 
 	return nil
 }

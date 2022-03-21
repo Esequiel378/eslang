@@ -10,6 +10,8 @@ const (
 	OP_PUSH_INT
 	OP_PUSH_STR
 	OP_VAR
+	OP_VAR_READ
+	OP_VAR_WRITE
 )
 
 var OPERATION_TYPE_ALIASES = map[OperationType]string{
@@ -20,14 +22,19 @@ var OPERATION_TYPE_ALIASES = map[OperationType]string{
 	OP_PUSH_INT:   "OP_PUSH_INT",
 	OP_PUSH_STR:   "OP_PUSH_STR",
 	OP_VAR:        "OP_VAR",
+	OP_VAR_READ:   "OP_VAR_READ",
+	OP_VAR_WRITE:  "OP_VAR_WRITE",
 }
 
 var RESERVED_WORDS = map[string]bool{
-	"if":   true,
-	"end":  true,
-	"else": true,
-	"do":   true,
-	"dump": true,
+	"if":    true,
+	"end":   true,
+	"else":  true,
+	"do":    true,
+	"dump":  true,
+	"int":   true,
+	"float": true,
+	"str":   true,
 }
 
 type Block struct {
@@ -124,12 +131,8 @@ type OperationValue struct {
 
 func NewOperationValue() *OperationValue {
 	return &OperationValue{
-		intValue:   0,
-		floatValue: 0,
-		strValue:   "",
-		name:       "",
-		block:      NewEmptyBlock(),
-		_type:      Nil,
+		block: NewEmptyBlock(),
+		_type: Nil,
 	}
 }
 

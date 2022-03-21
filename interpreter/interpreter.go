@@ -9,6 +9,7 @@ type StackValue struct {
 	intValue   int64
 	floatValue float64
 	strValue   string
+	name       string
 	_type      core.Type
 }
 
@@ -16,6 +17,16 @@ func NewStackValue() *StackValue {
 	return &StackValue{
 		_type: core.Nil,
 	}
+}
+
+func (sv *StackValue) Name() string {
+	return sv.name
+}
+
+func (sv *StackValue) SetName(name string) *StackValue {
+	sv.name = name
+
+	return sv
 }
 
 func (sv *StackValue) Type() core.Type {
@@ -98,8 +109,10 @@ func (s *Stack) SetVariable(name string, sValue *StackValue) {
 	s.variables[name] = sValue
 }
 
-func (s *Stack) GetVariable(name string) *StackValue {
-	return s.variables[name]
+func (s *Stack) GetVariable(name string) (*StackValue, bool) {
+	v, found := s.variables[name]
+
+	return v, found
 }
 
 func (s *Stack) IsEmpty() bool {

@@ -36,6 +36,9 @@ $ go run main.go -m v -r test.esl
 + [Strings literals](#string-literals)
 + [Dump](#dump)
 + [Operations](#operations)
++ [Variables](#variables)
+    - [write](#write)
+    - [read](#read)
 + [Blocks](#blocks)
     - [`DO-END`](#do-end)
     - [`IF-ELSE-END`](#if-else-end)
@@ -137,10 +140,85 @@ DUMP in line 2:7
 ```
 </details>
 
-### Blocks <a name="block" />
+### Variables <a name="variables" />
+
+> Declare variable using a name and a type. Name must be in camel case
+
+Input
+
+```pascal
+tmp int 
+```
+
+<details>
+  <summary>Stack tree</summary>
+  
+```pascal
+VAR in line 1:1
+```
+</details>
 
 
-#### `DO-END` <a name="do-end" />
+#### Write <a name="write" />
+
+`.` (dot) takes a value, a variable, and write it into the stack memory. Pushes the stored value into the top of the stack
+
+Input
+
+```pascal
+tmp int
+1 tmp .
+```
+
+<details>
+  <summary>Stack tree</summary>
+  
+```pascal
+VAR in line 1:1
+PUSH_INT 1 in line 2:1
+VAR in line 2:3
+VAR_WRITE in line 2:7
+```
+</details>
+
+#### Read <a name="read" />
+
+`,` (comma) take a variable name and push the value into the top of the stack.
+> There is a shorthand for reading a variable, by using the name without the comma `tmp dump`.
+
+Input
+
+```pascal
+1 tmp int .
+tmp , dump 
+// tmp dump
+```
+
+Output
+
+```pascal
+1
+```
+
+
+<details>
+  <summary>Stack tree</summary>
+  
+```pascal
+PUSH_INT 1 in line 1:1
+VAR in line 1:3
+VAR_WRITE in line 1:11
+VAR in line 2:1
+VAR_READ in line 2:5
+DUMP in line 2:7
+```
+</details>
+
+
+### Blocks <a name="blocks" />
+
+
+#### do-end <a name="do-end" />
 
 Input
 
@@ -169,7 +247,7 @@ END in line 3:1
 ```
 </details>
 
-#### `IF-ELSE-END` <a name="if-else-end" />
+#### if-else-end <a name="if-else-end" />
 
 Input
 

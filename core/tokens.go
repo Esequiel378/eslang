@@ -27,6 +27,8 @@ const (
 	TOKEN_PUSH_INT
 	TOKEN_PUSH_STR
 	TOKEN_VAR
+	TOKEN_VAR_READ
+	TOKEN_VAR_WRITE
 )
 
 var REGISTERED_TOKENS = map[TokenType]TokenHandler{
@@ -43,6 +45,8 @@ var REGISTERED_TOKENS = map[TokenType]TokenHandler{
 	TOKEN_PUSH_INT:   TokenPushInt,
 	TOKEN_PUSH_STR:   TokenPushStr,
 	TOKEN_VAR:        TokenVar,
+	TOKEN_VAR_READ:   TokenVarRead,
+	TOKEN_VAR_WRITE:  TokenVarWrite,
 }
 
 var TOKEN_ALIASES = map[TokenType]string{
@@ -58,6 +62,8 @@ var TOKEN_ALIASES = map[TokenType]string{
 	TOKEN_PUSH_INT:   "PUSH_INT",
 	TOKEN_PUSH_STR:   "PUSH_STR",
 	TOKEN_VAR:        "VAR",
+	TOKEN_VAR_READ:   "VAR_READ",
+	TOKEN_VAR_WRITE:  "VAR_WRITE",
 }
 
 var (
@@ -200,6 +206,38 @@ func TokenVar(token, line string, lnum int, program *Program) (bool, error) {
 	} else {
 		program.SetVariable(token, op)
 	}
+
+	program.Push(op)
+
+	return true, nil
+}
+
+func TokenVarRead(token, line string, lnum int, program *Program) (bool, error) {
+	if token != "," {
+		return false, nil
+	}
+
+	opValue := NewOperationValue()
+	op := NewOperation(OP_VAR_READ, opValue, TOKEN_VAR_READ, TOKEN_VAR_READ)
+
+	cnum := strings.Index(line, token)
+	op.TokenStart().SetPostition(lnum+1, cnum+1)
+
+	program.Push(op)
+
+	return true, nil
+}
+
+func TokenVarWrite(token, line string, lnum int, program *Program) (bool, error) {
+	if token != "." {
+		return false, nil
+	}
+
+	opValue := NewOperationValue()
+	op := NewOperation(OP_VAR_WRITE, opValue, TOKEN_VAR_WRITE, TOKEN_VAR_WRITE)
+
+	cnum := strings.Index(line, token)
+	op.TokenStart().SetPostition(lnum+1, cnum+1)
 
 	program.Push(op)
 
