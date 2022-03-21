@@ -156,71 +156,37 @@ func (s *Stack) PopTwo() (lhs *StackValue, rhs *StackValue, err error) {
 
 func executeProgram(program *core.Program, stack *Stack) error {
 	for _, op := range program.Operations() {
-		handler, ok := REGISTERED_OPERATIONS[op.Type()]
-
-		if !ok {
-			return fmt.Errorf("exaustive operation handiling for `%s`", op.TypeAlias())
-		}
-
 		switch op.Type() {
 		case core.OP_BLOCK:
-			switch op.TokenStart().Token() {
-			case core.TOKEN_DO:
-				program := op.Value().Block().Current()
+			handler, ok := REGISTERED_OP_BLOCK[op.TokenStart().Token()]
+			if !ok {
+				return FormatError(
+					op,
+					fmt.Errorf("exaustive block operation handiling for `%s`", op.TypeAlias()),
+				)
+			}
 
-				if err := executeProgram(program, stack); err != nil {
-					return FormatError(op, err)
-				}
-			case core.TOKEN_IF:
-				sValue, err := stack.Pop()
-				if err != nil {
-					return FormatError(op, fmt.Errorf("error running block program"))
-				}
+			program, err := handler(stack, op)
+			if err != nil {
+				return FormatError(op, err)
+			}
 
-				truthy := sValue.Int()
-
-				// TODO: Add boolean type
-				if sValue.Type() != core.Int {
-					value, err := sValue.Value()
-					if err != nil {
-						return err
-					}
-
-					return FormatError(op, fmt.Errorf(
-						"error testing the truthy of %s with type %d",
-						value,
-						sValue.Type(),
-					),
-					)
-				}
-
-				block := op.Value().Block()
-
-				if truthy != 0 {
-					program := block.Current()
-
-					if err := executeProgram(program, stack); err != nil {
-						return FormatError(op, err)
-					}
-
-					break
-				}
-
-				if !block.HasNext() {
-					break
-				}
-
-				program := block.Next().Current()
-
-				if err := executeProgram(program, stack); err != nil {
-					return FormatError(op, err)
-				}
-
+			if err := executeProgram(program, stack); err != nil {
+				return FormatError(op, err)
 			}
 
 		default:
+			handler, ok := REGISTERED_OPERATIONS[op.Type()]
+
+			if !ok {
+				return FormatError(
+					op,
+					fmt.Errorf("exaustive operation handiling for `%s`", op.TypeAlias()),
+				)
+			}
+
 			if err := handler(stack, op); err != nil {
-				return FormatError(op, err)
+				return err
 			}
 		}
 	}

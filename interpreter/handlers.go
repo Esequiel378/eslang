@@ -5,7 +5,69 @@ import (
 	"fmt"
 )
 
-type OPHandler func(*Stack, *core.Operation) error
+type (
+	OPHandler      func(*Stack, *core.Operation) error
+	OPBlockHandler func(*Stack, *core.Operation) (*core.Program, error)
+)
+
+var REGISTERED_OP_BLOCK = map[core.TokenType]OPBlockHandler{
+	core.TOKEN_DO: OPBlockDo,
+	core.TOKEN_IF: OPBlockIf,
+}
+
+func OPBlockDo(_ *Stack, op *core.Operation) (*core.Program, error) {
+	program := op.Value().Block().Current()
+
+	return program, nil
+}
+
+func OPBlockIf(stack *Stack, op *core.Operation) (*core.Program, error) {
+	sValue, err := stack.Pop()
+	if err != nil {
+		return nil, FormatError(op, err)
+	}
+
+	if sValue.Type() != core.Int && sValue.Type() != core.Float {
+		value, err := sValue.Value()
+		if err != nil {
+			return nil, err
+		}
+
+		return nil, FormatError(
+			op,
+			fmt.Errorf(
+				"error testing the truthy of %s with type %d, expected `int` or `float`",
+				value,
+				sValue.Type(),
+			),
+		)
+	}
+
+	var truthy bool
+
+	switch sValue.Type() {
+	case core.Int:
+		truthy = sValue.Int() > 0
+	case core.Float:
+		truthy = sValue.Float() > 0
+	}
+
+	block := op.Value().Block()
+
+	// If block
+	if truthy {
+		program := block.Current()
+		return program, nil
+	}
+
+	// If does not have else block
+	if !block.HasNext() {
+		return nil, nil
+	}
+
+	// Else block
+	return block.Next().Current(), nil
+}
 
 var REGISTERED_OPERATIONS = map[core.OperationType]OPHandler{
 	core.OP_PUSH_INT:   OPPushInt,
