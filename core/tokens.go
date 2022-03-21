@@ -144,7 +144,8 @@ func TokenPushStr(token, line string, lnum int, program *Program) (bool, error) 
 		return false, nil
 	}
 
-	opValue := NewOperationValue().SetStr(token)
+	str := token[1 : len(token)-1]
+	opValue := NewOperationValue().SetStr(str)
 	op := NewOperation(OP_PUSH_STR, opValue, TOKEN_PUSH_STR, TOKEN_PUSH_STR)
 
 	cnum := strings.Index(line, token)
