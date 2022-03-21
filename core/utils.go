@@ -9,7 +9,7 @@ import (
 )
 
 func PrintProgram(program *Program, ident int) error {
-	for _, op := range *program {
+	for _, op := range program.Operations() {
 		lnum, cnum := op.TokenStart().Position()
 		token := op.TokenStart().TokenAlias()
 		spacing := strings.Repeat("\t", ident)

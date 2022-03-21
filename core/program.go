@@ -10,10 +10,38 @@ import (
 	"github.com/anmitsu/go-shlex"
 )
 
-type Program []*Operation
+type Program struct {
+	operations []*Operation
+	variables  map[string]*Operation
+}
+
+func NewProgram() Program {
+	return Program{
+		operations: []*Operation{},
+		variables:  make(map[string]*Operation),
+	}
+}
+
+func (p *Program) Operations() []*Operation {
+	return p.operations
+}
+
+func (p *Program) Variables() map[string]*Operation {
+	return p.variables
+}
+
+func (p *Program) GetVariable(name string) (*Operation, bool) {
+	op, found := p.variables[name]
+
+	return op, found
+}
+
+func (p *Program) SetVariable(name string, op *Operation) {
+	p.variables[name] = op
+}
 
 func (p *Program) IsEmpty() bool {
-	return len(*p) == 0
+	return len(p.operations) == 0
 }
 
 // Push method    add a new operation to the program
@@ -30,7 +58,7 @@ func (p *Program) Push(op *Operation) {
 		}
 	}
 
-	*p = append(*p, op)
+	p.operations = append(p.operations, op)
 }
 
 func (p *Program) CloseLastBlock(line, col int) error {
@@ -60,7 +88,7 @@ func (p *Program) Last() *Operation {
 		return nil
 	}
 
-	return (*p)[len(*p)-1]
+	return (p.operations)[len(p.operations)-1]
 }
 
 // TODO: Make parseLines an util not a method of Program
@@ -146,14 +174,13 @@ func (p *Program) LoadFromFile(filename string) error {
 		log.Fatal(err)
 	}
 
-	// TODO: check for a variable definitions instead
-	for _, op := range *p {
-		if op.Type() == OP_MEM && op.Value().Type() == Nil {
+	for name, op := range p.Variables() {
+		if op.Value().Type() == Nil {
 			line, col := op.TokenStart().Position()
 
 			return fmt.Errorf(
-				"missing variable type assigment in line %d:%d",
-				line, col,
+				"missing variable type assigment for `%s` in line %d:%d",
+				name, line, col,
 			)
 		}
 	}

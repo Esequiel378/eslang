@@ -142,7 +142,7 @@ func (s *Stack) PopTwo() (lhs *StackValue, rhs *StackValue, err error) {
 }
 
 func executeProgram(program *core.Program, stack *Stack) error {
-	for _, op := range *program {
+	for _, op := range program.Operations() {
 		handler, ok := REGISTERED_OPERATIONS[op.Type()]
 
 		if !ok {

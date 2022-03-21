@@ -36,14 +36,13 @@ var REGISTERED_TOKENS = map[TokenType]TokenHandler{
 	TOKEN_END:        TokenEnd,
 	TOKEN_EQUAL:      TokenEqual,
 	TOKEN_IF:         TokenIf,
+	TOKEN_INT:        TokenInt,
+	TOKEN_MEM:        TokenMem,
 	TOKEN_MINUS:      TokenMinus,
 	TOKEN_PLUS:       TokenPlus,
 	TOKEN_PUSH_FLOAT: TokenPushFloat,
 	TOKEN_PUSH_INT:   TokenPushInt,
 	TOKEN_PUSH_STR:   TokenPushStr,
-	TOKEN_INT:        TokenInt,
-	// must be the las token to evaluate
-	TOKEN_MEM: TokenMem,
 }
 
 var TOKEN_ALIASES = map[TokenType]string{
@@ -187,11 +186,20 @@ func TokenMem(token, line string, lnum int, program *Program) (bool, error) {
 		return false, nil
 	}
 
-	opValue := NewOperationValue()
+	opValue := NewOperationValue().SetName(token)
 	op := NewOperation(OP_MEM, opValue, TOKEN_MEM, TOKEN_MEM)
 
 	cnum := strings.Index(line, token)
 	op.TokenStart().SetPostition(lnum+1, cnum+1)
+
+	varOp, found := program.GetVariable(token)
+
+	if found {
+		t := varOp.Value().Type()
+		op.Value().SetType(t)
+	} else {
+		program.SetVariable(token, op)
+	}
 
 	program.Push(op)
 

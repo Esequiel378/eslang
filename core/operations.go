@@ -25,6 +25,7 @@ var OPERATION_TYPE_ALIASES = map[OperationType]string{
 var RESERVED_WORDS = map[string]bool{
 	"if":   true,
 	"end":  true,
+	"else": true,
 	"do":   true,
 	"dump": true,
 }
@@ -117,6 +118,7 @@ type OperationValue struct {
 	floatValue float64
 	strValue   string
 	block      *Block
+	name       string
 	_type      Type
 }
 
@@ -125,6 +127,7 @@ func NewOperationValue() *OperationValue {
 		intValue:   0,
 		floatValue: 0,
 		strValue:   "",
+		name:       "",
 		block:      NewEmptyBlock(),
 		_type:      Nil,
 	}
@@ -136,6 +139,16 @@ func (o *OperationValue) Type() Type {
 
 func (o *OperationValue) SetType(t Type) *OperationValue {
 	o._type = t
+
+	return o
+}
+
+func (o *OperationValue) Name() string {
+	return o.name
+}
+
+func (o *OperationValue) SetName(name string) *OperationValue {
+	o.name = name
 
 	return o
 }

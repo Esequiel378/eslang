@@ -12,7 +12,7 @@ func main() {
 	mode := flag.String("m", "i", "Mode in which theprogram will be executed")
 	flag.Parse()
 
-	var program core.Program
+	program := core.NewProgram()
 
 	if err := program.LoadFromFile(*inputFile); err != nil {
 		log.Fatal(err)
