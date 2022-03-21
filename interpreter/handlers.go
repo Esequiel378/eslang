@@ -13,6 +13,7 @@ var REGISTERED_OPERATIONS = map[core.OperationType]OPHandler{
 	core.OP_PUSH_STR:   OPPushStr,
 	core.OP_MOP:        OPMop,
 	core.OP_DUMP:       OPDump,
+	core.OP_MEM:        OPMem,
 }
 
 func OPPushFloat(stack *Stack, op *core.Operation) error {
@@ -144,6 +145,16 @@ func OPEqual(stack *Stack, _ *core.Operation) error {
 	}
 
 	stack.Push(sValue)
+
+	return nil
+}
+
+func OPMem(stack *Stack, op *core.Operation) error {
+	opValue := op.Value()
+
+	sValue := NewStackValue().SetType(opValue.Type())
+
+	stack.SetVariable("temp", sValue)
 
 	return nil
 }

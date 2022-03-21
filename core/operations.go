@@ -5,11 +5,29 @@ type OperationType int
 const (
 	OP_BLOCK OperationType = iota
 	OP_DUMP
+	OP_MEM
 	OP_MOP
-	OP_PUSH_INT
 	OP_PUSH_FLOAT
+	OP_PUSH_INT
 	OP_PUSH_STR
 )
+
+var OPERATION_TYPE_ALIASES = map[OperationType]string{
+	OP_BLOCK:      "OP_BLOCK",
+	OP_DUMP:       "OP_DUMP",
+	OP_MEM:        "OP_MEM",
+	OP_MOP:        "OP_MOP",
+	OP_PUSH_FLOAT: "OP_PUSH_FLOAT",
+	OP_PUSH_INT:   "OP_PUSH_INT",
+	OP_PUSH_STR:   "OP_PUSH_STR",
+}
+
+var RESERVED_WORDS = map[string]bool{
+	"if":   true,
+	"end":  true,
+	"do":   true,
+	"dump": true,
+}
 
 type Block struct {
 	current    *Program
@@ -81,16 +99,16 @@ func (b *Block) TokenEnd() *Token {
 type Type int
 
 const (
-	Nil Type = iota
+	Float Type = iota
 	Int
-	Float
+	Nil
 	Str
 )
 
 var TYPE_ALIASES = map[Type]string{
-	Nil:   "nil",
-	Int:   "int",
 	Float: "float",
+	Int:   "int",
+	Nil:   "nil",
 	Str:   "str",
 }
 
@@ -114,6 +132,12 @@ func NewOperationValue() *OperationValue {
 
 func (o *OperationValue) Type() Type {
 	return o._type
+}
+
+func (o *OperationValue) SetType(t Type) *OperationValue {
+	o._type = t
+
+	return o
 }
 
 func (o *OperationValue) Str() string {
@@ -167,6 +191,10 @@ func NewOperation(op OperationType, value *OperationValue, tokenStart, tokenEnd 
 		tokenStart: &Token{token: tokenStart},
 		tokenEnd:   &Token{token: tokenEnd},
 	}
+}
+
+func (o Operation) TypeAlias() string {
+	return OPERATION_TYPE_ALIASES[o.opType]
 }
 
 func (o Operation) Type() OperationType {

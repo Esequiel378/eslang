@@ -16,6 +16,7 @@ func (p *Program) IsEmpty() bool {
 	return len(*p) == 0
 }
 
+// Push method    add a new operation to the program
 func (p *Program) Push(op *Operation) {
 	if !p.IsEmpty() {
 		lastOp := p.Last()
@@ -39,7 +40,7 @@ func (p *Program) CloseLastBlock(line, col int) error {
 
 	lastOp := p.Last()
 
-	if lastOp.Type() != OP_BLOCK {
+	if lastOp == nil || lastOp.Type() != OP_BLOCK {
 		return fmt.Errorf("no open block to close")
 	}
 
@@ -52,6 +53,8 @@ func (p *Program) CloseLastBlock(line, col int) error {
 	return nil
 }
 
+// Last method    Returns the last operation added to the program
+// If there is not operation, it will return nil
 func (p *Program) Last() *Operation {
 	if p.IsEmpty() {
 		return nil
@@ -85,7 +88,12 @@ func (p *Program) parseLines(lines []string) error {
 			found := false
 
 			for _, tokenHandler := range REGISTERED_TOKENS {
-				if err := tokenHandler(token, line, lnum, p); err != nil {
+				ok, err := tokenHandler(token, line, lnum, p)
+				if err != nil {
+					return err
+				}
+
+				if !ok {
 					continue
 				}
 
@@ -136,6 +144,18 @@ func (p *Program) LoadFromFile(filename string) error {
 
 	if err := p.parseLines(lines); err != nil {
 		log.Fatal(err)
+	}
+
+	// TODO: check for a variable definitions instead
+	for _, op := range *p {
+		if op.Type() == OP_MEM && op.Value().Type() == Nil {
+			line, col := op.TokenStart().Position()
+
+			return fmt.Errorf(
+				"missing variable type assigment in line %d:%d",
+				line, col,
+			)
+		}
 	}
 
 	return nil

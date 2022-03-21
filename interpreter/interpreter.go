@@ -22,6 +22,12 @@ func (sv *StackValue) Type() core.Type {
 	return sv._type
 }
 
+func (sv *StackValue) SetType(t core.Type) *StackValue {
+	sv._type = t
+
+	return sv
+}
+
 func (sv *StackValue) TypeAlias() string {
 	return core.TYPE_ALIASES[sv._type]
 }
@@ -76,14 +82,32 @@ func (sv *StackValue) SetFloat(value float64) *StackValue {
 	return sv
 }
 
-type Stack []*StackValue
+type Stack struct {
+	stack     []*StackValue
+	variables map[string]*StackValue
+}
+
+func NewStack() Stack {
+	return Stack{
+		stack:     []*StackValue{},
+		variables: make(map[string]*StackValue),
+	}
+}
+
+func (s *Stack) SetVariable(name string, sValue *StackValue) {
+	s.variables[name] = sValue
+}
+
+func (s *Stack) GetVariable(name string) *StackValue {
+	return s.variables[name]
+}
 
 func (s *Stack) IsEmpty() bool {
-	return len(*s) == 0
+	return len(s.stack) == 0
 }
 
 func (s *Stack) Push(op *StackValue) {
-	*s = append(*s, op)
+	s.stack = append(s.stack, op)
 }
 
 func (s *Stack) Pop() (*StackValue, error) {
@@ -92,11 +116,11 @@ func (s *Stack) Pop() (*StackValue, error) {
 	}
 
 	// Get the index of the top most element.
-	index := len(*s) - 1
+	index := len(s.stack) - 1
 	// Index into the slice and obtain the element.
-	value := (*s)[index]
+	value := (s.stack)[index]
 	// Remove it from the stack by slicing it off.
-	*s = (*s)[:index]
+	s.stack = (s.stack)[:index]
 
 	return value, nil
 }
@@ -119,7 +143,11 @@ func (s *Stack) PopTwo() (lhs *StackValue, rhs *StackValue, err error) {
 
 func executeProgram(program *core.Program, stack *Stack) error {
 	for _, op := range *program {
-		handler := REGISTERED_OPERATIONS[op.Type()]
+		handler, ok := REGISTERED_OPERATIONS[op.Type()]
+
+		if !ok {
+			return fmt.Errorf("exaustive operation handiling for `%s`", op.TypeAlias())
+		}
 
 		switch op.Type() {
 		case core.OP_BLOCK:
@@ -188,7 +216,7 @@ func executeProgram(program *core.Program, stack *Stack) error {
 }
 
 func SimulateProgram(program *core.Program) error {
-	var stack Stack
+	stack := NewStack()
 
 	if err := executeProgram(program, &stack); err != nil {
 		return err

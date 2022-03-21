@@ -8,8 +8,9 @@ import (
 )
 
 type (
-	TokenType    int
-	TokenHandler func(token, line string, lnum int, program *Program) error
+	TokenType int
+	// TokenHandler type    function definition to implement new token handlers
+	TokenHandler func(token, line string, lnum int, program *Program) (bool, error)
 )
 
 const (
@@ -19,10 +20,12 @@ const (
 	TOKEN_END
 	TOKEN_EQUAL
 	TOKEN_IF
+	TOKEN_INT
+	TOKEN_MEM
 	TOKEN_MINUS
 	TOKEN_PLUS
-	TOKEN_PUSH_INT
 	TOKEN_PUSH_FLOAT
+	TOKEN_PUSH_INT
 	TOKEN_PUSH_STR
 )
 
@@ -35,9 +38,12 @@ var REGISTERED_TOKENS = map[TokenType]TokenHandler{
 	TOKEN_IF:         TokenIf,
 	TOKEN_MINUS:      TokenMinus,
 	TOKEN_PLUS:       TokenPlus,
-	TOKEN_PUSH_INT:   TokenPushInt,
 	TOKEN_PUSH_FLOAT: TokenPushFloat,
+	TOKEN_PUSH_INT:   TokenPushInt,
 	TOKEN_PUSH_STR:   TokenPushStr,
+	TOKEN_INT:        TokenInt,
+	// must be the las token to evaluate
+	TOKEN_MEM: TokenMem,
 }
 
 var TOKEN_ALIASES = map[TokenType]string{
@@ -47,17 +53,19 @@ var TOKEN_ALIASES = map[TokenType]string{
 	TOKEN_END:        "END",
 	TOKEN_EQUAL:      "EQUAL",
 	TOKEN_IF:         "IF",
+	TOKEN_MEM:        "MEM",
 	TOKEN_MINUS:      "MINUS",
 	TOKEN_PLUS:       "PLUS",
+	TOKEN_PUSH_FLOAT: "PUSH_FLOAT",
 	TOKEN_PUSH_INT:   "PUSH_INT",
 	TOKEN_PUSH_STR:   "PUSH_STR",
-	TOKEN_PUSH_FLOAT: "PUSH_FLOAT",
 }
 
 var (
-	IS_INT   = regexp.MustCompile(`^\d+$`)
-	IS_FLOAT = regexp.MustCompile(`^\d+\.\d+$`)
-	IS_STR   = regexp.MustCompile(`^".+"$`)
+	IS_INT            = regexp.MustCompile(`^\d+$`)
+	IS_FLOAT          = regexp.MustCompile(`^\d+\.\d+$`)
+	IS_STR            = regexp.MustCompile(`^".+"$`)
+	IS_VALID_VARIABLE = regexp.MustCompile(`^[a-zA-Z]+$`)
 )
 
 type Token struct {
@@ -83,14 +91,14 @@ func (t *Token) SetPostition(line, col int) {
 	t.col = col
 }
 
-func TokenPushInt(token, line string, lnum int, program *Program) error {
+func TokenPushInt(token, line string, lnum int, program *Program) (bool, error) {
 	if !IS_INT.MatchString(token) {
-		return fmt.Errorf("invalid token")
+		return false, nil
 	}
 
 	value, err := strconv.ParseInt(token, 10, 64)
 	if err != nil {
-		return fmt.Errorf("error parsing token '%s' to int: %s", token, err.Error())
+		return true, fmt.Errorf("error parsing token '%s' to int: %s", token, err.Error())
 	}
 
 	opValue := NewOperationValue().SetInt(value)
@@ -101,17 +109,17 @@ func TokenPushInt(token, line string, lnum int, program *Program) error {
 
 	program.Push(op)
 
-	return nil
+	return true, nil
 }
 
-func TokenPushFloat(token, line string, lnum int, program *Program) error {
+func TokenPushFloat(token, line string, lnum int, program *Program) (bool, error) {
 	if !IS_FLOAT.MatchString(token) {
-		return fmt.Errorf("invalid token")
+		return false, nil
 	}
 
 	value, err := strconv.ParseFloat(token, 64)
 	if err != nil {
-		return fmt.Errorf("error parsing token '%s' to float: %s", token, err.Error())
+		return true, fmt.Errorf("error parsing token '%s' to float: %s", token, err.Error())
 	}
 
 	opValue := NewOperationValue().SetFloat(value)
@@ -122,12 +130,12 @@ func TokenPushFloat(token, line string, lnum int, program *Program) error {
 
 	program.Push(op)
 
-	return nil
+	return true, nil
 }
 
-func TokenPushStr(token, line string, lnum int, program *Program) error {
+func TokenPushStr(token, line string, lnum int, program *Program) (bool, error) {
 	if !IS_STR.MatchString(token) {
-		return fmt.Errorf("invalid token")
+		return false, nil
 	}
 
 	opValue := NewOperationValue().SetStr(token)
@@ -138,12 +146,29 @@ func TokenPushStr(token, line string, lnum int, program *Program) error {
 
 	program.Push(op)
 
-	return nil
+	return true, nil
 }
 
-func TokenPlus(token, line string, lnum int, program *Program) error {
+func TokenInt(token, line string, lnum int, program *Program) (bool, error) {
+	if token != "int" {
+		return false, nil
+	}
+
+	lastOP := program.Last()
+
+	if lastOP == nil || lastOP.Type() != OP_MEM {
+		cnum := strings.Index(line, token)
+		return true, fmt.Errorf("error: using type `int` out of context at line %d:%d", lnum+1, cnum+1)
+	}
+
+	lastOP.Value().SetType(Int)
+
+	return true, nil
+}
+
+func TokenPlus(token, line string, lnum int, program *Program) (bool, error) {
 	if token != "+" {
-		return fmt.Errorf("invalid token")
+		return false, nil
 	}
 
 	opValue := NewOperationValue()
@@ -154,12 +179,28 @@ func TokenPlus(token, line string, lnum int, program *Program) error {
 
 	program.Push(op)
 
-	return nil
+	return true, nil
 }
 
-func TokenMinus(token, line string, lnum int, program *Program) error {
+func TokenMem(token, line string, lnum int, program *Program) (bool, error) {
+	if !IS_VALID_VARIABLE.MatchString(token) || RESERVED_WORDS[token] {
+		return false, nil
+	}
+
+	opValue := NewOperationValue()
+	op := NewOperation(OP_MEM, opValue, TOKEN_MEM, TOKEN_MEM)
+
+	cnum := strings.Index(line, token)
+	op.TokenStart().SetPostition(lnum+1, cnum+1)
+
+	program.Push(op)
+
+	return true, nil
+}
+
+func TokenMinus(token, line string, lnum int, program *Program) (bool, error) {
 	if token != "-" {
-		return fmt.Errorf("invalid token")
+		return false, nil
 	}
 
 	opValue := NewOperationValue()
@@ -170,12 +211,12 @@ func TokenMinus(token, line string, lnum int, program *Program) error {
 
 	program.Push(op)
 
-	return nil
+	return true, nil
 }
 
-func TokenEqual(token, line string, lnum int, program *Program) error {
+func TokenEqual(token, line string, lnum int, program *Program) (bool, error) {
 	if token != "=" {
-		return fmt.Errorf("invalid token")
+		return false, nil
 	}
 
 	opValue := NewOperationValue()
@@ -186,12 +227,12 @@ func TokenEqual(token, line string, lnum int, program *Program) error {
 
 	program.Push(op)
 
-	return nil
+	return true, nil
 }
 
-func TokenDump(token, line string, lnum int, program *Program) error {
+func TokenDump(token, line string, lnum int, program *Program) (bool, error) {
 	if token != "dump" {
-		return fmt.Errorf("invalid token")
+		return false, nil
 	}
 
 	opValue := NewOperationValue()
@@ -202,12 +243,12 @@ func TokenDump(token, line string, lnum int, program *Program) error {
 
 	program.Push(op)
 
-	return nil
+	return true, nil
 }
 
-func TokenDo(token, line string, lnum int, program *Program) error {
+func TokenDo(token, line string, lnum int, program *Program) (bool, error) {
 	if token != "do" {
-		return fmt.Errorf("invalid token")
+		return false, nil
 	}
 
 	cnum := strings.Index(line, token)
@@ -220,12 +261,12 @@ func TokenDo(token, line string, lnum int, program *Program) error {
 
 	program.Push(op)
 
-	return nil
+	return true, nil
 }
 
-func TokenIf(token, line string, lnum int, program *Program) error {
+func TokenIf(token, line string, lnum int, program *Program) (bool, error) {
 	if token != "if" {
-		return fmt.Errorf("invalid token")
+		return false, nil
 	}
 
 	cnum := strings.Index(line, token)
@@ -238,18 +279,18 @@ func TokenIf(token, line string, lnum int, program *Program) error {
 
 	program.Push(op)
 
-	return nil
+	return true, nil
 }
 
-func TokenElse(token, line string, lnum int, program *Program) error {
+func TokenElse(token, line string, lnum int, program *Program) (bool, error) {
 	if token != "else" {
-		return fmt.Errorf("invalid token")
+		return false, nil
 	}
 
 	cnum := strings.Index(line, token)
 
 	if err := program.CloseLastBlock(lnum+1, cnum+1); err != nil {
-		return err
+		return true, err
 	}
 
 	block := NewBlock(TOKEN_ELSE, TOKEN_END)
@@ -257,19 +298,19 @@ func TokenElse(token, line string, lnum int, program *Program) error {
 
 	program.Last().Value().Block().SetNext(block)
 
-	return nil
+	return true, nil
 }
 
-func TokenEnd(token, line string, lnum int, program *Program) error {
+func TokenEnd(token, line string, lnum int, program *Program) (bool, error) {
 	if token != "end" {
-		return fmt.Errorf("invalid token")
+		return false, nil
 	}
 
 	cnum := strings.Index(line, token)
 
 	if err := program.CloseLastBlock(lnum+1, cnum+1); err != nil {
-		return err
+		return true, err
 	}
 
-	return nil
+	return true, nil
 }
