@@ -116,6 +116,7 @@ Input
 ```pascal
 1 2 + dump
 3 2 - dump
+"Hello " "World" + dump
 ```
 
 Output
@@ -123,6 +124,7 @@ Output
 ```pascal
 3
 1
+Hello World
 ```
 
 <details>
@@ -137,6 +139,10 @@ PUSH_INT 3 in line 2:1
 PUSH_INT 2 in line 2:3
 MINUS in line 2:5
 DUMP in line 2:7
+PUSH_STR Hello  in line 3:1
+PUSH_STR World in line 3:10
+PLUS in line 3:18
+DUMP in line 3:20
 ```
 </details>
 
