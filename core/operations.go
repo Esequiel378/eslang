@@ -13,6 +13,7 @@ const (
 	OP_VAR
 	OP_VAR_READ
 	OP_VAR_WRITE
+	OP_WHILE
 )
 
 var OPERATION_TYPE_ALIASES = map[OperationType]string{
@@ -26,12 +27,10 @@ var OPERATION_TYPE_ALIASES = map[OperationType]string{
 	OP_VAR:        "OP_VAR",
 	OP_VAR_READ:   "OP_VAR_READ",
 	OP_VAR_WRITE:  "OP_VAR_WRITE",
+	OP_WHILE:      "OP_WHILE",
 }
 
 var RESERVED_WORDS = map[string]bool{
-	"if":    true,
-	"end":   true,
-	"else":  true,
 	"do":    true,
 	"dump":  true,
 	"dup":   true,
@@ -41,6 +40,7 @@ var RESERVED_WORDS = map[string]bool{
 	"if":    true,
 	"int":   true,
 	"str":   true,
+	"while": true,
 }
 
 type Block struct {

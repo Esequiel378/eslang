@@ -43,6 +43,7 @@ $ go run main.go -m v -r test.esl
 + [Blocks](#blocks)
     - [`DO-END`](#do-end)
     - [`IF-ELSE-END`](#if-else-end)
++ [While](#While)
 
 ### Store values in the stack <a name="push" />
 
@@ -310,5 +311,40 @@ ELSE in lines [1:3:5:1]
         PUSH_INT 0 in line 4:1
         DUMP in line 4:3
 END in line 5:1
+```
+</details>
+
+#### While <a name="while" />
+
+Input
+
+```pascal
+5 while
+    dup dump
+    1 -
+end
+```
+
+Output
+
+```pascal
+5
+4
+3
+2
+1
+```
+
+<details>
+  <summary>Stack tree</summary>
+  
+```pascal
+PUSH_INT 5 in line 1:1
+WHILE in lines [1:3:4:1]
+        DUP in line 2:5
+        DUMP in line 2:9
+        PUSH_INT 1 in line 3:5
+        MINUS in line 3:7
+END in line 4:1
 ```
 </details>

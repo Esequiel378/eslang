@@ -19,6 +19,32 @@ func NewStackValue() *StackValue {
 	}
 }
 
+func (sv *StackValue) TestTruthy() (bool, error) {
+	if sv.Type() != core.Int && sv.Type() != core.Float {
+		value, err := sv.Value()
+		if err != nil {
+			return false, err
+		}
+
+		return false, fmt.Errorf(
+			"error testing the truthy of %s with type %d, expected `int` or `float`",
+			value,
+			sv.Type(),
+		)
+	}
+
+	var truthy bool
+
+	switch sv.Type() {
+	case core.Int:
+		truthy = sv.Int() > 0
+	case core.Float:
+		truthy = sv.Float() > 0
+	}
+
+	return truthy, nil
+}
+
 func (sv *StackValue) Name() string {
 	return sv.name
 }
@@ -166,17 +192,23 @@ func executeProgram(program *core.Program, stack *Stack) error {
 				)
 			}
 
-			program, err := handler(stack, op)
-			if err != nil {
-				return FormatError(op, err)
-			}
+			for {
+				program, err := handler(stack, op)
+				if err != nil {
+					return FormatError(op, err)
+				}
 
-			if program == nil {
-				break
-			}
+				if program == nil {
+					break
+				}
 
-			if err := executeProgram(program, stack); err != nil {
-				return FormatError(op, err)
+				if err := executeProgram(program, stack); err != nil {
+					return FormatError(op, err)
+				}
+
+				if op.TokenStart().Token() != core.TOKEN_WHILE {
+					break
+				}
 			}
 
 		default:

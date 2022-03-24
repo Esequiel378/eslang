@@ -31,6 +31,7 @@ const (
 	TOKEN_VAR_READ
 	TOKEN_VAR_TYPE
 	TOKEN_VAR_WRITE
+	TOKEN_WHILE
 )
 
 var REGISTERED_TOKENS = map[TokenType]TokenHandler{
@@ -50,6 +51,7 @@ var REGISTERED_TOKENS = map[TokenType]TokenHandler{
 	TOKEN_VAR_READ:   TokenVarRead,
 	TOKEN_VAR_TYPE:   TokenVarType,
 	TOKEN_VAR_WRITE:  TokenVarWrite,
+	TOKEN_WHILE:      TokenWhile,
 }
 
 var TOKEN_ALIASES = map[TokenType]string{
@@ -68,6 +70,7 @@ var TOKEN_ALIASES = map[TokenType]string{
 	TOKEN_VAR:        "VAR",
 	TOKEN_VAR_READ:   "VAR_READ",
 	TOKEN_VAR_WRITE:  "VAR_WRITE",
+	TOKEN_WHILE:      "WHILE",
 }
 
 var (
@@ -250,6 +253,25 @@ func TokenVarWrite(token, line string, lnum int, program *Program) (bool, error)
 	op := NewOperation(OP_VAR_WRITE, opValue, TOKEN_VAR_WRITE, TOKEN_VAR_WRITE)
 
 	cnum := strings.Index(line, token)
+	op.TokenStart().SetPostition(lnum+1, cnum+1)
+
+	program.Push(op)
+
+	return true, nil
+}
+
+func TokenWhile(token, line string, lnum int, program *Program) (bool, error) {
+	if token != "while" {
+		return false, nil
+	}
+
+	cnum := strings.Index(line, token)
+
+	block := NewBlock(TOKEN_WHILE, TOKEN_END)
+	opValue := NewOperationValue().SetBlock(block)
+	opValue.Block().TokenStart().SetPostition(lnum+1, cnum+1)
+
+	op := NewOperation(OP_BLOCK, opValue, TOKEN_WHILE, TOKEN_END)
 	op.TokenStart().SetPostition(lnum+1, cnum+1)
 
 	program.Push(op)

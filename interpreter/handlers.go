@@ -11,8 +11,9 @@ type (
 )
 
 var REGISTERED_OP_BLOCK = map[core.TokenType]OPBlockHandler{
-	core.TOKEN_DO: OPBlockDo,
-	core.TOKEN_IF: OPBlockIf,
+	core.TOKEN_DO:    OPBlockDo,
+	core.TOKEN_IF:    OPBlockIf,
+	core.TOKEN_WHILE: OPBlockIf,
 }
 
 func OPBlockDo(_ *Stack, op *core.Operation) (*core.Program, error) {
@@ -58,8 +59,6 @@ var REGISTERED_OPERATIONS = map[core.OperationType]OPHandler{
 	core.OP_PUSH_FLOAT: OPPushFloat,
 	core.OP_PUSH_INT:   OPPushInt,
 	core.OP_PUSH_STR:   OPPushStr,
-	core.OP_MOP:        OPMop,
-	core.OP_DUMP:       OPDump,
 	core.OP_VAR:        OPVar,
 	core.OP_VAR_READ:   OPVarRead,
 	core.OP_VAR_WRITE:  OPVarWrite,
