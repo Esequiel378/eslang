@@ -16,7 +16,7 @@ var REGISTERED_OP_BLOCK = map[core.TokenType]OPBlockHandler{
 }
 
 func OPBlockDo(_ *Stack, op *core.Operation) (*core.Program, error) {
-	program := op.Value().Block().Current()
+	program := op.Value().Block().Program()
 
 	return program, nil
 }
@@ -27,42 +27,24 @@ func OPBlockIf(stack *Stack, op *core.Operation) (*core.Program, error) {
 		return nil, FormatError(op, err)
 	}
 
-	if sValue.Type() != core.Int && sValue.Type() != core.Float {
-		value, err := sValue.Value()
-		if err != nil {
-			return nil, err
-		}
+	stack.Push(sValue)
 
-		return nil, FormatError(
-			op,
-			fmt.Errorf(
-				"error testing the truthy of %s with type %d, expected `int` or `float`",
-				value,
-				sValue.Type(),
-			),
-		)
-	}
-
-	var truthy bool
-
-	switch sValue.Type() {
-	case core.Int:
-		truthy = sValue.Int() > 0
-	case core.Float:
-		truthy = sValue.Float() > 0
+	truthy, err := sValue.TestTruthy()
+	if err != nil {
+		return nil, FormatError(op, err)
 	}
 
 	block := op.Value().Block()
 
 	// If block
 	if truthy {
-		program := block.Current()
+		program := block.Program()
 		return program, nil
 	}
 
 	// Else block
 	if block.HasNext() {
-		return block.Next().Current(), nil
+		return block.Next().Program(), nil
 	}
 
 	// End block
@@ -70,8 +52,11 @@ func OPBlockIf(stack *Stack, op *core.Operation) (*core.Program, error) {
 }
 
 var REGISTERED_OPERATIONS = map[core.OperationType]OPHandler{
-	core.OP_PUSH_INT:   OPPushInt,
+	core.OP_DUMP:       OPDump,
+	core.OP_DUP:        OPDup,
+	core.OP_MOP:        OPMop,
 	core.OP_PUSH_FLOAT: OPPushFloat,
+	core.OP_PUSH_INT:   OPPushInt,
 	core.OP_PUSH_STR:   OPPushStr,
 	core.OP_MOP:        OPMop,
 	core.OP_DUMP:       OPDump,
@@ -113,6 +98,18 @@ func OPDump(stack *Stack, _ *core.Operation) error {
 	}
 
 	fmt.Println(v)
+
+	return nil
+}
+
+func OPDup(stack *Stack, _ *core.Operation) error {
+	sValue, err := stack.Pop()
+	if err != nil {
+		return err
+	}
+
+	stack.Push(sValue)
+	stack.Push(sValue)
 
 	return nil
 }

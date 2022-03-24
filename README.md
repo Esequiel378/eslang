@@ -35,6 +35,7 @@ $ go run main.go -m v -r test.esl
 + [Store values on the stack](#push)
 + [Strings literals](#string-literals)
 + [Dump](#dump)
++ [Dup](#dup)
 + [Operations](#operations)
 + [Variables](#variables)
     - [write](#write)
@@ -106,6 +107,32 @@ PUSH_INT 3 in line 2:1
 PUSH_INT 4 in line 2:3
 DUMP in line 2:5
 DUMP in line 2:5
+```
+</details>
+
+### Dup last value from the stack <a name="dup" />
+
+Input
+
+```pascal
+2 dup dump dump
+```
+
+Output
+
+```pascal
+2
+2
+```
+
+<details>
+  <summary>Stack tree</summary>
+  
+```pascal
+PUSH_INT 2 in line 1:1
+DUP in line 1:3
+DUMP in line 1:7
+DUMP in line 1:7
 ```
 </details>
 

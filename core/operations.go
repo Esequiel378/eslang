@@ -5,6 +5,7 @@ type OperationType int
 const (
 	OP_BLOCK OperationType = iota
 	OP_DUMP
+	OP_DUP
 	OP_MOP
 	OP_PUSH_FLOAT
 	OP_PUSH_INT
@@ -17,6 +18,7 @@ const (
 var OPERATION_TYPE_ALIASES = map[OperationType]string{
 	OP_BLOCK:      "OP_BLOCK",
 	OP_DUMP:       "OP_DUMP",
+	OP_DUP:        "OP_DUP",
 	OP_MOP:        "OP_MOP",
 	OP_PUSH_FLOAT: "OP_PUSH_FLOAT",
 	OP_PUSH_INT:   "OP_PUSH_INT",
@@ -32,8 +34,12 @@ var RESERVED_WORDS = map[string]bool{
 	"else":  true,
 	"do":    true,
 	"dump":  true,
-	"int":   true,
+	"dup":   true,
+	"else":  true,
+	"end":   true,
 	"float": true,
+	"if":    true,
+	"int":   true,
 	"str":   true,
 }
 
@@ -191,6 +197,12 @@ func (o *OperationValue) SetFloat(value float64) *OperationValue {
 
 func (o *OperationValue) Block() *Block {
 	return o.block
+}
+
+func (o *OperationValue) SetBlock(block *Block) *OperationValue {
+	o.block = block
+
+	return o
 }
 
 type Operation struct {

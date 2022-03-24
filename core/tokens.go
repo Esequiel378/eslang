@@ -16,6 +16,7 @@ type (
 const (
 	TOKEN_DO TokenType = iota
 	TOKEN_DUMP
+	TOKEN_DUP
 	TOKEN_ELSE
 	TOKEN_END
 	TOKEN_EQUAL
@@ -35,6 +36,7 @@ const (
 var REGISTERED_TOKENS = map[TokenType]TokenHandler{
 	TOKEN_DO:         TokenDo,
 	TOKEN_DUMP:       TokenDump,
+	TOKEN_DUP:        TokenDup,
 	TOKEN_ELSE:       TokenElse,
 	TOKEN_END:        TokenEnd,
 	TOKEN_EQUAL:      TokenEqual,
@@ -53,6 +55,7 @@ var REGISTERED_TOKENS = map[TokenType]TokenHandler{
 var TOKEN_ALIASES = map[TokenType]string{
 	TOKEN_DO:         "DO",
 	TOKEN_DUMP:       "DUMP",
+	TOKEN_DUP:        "DUP",
 	TOKEN_ELSE:       "ELSE",
 	TOKEN_END:        "END",
 	TOKEN_EQUAL:      "EQUAL",
@@ -302,6 +305,24 @@ func TokenDump(token, line string, lnum int, program *Program) (bool, error) {
 	return true, nil
 }
 
+func TokenDup(token, line string, lnum int, program *Program) (bool, error) {
+	if token != "dup" {
+		return false, nil
+	}
+
+	cnum := strings.Index(line, token)
+
+	opValue := NewOperationValue()
+	opValue.Block().TokenStart().SetPostition(lnum+1, cnum+1)
+
+	op := NewOperation(OP_DUP, opValue, TOKEN_DUP, TOKEN_DUP)
+	op.TokenStart().SetPostition(lnum+1, cnum+1)
+
+	program.Push(op)
+
+	return true, nil
+}
+
 func TokenDo(token, line string, lnum int, program *Program) (bool, error) {
 	if token != "do" {
 		return false, nil
@@ -309,7 +330,8 @@ func TokenDo(token, line string, lnum int, program *Program) (bool, error) {
 
 	cnum := strings.Index(line, token)
 
-	opValue := NewOperationValue()
+	block := NewBlock(TOKEN_DO, TOKEN_END)
+	opValue := NewOperationValue().SetBlock(block)
 	opValue.Block().TokenStart().SetPostition(lnum+1, cnum+1)
 
 	op := NewOperation(OP_BLOCK, opValue, TOKEN_DO, TOKEN_END)
@@ -327,7 +349,8 @@ func TokenIf(token, line string, lnum int, program *Program) (bool, error) {
 
 	cnum := strings.Index(line, token)
 
-	opValue := NewOperationValue()
+	block := NewBlock(TOKEN_IF, TOKEN_END)
+	opValue := NewOperationValue().SetBlock(block)
 	opValue.Block().TokenStart().SetPostition(lnum+1, cnum+1)
 
 	op := NewOperation(OP_BLOCK, opValue, TOKEN_IF, TOKEN_END)
