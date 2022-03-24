@@ -60,7 +60,6 @@ var REGISTERED_OPERATIONS = map[core.OperationType]OPHandler{
 	core.OP_PUSH_INT:   OPPushInt,
 	core.OP_PUSH_STR:   OPPushStr,
 	core.OP_VAR:        OPVar,
-	core.OP_VAR_READ:   OPVarRead,
 	core.OP_VAR_WRITE:  OPVarWrite,
 }
 
@@ -223,23 +222,6 @@ func OPVar(stack *Stack, op *core.Operation) error {
 	}
 
 	stack.Push(variable)
-
-	return nil
-}
-
-func OPVarRead(stack *Stack, _ *core.Operation) error {
-	variable, err := stack.Pop()
-	if err != nil {
-		return err
-	}
-
-	sValue, found := stack.GetVariable(variable.Name())
-
-	if !found {
-		return fmt.Errorf("variable with name `%s` does not exist", variable.Name())
-	}
-
-	stack.Push(sValue)
 
 	return nil
 }

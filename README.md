@@ -195,7 +195,7 @@ VAR in line 1:1
 
 #### Write <a name="write" />
 
-`.` (dot) takes a value, a variable, and write it into the stack memory. Pushes the stored value into the top of the stack
+`.` (dot) takes a value and a variable name, and write them into the stack memory. Pushes the variable into the top of the stack
 
 Input
 
@@ -241,15 +241,14 @@ Output
 
 #### Read <a name="read" />
 
-`,` (comma) take a variable name and push the value into the top of the stack.
-> There is a shorthand for reading a variable, by using the name without the comma `tmp dump`.
+To read a variable, you can use the variable name like this `tmp dump`.
 
 Input
 
 ```pascal
-1 tmp int .
-tmp , dump 
-// tmp dump
+1 tmp int . 
+// ...
+tmp dump 
 ```
 
 Output

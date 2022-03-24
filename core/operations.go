@@ -11,7 +11,6 @@ const (
 	OP_PUSH_INT
 	OP_PUSH_STR
 	OP_VAR
-	OP_VAR_READ
 	OP_VAR_WRITE
 	OP_WHILE
 )
@@ -25,7 +24,6 @@ var OPERATION_TYPE_ALIASES = map[OperationType]string{
 	OP_PUSH_INT:   "OP_PUSH_INT",
 	OP_PUSH_STR:   "OP_PUSH_STR",
 	OP_VAR:        "OP_VAR",
-	OP_VAR_READ:   "OP_VAR_READ",
 	OP_VAR_WRITE:  "OP_VAR_WRITE",
 	OP_WHILE:      "OP_WHILE",
 }
