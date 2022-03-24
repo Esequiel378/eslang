@@ -46,14 +46,15 @@ func (p *Program) IsEmpty() bool {
 
 // Push method    add a new operation to the program
 func (p *Program) Push(op *Operation) {
-	if !p.IsEmpty() {
-		lastOp := p.Last()
+	lastOp := p.Last()
+
+	if lastOp != nil && lastOp.Type() == OP_BLOCK {
 		// Get the last block within the operation
 		block := lastOp.Value().Block().Last()
 
 		// Push the op to the last nested block if its open
-		if lastOp.Type() == OP_BLOCK && block.IsOpen() {
-			block.Current().Push(op)
+		if block.IsOpen() {
+			block.Program().Push(op)
 			return
 		}
 	}
@@ -72,11 +73,18 @@ func (p *Program) CloseLastBlock(line, col int) error {
 		return fmt.Errorf("no open block to close")
 	}
 
-	// Get the last block within the operation
+	// Get the last block
 	block := lastOp.Value().Block().Last()
+	blockLastOP := block.Program().Last()
 
-	block.TokenEnd().SetPostition(line, col)
-	lastOp.TokenEnd().SetPostition(line, col)
+	// Check if last op within block program is also a block and close it
+	if blockLastOP.Type() == OP_BLOCK && blockLastOP.Value().Block().IsOpen() {
+		blockLastOP.TokenEnd().SetPostition(line, col)
+		blockLastOP.Value().Block().TokenEnd().SetPostition(line, col)
+	} else {
+		block.TokenEnd().SetPostition(line, col)
+		lastOp.TokenEnd().SetPostition(line, col)
+	}
 
 	return nil
 }
@@ -95,9 +103,8 @@ func (p *Program) Last() *Operation {
 func (p *Program) parseLines(lines []string) error {
 	for lnum, line := range lines {
 		line = strings.Split(line, "//")[0]
-		line = strings.Trim(line, " ")
 
-		if len(line) == 0 {
+		if len(line) == 0 || line == "" {
 			continue
 		}
 
@@ -141,24 +148,6 @@ func (p *Program) parseLines(lines []string) error {
 		}
 	}
 
-	lastOp := p.Last()
-	// Get the last block within the operation
-	block := lastOp.Value().Block().Last()
-
-	// Check for un-closed blocks
-	if lastOp.Type() == OP_BLOCK && block.IsOpen() {
-		tokenStart := block.TokenStart().TokenAlias()
-		tokenEnd := block.TokenEnd().TokenAlias()
-		lnum, cnum := block.TokenStart().Position()
-
-		return fmt.Errorf(
-			"%s missing %s closing token in line %d:%d",
-			color.InYellow(tokenStart),
-			color.InYellow(tokenEnd),
-			lnum, cnum,
-		)
-	}
-
 	return nil
 }
 
@@ -183,6 +172,37 @@ func (p *Program) LoadFromFile(filename string) error {
 				name, line, col,
 			)
 		}
+	}
+
+	lastOp := p.Last()
+
+	if lastOp == nil {
+		return fmt.Errorf("empty program")
+	}
+
+	// Get the last block within the operation
+	block := lastOp.Value().Block().Last()
+
+	// Check for un-closed blocks
+	if lastOp.Type() == OP_BLOCK && block.IsOpen() {
+		blockLastOP := block.Program().Last()
+
+		tokenStart := block.TokenStart().TokenAlias()
+		tokenEnd := block.TokenEnd().TokenAlias()
+		line, col := block.TokenStart().Position()
+
+		if blockLastOP.Type() == OP_BLOCK && blockLastOP.Value().Block().IsOpen() {
+			tokenStart = blockLastOP.TokenStart().TokenAlias()
+			tokenEnd = blockLastOP.TokenEnd().TokenAlias()
+			line, col = blockLastOP.TokenEnd().Position()
+		}
+
+		return fmt.Errorf(
+			"%s missing %s closing token in line %d:%d",
+			color.InYellow(tokenStart),
+			color.InYellow(tokenEnd),
+			line, col,
+		)
 	}
 
 	return nil

@@ -27,7 +27,7 @@ func PrintProgram(program *Program, ident int) error {
 
 			fmt.Printf("%s%s in lines [%s:%s:%s:%s]\n", spacing, token, line, col, eline, ecol)
 
-			if err := PrintProgram(op.Value().Block().Current(), ident+1); err != nil {
+			if err := PrintProgram(op.Value().Block().Program(), ident+1); err != nil {
 				return err
 			}
 

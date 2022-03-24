@@ -62,7 +62,7 @@ func NewBlock(tokenStart, tokenEnd TokenType) *Block {
 	}
 }
 
-func (b *Block) Current() *Program {
+func (b *Block) Program() *Program {
 	return b.current
 }
 
