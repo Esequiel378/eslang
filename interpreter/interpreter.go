@@ -222,7 +222,7 @@ func executeProgram(program *core.Program, stack *Stack) error {
 			}
 
 			if err := handler(stack, op); err != nil {
-				return err
+				return FormatError(op, err)
 			}
 		}
 	}

@@ -215,6 +215,30 @@ VAR_WRITE in line 2:7
 ```
 </details>
 
+> Keep in mind that operations with variables will return the result of such operation, and no the pointer to the variable.
+
+Won't work
+
+```pascal
+11 tmp int .
+tmp 1 - .
+dump
+```
+
+Will work
+
+```pascal
+11 tmp int .
+tmp 1 - tmp .
+dump
+```
+
+Output
+
+```
+10
+```
+
 #### Read <a name="read" />
 
 `,` (comma) take a variable name and push the value into the top of the stack.

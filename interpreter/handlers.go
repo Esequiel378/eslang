@@ -252,8 +252,12 @@ func OPVarWrite(stack *Stack, _ *core.Operation) error {
 
 	sValue := NewStackValue().SetName(rhs.Name())
 
+	if rhs.Name() == "" && lhs.Name() == "" {
+		return fmt.Errorf("`write` operation can only be used with variables")
+	}
+
 	if rhs.Name() == "" {
-		return fmt.Errorf("error writing variable, invalid parameters order")
+		return fmt.Errorf("error writing to variable, invalid parameters order")
 	}
 
 	switch rhs.Type() {
