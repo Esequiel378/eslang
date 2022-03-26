@@ -89,3 +89,37 @@ func (v StackValueString) Value() any {
 func (v StackValueString) TestTruthy() (bool, error) {
 	return v.value != "", nil
 }
+
+// StackValueVar struct    contains a variable value.
+type StackValueVar struct {
+	value StackValue
+	name  string
+}
+
+// NewStackValueVar function    creates a new variable value.
+func NewStackValueVar(name string, value StackValue) StackValueVar {
+	return StackValueVar{
+		value: value,
+		name:  name,
+	}
+}
+
+// Type method    returns the type of the variable value.
+func (v StackValueVar) Type() core.Type {
+	return v.value.Type()
+}
+
+// Value method    returns the value of the variable.
+func (v StackValueVar) Value() any {
+	return v.value.Value()
+}
+
+// TestTruthy method    returns true if the value of the variable is truthy.
+func (v StackValueVar) TestTruthy() (bool, error) {
+	return v.value.TestTruthy()
+}
+
+// Name method    returns the name of the variable.
+func (v StackValueVar) Name() string {
+	return v.name
+}

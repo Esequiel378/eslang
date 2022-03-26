@@ -6,14 +6,28 @@ import (
 
 // Stack struct    represents a stack of elements.
 type Stack struct {
-	stack []StackValue
+	stack     []StackValue
+	variables map[string]StackValue
 }
 
 // NewStack function    returns a new stack.
 func NewStack() Stack {
 	return Stack{
-		stack: []StackValue{},
+		stack:     []StackValue{},
+		variables: make(map[string]StackValue),
 	}
+}
+
+// GetVariable method    returns a StackValue for the variable and a boolean indicating if the variable was found.
+func (s *Stack) GetVariable(name string) (StackValue, bool) {
+	value, ok := s.variables[name]
+
+	return value, ok
+}
+
+// SetVariable method    sets the value of the variable.
+func (s *Stack) SetVariable(name string, value StackValue) {
+	s.variables[name] = value
 }
 
 // IsEmpty method    returns true if the stack is empty.

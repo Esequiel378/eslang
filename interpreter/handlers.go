@@ -58,8 +58,8 @@ var REGISTERED_OPERATIONS = map[core.OperationType]OPHandler{
 	core.OP_PUSH_FLOAT: OPPushFloat,
 	core.OP_PUSH_INT:   OPPushInt,
 	core.OP_PUSH_STR:   OPPushStr,
-	// core.OP_VAR:        OPVar,
-	// core.OP_VAR_WRITE:  OPVarWrite,
+	core.OP_VAR:        OPVar,
+	core.OP_VAR_WRITE:  OPVarWrite,
 }
 
 func OPPushFloat(stack *s.Stack, op *core.Operation) error {
@@ -174,62 +174,37 @@ func OPEqual(stack *s.Stack, _ *core.Operation) error {
 	return nil
 }
 
-// func OPVar(stack *s.Stack, op *core.Operation) error {
-// 	opValue := op.Value()
+func OPVar(stack *s.Stack, op *core.Operation) error {
+	opValue := op.Value()
 
-// 	name := op.Value().Name()
-// 	variable, found := stack.GetVariable(name)
+	name := op.Value().Name()
+	variable, found := stack.GetVariable(name)
 
-// 	if !found {
-// 		variable = NewStackValue().SetName(name).SetType(opValue.Type())
-// 		stack.SetVariable(name, variable)
-// 	}
+	if !found {
+		variable = s.NewStackValueVar(opValue.Name(), nil)
+		stack.SetVariable(name, variable)
+	}
 
-// 	stack.Push(variable)
+	stack.Push(variable)
 
-// 	return nil
-// }
+	return nil
+}
 
-// func OPVarWrite(stack *s.Stack, _ *core.Operation) error {
-// 	lhs, rhs, err := stack.PopTwo()
-// 	if err != nil {
-// 		return err
-// 	}
+func OPVarWrite(stack *s.Stack, _ *core.Operation) error {
+	lhs, _rhs, err := stack.PopTwo()
+	if err != nil {
+		return err
+	}
 
-// 	sValue := NewStackValue().SetName(rhs.Name())
+	rhs, ok := _rhs.(s.StackValueVar)
+	if !ok {
+		return fmt.Errorf("cannot write to non-variable")
+	}
 
-// 	if rhs.Name() == "" && lhs.Name() == "" {
-// 		return fmt.Errorf("`write` operation can only be used with variables")
-// 	}
+	sValue := s.NewStackValueVar(rhs.Name(), lhs)
 
-// 	if rhs.Name() == "" {
-// 		return fmt.Errorf("error writing to variable, invalid parameters order")
-// 	}
+	stack.SetVariable(sValue.Name(), sValue)
+	stack.Push(sValue)
 
-// 	switch rhs.Type() {
-// 	case core.Int:
-// 		if lhs.Type() != core.Int {
-// 			return fmt.Errorf("can not assign an `%s` value to a `%s` variable", lhs.TypeAlias(), rhs.TypeAlias())
-// 		}
-
-// 		sValue.SetInt(lhs.Int())
-// 	case core.Float:
-// 		if lhs.Type() != core.Float {
-// 			return fmt.Errorf("can not assign an `%s` value to a `%s` variable", lhs.TypeAlias(), rhs.TypeAlias())
-// 		}
-
-// 		sValue.SetFloat(lhs.Float())
-// 	case core.String:
-// 		if lhs.Type() != core.String {
-// 			return fmt.Errorf("can not assign an `%s` value to a `%s` variable", lhs.TypeAlias(), rhs.TypeAlias())
-// 		}
-
-// 		sValue.SetStr(lhs.Str())
-// 	}
-
-// 	stack.SetVariable(rhs.Name(), sValue)
-
-// 	stack.Push(sValue)
-
-// 	return nil
-// }
+	return nil
+}
