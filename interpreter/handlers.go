@@ -2,14 +2,13 @@ package interpreter
 
 import (
 	"eslang/core"
-	"eslang/interpreter/stack"
 	s "eslang/interpreter/stack"
 	"fmt"
 )
 
 type (
-	OPHandler      func(*stack.Stack, *core.Operation) error
-	OPBlockHandler func(*stack.Stack, *core.Operation) (*core.Program, error)
+	OPHandler      func(*s.Stack, *core.Operation) error
+	OPBlockHandler func(*s.Stack, *core.Operation) (*core.Program, error)
 )
 
 var REGISTERED_OP_BLOCK = map[core.TokenType]OPBlockHandler{
@@ -18,13 +17,13 @@ var REGISTERED_OP_BLOCK = map[core.TokenType]OPBlockHandler{
 	core.TOKEN_WHILE: OPBlockIf,
 }
 
-func OPBlockDo(_ *stack.Stack, op *core.Operation) (*core.Program, error) {
+func OPBlockDo(_ *s.Stack, op *core.Operation) (*core.Program, error) {
 	program := op.Value().Block().Program()
 
 	return program, nil
 }
 
-func OPBlockIf(stack *stack.Stack, op *core.Operation) (*core.Program, error) {
+func OPBlockIf(stack *s.Stack, op *core.Operation) (*core.Program, error) {
 	sValue, err := stack.Peek()
 	if err != nil {
 		return nil, FormatError(op, err)
@@ -63,28 +62,28 @@ var REGISTERED_OPERATIONS = map[core.OperationType]OPHandler{
 	// core.OP_VAR_WRITE:  OPVarWrite,
 }
 
-func OPPushFloat(stack *stack.Stack, op *core.Operation) error {
+func OPPushFloat(stack *s.Stack, op *core.Operation) error {
 	sValue := s.NewStackValueFloat(op.Value().Float())
 	stack.Push(sValue)
 
 	return nil
 }
 
-func OPPushInt(stack *stack.Stack, op *core.Operation) error {
+func OPPushInt(stack *s.Stack, op *core.Operation) error {
 	sValue := s.NewStackValueInt(op.Value().Int())
 	stack.Push(sValue)
 
 	return nil
 }
 
-func OPPushStr(stack *stack.Stack, op *core.Operation) error {
+func OPPushStr(stack *s.Stack, op *core.Operation) error {
 	sValue := s.NewStackValueString(op.Value().Str())
 	stack.Push(sValue)
 
 	return nil
 }
 
-func OPDump(stack *stack.Stack, _ *core.Operation) error {
+func OPDump(stack *s.Stack, _ *core.Operation) error {
 	sValue, err := stack.Pop()
 	if err != nil {
 		return err
@@ -95,7 +94,7 @@ func OPDump(stack *stack.Stack, _ *core.Operation) error {
 	return nil
 }
 
-func OPDup(stack *stack.Stack, _ *core.Operation) error {
+func OPDup(stack *s.Stack, _ *core.Operation) error {
 	sValue, err := stack.Pop()
 	if err != nil {
 		return err
@@ -107,13 +106,13 @@ func OPDup(stack *stack.Stack, _ *core.Operation) error {
 	return nil
 }
 
-var REGISTERED_MOPS = map[core.TokenType]func(*stack.Stack, *core.Operation) error{
+var REGISTERED_MOPS = map[core.TokenType]func(*s.Stack, *core.Operation) error{
 	core.TOKEN_EQUAL: OPEqual,
 	core.TOKEN_MINUS: OPMinus,
 	core.TOKEN_PLUS:  OPPlus,
 }
 
-func OPMop(stack *stack.Stack, op *core.Operation) error {
+func OPMop(stack *s.Stack, op *core.Operation) error {
 	handler, ok := REGISTERED_MOPS[op.TokenStart().Token()]
 
 	if !ok {
@@ -127,7 +126,7 @@ func OPMop(stack *stack.Stack, op *core.Operation) error {
 	return nil
 }
 
-func OPPlus(stack *stack.Stack, _ *core.Operation) error {
+func OPPlus(stack *s.Stack, _ *core.Operation) error {
 	lhs, rhs, err := stack.PopTwo()
 	if err != nil {
 		return err
@@ -143,7 +142,7 @@ func OPPlus(stack *stack.Stack, _ *core.Operation) error {
 	return nil
 }
 
-func OPMinus(stack *stack.Stack, _ *core.Operation) error {
+func OPMinus(stack *s.Stack, _ *core.Operation) error {
 	lhs, rhs, err := stack.PopTwo()
 	if err != nil {
 		return err
@@ -159,7 +158,7 @@ func OPMinus(stack *stack.Stack, _ *core.Operation) error {
 	return nil
 }
 
-func OPEqual(stack *stack.Stack, _ *core.Operation) error {
+func OPEqual(stack *s.Stack, _ *core.Operation) error {
 	lhs, rhs, err := stack.PopTwo()
 	if err != nil {
 		return err
@@ -175,7 +174,7 @@ func OPEqual(stack *stack.Stack, _ *core.Operation) error {
 	return nil
 }
 
-// func OPVar(stack *stack.Stack, op *core.Operation) error {
+// func OPVar(stack *s.Stack, op *core.Operation) error {
 // 	opValue := op.Value()
 
 // 	name := op.Value().Name()
@@ -191,7 +190,7 @@ func OPEqual(stack *stack.Stack, _ *core.Operation) error {
 // 	return nil
 // }
 
-// func OPVarWrite(stack *stack.Stack, _ *core.Operation) error {
+// func OPVarWrite(stack *s.Stack, _ *core.Operation) error {
 // 	lhs, rhs, err := stack.PopTwo()
 // 	if err != nil {
 // 		return err

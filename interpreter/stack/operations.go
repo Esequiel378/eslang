@@ -63,7 +63,7 @@ func CompareEqualValues(lhs StackValue, rhs StackValue) (StackValue, error) {
 		return nil, fmt.Errorf("can not compare values of different types")
 	}
 
-	// TODO: create a StackValueBoo type
+	// TODO: create a StackValueBool type
 	switch lhs.Type() {
 	case core.Int:
 		if lhs.Value().(int) == rhs.Value().(int) {
