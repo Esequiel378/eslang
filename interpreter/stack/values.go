@@ -106,16 +106,34 @@ func NewStackValueVar(name string, value StackValue) StackValueVar {
 
 // Type method    returns the type of the variable value.
 func (v StackValueVar) Type() core.Type {
+	var zero StackValue
+
+	if v.value == nil {
+		return zero.Type()
+	}
+
 	return v.value.Type()
 }
 
 // Value method    returns the value of the variable.
 func (v StackValueVar) Value() any {
+	var zero StackValue
+
+	if v.value == nil {
+		return zero.Value()
+	}
+
 	return v.value.Value()
 }
 
 // TestTruthy method    returns true if the value of the variable is truthy.
 func (v StackValueVar) TestTruthy() (bool, error) {
+	var zero StackValue
+
+	if v.value == nil {
+		return zero.TestTruthy()
+	}
+
 	return v.value.TestTruthy()
 }
 
