@@ -164,7 +164,7 @@ func TokenPushStr(token, line string, lnum int, program *Program) (bool, error) 
 var ALIASES_TO_TYPE = map[string]Type{
 	"int":   Int,
 	"float": Float,
-	"str":   Str,
+	"str":   String,
 }
 
 func TokenVarType(token, line string, lnum int, program *Program) (bool, error) {

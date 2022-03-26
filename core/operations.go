@@ -114,14 +114,23 @@ const (
 	Float Type = iota
 	Int
 	Nil
-	Str
+	String
 )
 
 var TYPE_ALIASES = map[Type]string{
-	Float: "float",
-	Int:   "int",
-	Nil:   "nil",
-	Str:   "str",
+	Float:  "float",
+	Int:    "int",
+	Nil:    "nil",
+	String: "str",
+}
+
+func (t Type) String() string {
+
+	if typ, ok := TYPE_ALIASES[t]; ok {
+		return typ
+	}
+
+	return "-UNKNOWN-"
 }
 
 type OperationValue struct {
@@ -165,7 +174,7 @@ func (o *OperationValue) Str() string {
 }
 
 func (o *OperationValue) SetStr(str string) *OperationValue {
-	o._type = Str
+	o._type = String
 	o.strValue = str
 
 	return o

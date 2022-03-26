@@ -1,6 +1,6 @@
 module eslang
 
-go 1.17
+go 1.18
 
 require (
 	github.com/TwiN/go-color v1.1.0
