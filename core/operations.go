@@ -21,11 +21,7 @@ var OP_TYPE_ALIASES = map[OPType]string{
 }
 
 func (opType OPType) String() string {
-	if alias, ok := OP_TYPE_ALIASES[opType]; ok {
-		return alias
-	}
-
-	return "-unknown-"
+	return OP_TYPE_ALIASES[opType]
 }
 
 // Position struct    represents the operation position in the source code

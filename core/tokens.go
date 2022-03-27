@@ -36,18 +36,13 @@ var TOKEN_ALIASES = map[TokenType]string{
 }
 
 func (t TokenType) String() string {
-	if alias, ok := TOKEN_ALIASES[t]; ok {
-		return alias
-	}
-
-	return "-unknown-"
+	return TOKEN_ALIASES[t]
 }
 
 var (
-	IS_INT            = regexp.MustCompile(`^\d+$`)
-	IS_FLOAT          = regexp.MustCompile(`^\d+\.\d+$`)
-	IS_STR            = regexp.MustCompile(`^".+"$`)
-	IS_VALID_VARIABLE = regexp.MustCompile(`^[a-zA-Z]+$`)
+	IS_INT   = regexp.MustCompile(`^\d+$`)
+	IS_FLOAT = regexp.MustCompile(`^\d+\.\d+$`)
+	IS_STR   = regexp.MustCompile(`^".+"$`)
 )
 
 func TokenPushInt(token string, lnum, cnum int, program *Program) (bool, error) {
