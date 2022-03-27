@@ -8,8 +8,9 @@ import (
 )
 
 type (
+	// TokenType int    is the type of a token.
 	TokenType int
-	// TokenHandler type    function definition to implement new token handlers
+	// TokenHandler func    function definition to implement new token handlers
 	TokenHandler func(token string, lnum, column int, program *ops.Program) (bool, error)
 )
 
@@ -22,6 +23,7 @@ const (
 	TOKEN_TYPE_COUNT
 )
 
+// REGISTERED_TOKENS map    is a map of token types to their respective token handlers
 var REGISTERED_TOKENS = map[TokenType]TokenHandler{
 	TOKEN_DUMP:       TokenDump,
 	TOKEN_PUSH_FLOAT: TokenPushFloat,
@@ -29,6 +31,7 @@ var REGISTERED_TOKENS = map[TokenType]TokenHandler{
 	TOKEN_PUSH_STR:   TokenPushStr,
 }
 
+// TOKEN_ALIASES map    is a map of token types to their respective string representations
 var TOKEN_ALIASES = map[TokenType]string{
 	TOKEN_DUMP:       "DUMP",
 	TOKEN_PUSH_FLOAT: "PUSH_FLOAT",
@@ -36,6 +39,7 @@ var TOKEN_ALIASES = map[TokenType]string{
 	TOKEN_PUSH_STR:   "PUSH_STR",
 }
 
+// String method    returns the string representation of a token type
 func (t TokenType) String() string {
 	return TOKEN_ALIASES[t]
 }
@@ -46,6 +50,7 @@ var (
 	IS_STR   = regexp.MustCompile(`^".+"$`)
 )
 
+// TokenPushInt function    pushes an integer onto the stack
 func TokenPushInt(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if !IS_INT.MatchString(token) {
 		return false, nil
@@ -64,6 +69,7 @@ func TokenPushInt(token string, lnum, cnum int, program *ops.Program) (bool, err
 	return true, nil
 }
 
+// TokenPushFloat function    pushes a float onto the stack
 func TokenPushFloat(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if !IS_FLOAT.MatchString(token) {
 		return false, nil
@@ -82,6 +88,7 @@ func TokenPushFloat(token string, lnum, cnum int, program *ops.Program) (bool, e
 	return true, nil
 }
 
+// TokenPushStr function    pushes a string onto the stack
 func TokenPushStr(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if !IS_STR.MatchString(token) {
 		return false, nil
@@ -96,6 +103,7 @@ func TokenPushStr(token string, lnum, cnum int, program *ops.Program) (bool, err
 	return true, nil
 }
 
+// TokenDump function    dumps the stack
 func TokenDump(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if token != "dump" {
 		return false, nil

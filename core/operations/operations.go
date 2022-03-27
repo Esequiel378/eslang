@@ -1,5 +1,6 @@
 package operations
 
+// OPType int    returns the type of the operation
 type OPType int
 
 const (
@@ -13,6 +14,7 @@ const (
 	OP_TYPE_COUNT
 )
 
+// OP_TYPE_ALIASES map   is a map of OPType to their respective string representations
 var OP_TYPE_ALIASES = map[OPType]string{
 	OP_BLOCK:         "OP_BLOCK",
 	OP_BLOCK_IF_ELSE: "OP_IF_ELSE",
@@ -22,6 +24,7 @@ var OP_TYPE_ALIASES = map[OPType]string{
 	OP_PUSH_STRING:   "OP_PUSH_STRING",
 }
 
+// String method    returns the string representation of the operation
 func (opType OPType) String() string {
 	return OP_TYPE_ALIASES[opType]
 }
