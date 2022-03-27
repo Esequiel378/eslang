@@ -26,16 +26,12 @@ func (t Type) String() string {
 	return "-unknown-"
 }
 
-// TODO: add tests to check the amount of RESERVED_WORDS
 var RESERVED_WORDS = map[string]bool{
-	"do":    true,
 	"dump":  true,
-	"dup":   true,
 	"else":  true,
 	"end":   true,
 	"float": true,
 	"if":    true,
 	"int":   true,
 	"str":   true,
-	"while": true,
 }

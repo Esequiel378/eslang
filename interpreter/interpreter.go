@@ -2,6 +2,7 @@ package interpreter
 
 import (
 	ops "eslang/core/operations"
+	"eslang/interpreter/handlers"
 	"eslang/interpreter/stack"
 	"fmt"
 )
@@ -10,7 +11,7 @@ func executeProgram(program *ops.Program, stack *stack.Stack) error {
 	for _, op := range program.Operations() {
 		switch op.Type() {
 		default:
-			handler, ok := REGISTERED_OPERATIONS[op.Type()]
+			handler, ok := handlers.REGISTERED_OPERATIONS[op.Type()]
 
 			if !ok {
 				return FormatError(
