@@ -3,31 +3,19 @@ package core
 type OPType int
 
 const (
-	OP_BLOCK OPType = iota
-	OP_DUMP
-	OP_DUP
-	OP_MOP
+	OP_DUMP OPType = iota
 	OP_PUSH_FLOAT
 	OP_PUSH_INT
 	OP_PUSH_STRING
-	OP_VAR
-	OP_VAR_WRITE
-	OP_WHILE
 
 	OP_TYPE_COUNT
 )
 
 var OP_TYPE_ALIASES = map[OPType]string{
-	OP_BLOCK:       "OP_BLOCK",
 	OP_DUMP:        "OP_DUMP",
-	OP_DUP:         "OP_DUP",
-	OP_MOP:         "OP_MOP",
 	OP_PUSH_FLOAT:  "OP_PUSH_FLOAT",
 	OP_PUSH_INT:    "OP_PUSH_INT",
 	OP_PUSH_STRING: "OP_PUSH_STRING",
-	OP_VAR:         "OP_VAR",
-	OP_VAR_WRITE:   "OP_VAR_WRITE",
-	OP_WHILE:       "OP_WHILE",
 }
 
 func (opType OPType) String() string {
@@ -36,45 +24,6 @@ func (opType OPType) String() string {
 	}
 
 	return "-unknown-"
-}
-
-type Type int
-
-const (
-	Float Type = iota
-	Int
-	Nil
-	String
-
-	TYPE_COUNT
-)
-
-var TYPE_ALIASES = map[Type]string{
-	Float:  "float",
-	Int:    "int",
-	Nil:    "nil",
-	String: "str",
-}
-
-func (t Type) String() string {
-	if alias, ok := TYPE_ALIASES[t]; ok {
-		return alias
-	}
-
-	return "-unknown-"
-}
-
-var RESERVED_WORDS = map[string]bool{
-	"do":    true,
-	"dump":  true,
-	"dup":   true,
-	"else":  true,
-	"end":   true,
-	"float": true,
-	"if":    true,
-	"int":   true,
-	"str":   true,
-	"while": true,
 }
 
 // Position struct    represents the operation position in the source code
