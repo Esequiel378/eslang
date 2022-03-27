@@ -18,7 +18,7 @@ var REGISTERED_OPERATIONS = map[core.OPType]OPHandler{
 }
 
 func OPPushFloat(stack *s.Stack, _op core.Operation) error {
-	op, ok := _op.(core.OperationPushFloat)
+	op, ok := _op.(core.OPPushFloat)
 
 	if !ok {
 		panic("OPPushFloat: invalid operation type")
@@ -31,7 +31,7 @@ func OPPushFloat(stack *s.Stack, _op core.Operation) error {
 }
 
 func OPPushInt(stack *s.Stack, _op core.Operation) error {
-	op, ok := _op.(core.OperationPushInt)
+	op, ok := _op.(core.OPPushInt)
 
 	if !ok {
 		panic("OPPushInt: invalid operation type")
@@ -44,7 +44,7 @@ func OPPushInt(stack *s.Stack, _op core.Operation) error {
 }
 
 func OPPushStr(stack *s.Stack, _op core.Operation) error {
-	op, ok := _op.(core.OperationPushString)
+	op, ok := _op.(core.OPPushString)
 
 	if !ok {
 		panic("OPPushStr: invalid operation type")

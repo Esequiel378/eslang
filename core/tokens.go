@@ -61,7 +61,7 @@ func TokenPushInt(token string, lnum, cnum int, program *Program) (bool, error) 
 	}
 
 	position := NewPosition(lnum, cnum, "")
-	op := NewOperationInt(value, position)
+	op := NewOPPushInt(value, position)
 
 	program.Push(op)
 
@@ -79,7 +79,7 @@ func TokenPushFloat(token string, lnum, cnum int, program *Program) (bool, error
 	}
 
 	position := NewPosition(lnum, cnum, "")
-	op := NewOperationFloat(value, position)
+	op := NewOPPushFloat(value, position)
 
 	program.Push(op)
 
@@ -93,7 +93,7 @@ func TokenPushStr(token string, lnum, cnum int, program *Program) (bool, error) 
 
 	value := token[1 : len(token)-1]
 	position := NewPosition(lnum, cnum, "")
-	op := NewOperationString(value, position)
+	op := NewOPPushString(value, position)
 
 	program.Push(op)
 
@@ -106,7 +106,7 @@ func TokenDump(token string, lnum, cnum int, program *Program) (bool, error) {
 	}
 
 	position := NewPosition(lnum, cnum, "")
-	op := NewOperationDump(position)
+	op := NewOPDump(position)
 
 	program.Push(op)
 

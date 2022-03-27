@@ -55,7 +55,7 @@ func LoadProgramFromFile(program *Program, filename string) error {
 			if !found {
 				// TODO: improve error mesage using colors and stuff
 				return fmt.Errorf(
-					"Token error in %d:%d - '%s' is not a valid token",
+					"token error in %d:%d - '%s' is not a valid token",
 					lnum+1, cnum+1,
 					token,
 				)
