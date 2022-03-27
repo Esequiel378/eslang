@@ -56,7 +56,7 @@ func (op *OPBlockIfElse) CloseLastBlock() {
 
 	lastOP := op.LastOP()
 
-	if lastOP.Type() == OP_BLOCK {
+	if lastOP.Type() == OP_PROGRAM {
 		block := lastOP.(OperationLinkedBlocks)
 		block.CloseLastBlock()
 		return

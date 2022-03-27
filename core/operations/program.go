@@ -23,7 +23,7 @@ func (op *Program) Position() Position {
 
 // Type method    returns the type of the operation
 func (op *Program) Type() OPType {
-	return OP_BLOCK
+	return OP_PROGRAM
 }
 
 // Operations method    returns the operations of the program

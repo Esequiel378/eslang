@@ -4,7 +4,7 @@ package operations
 type OPType int
 
 const (
-	OP_BLOCK OPType = iota
+	OP_PROGRAM OPType = iota
 	OP_BLOCK_IF_ELSE
 	OP_DUMP
 	OP_PUSH_FLOAT
@@ -16,7 +16,7 @@ const (
 
 // OP_TYPE_ALIASES map   is a map of OPType to their respective string representations
 var OP_TYPE_ALIASES = map[OPType]string{
-	OP_BLOCK:         "OP_BLOCK",
+	OP_PROGRAM:       "OP_PROGRAM",
 	OP_BLOCK_IF_ELSE: "OP_IF_ELSE",
 	OP_DUMP:          "OP_DUMP",
 	OP_PUSH_FLOAT:    "OP_PUSH_FLOAT",
