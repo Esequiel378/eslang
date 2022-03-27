@@ -1,28 +1,47 @@
 package core
 
-// Program struct    A program is a collection of operations
+// Program struct    represents a program block (entry point of the code)
 type Program struct {
+	position   Position
 	operations []Operation
 }
 
-// NewProgram function    Creates a new program
-func NewProgram() *Program {
+// NewProgram function    creates a new program block
+func NewProgram(filename string) *Program {
+	position := NewPosition(0, 0, filename)
+
 	return &Program{
-		operations: []Operation{},
+		position:   position,
+		operations: make([]Operation, 0),
 	}
 }
 
-// Operations method    Returns the operations of the program
-func (p *Program) Operations() []Operation {
-	return p.operations
+// Position method    returns the position of the operation
+func (op *Program) Position() Position {
+	return op.position
 }
 
-// IsEmpty method    Returns true if the program is empty
-func (p *Program) IsEmpty() bool {
-	return len(p.operations) == 0
+// Type method    returns the type of the operation
+func (op *Program) Type() OPType {
+	return OP_BLOCK
 }
 
-// Push method    Adds an operation to the program
-func (p *Program) Push(op Operation) {
-	p.operations = append(p.operations, op)
+// Operations method    returns the operations of the program
+func (op *Program) Operations() []Operation {
+	return op.operations
+}
+
+// IsEmpty method    returns true if the operation is empty
+func (op *Program) IsEmpty() bool {
+	return len(op.operations) == 0
+}
+
+// Push method    pushes an operation to the program
+func (op *Program) Push(operation Operation) {
+	op.operations = append(op.operations, operation)
+}
+
+// LastOP method    returns the last operation of the program
+func (op *Program) LastOP() Operation {
+	return op.operations[len(op.operations)-1]
 }
