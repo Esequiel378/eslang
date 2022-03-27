@@ -2,6 +2,7 @@ package core
 
 import (
 	ops "eslang/core/operations"
+	tkns "eslang/core/tokens"
 	"fmt"
 	"os"
 	"strings"
@@ -39,7 +40,7 @@ func LoadProgramFromFile(program *ops.Program, filename string) error {
 			found := false
 			cnum := strings.Index(line, token)
 
-			for _, tokenHandler := range REGISTERED_TOKENS {
+			for _, tokenHandler := range tkns.REGISTERED_TOKENS {
 				ok, err := tokenHandler(token, lnum, cnum, program)
 				if err != nil {
 					return err
