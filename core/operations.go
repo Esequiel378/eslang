@@ -17,7 +17,7 @@ const (
 	OP_TYPE_COUNT
 )
 
-var OPERATION_TYPE_ALIASES = map[OPType]string{
+var OP_TYPE_ALIASES = map[OPType]string{
 	OP_BLOCK:       "OP_BLOCK",
 	OP_DUMP:        "OP_DUMP",
 	OP_DUP:         "OP_DUP",
@@ -31,11 +31,7 @@ var OPERATION_TYPE_ALIASES = map[OPType]string{
 }
 
 func (opType OPType) String() string {
-	if int(OP_TYPE_COUNT)-1 != len(OPERATION_TYPE_ALIASES) {
-		panic("OPERATION_TYPE_ALIASES exaust handling")
-	}
-
-	if alias, ok := OPERATION_TYPE_ALIASES[opType]; ok {
+	if alias, ok := OP_TYPE_ALIASES[opType]; ok {
 		return alias
 	}
 
@@ -61,10 +57,6 @@ var TYPE_ALIASES = map[Type]string{
 }
 
 func (t Type) String() string {
-	if int(TYPE_COUNT)-1 != len(TYPE_ALIASES) {
-		panic("TYPE_ALIASES exaust handling")
-	}
-
 	if alias, ok := TYPE_ALIASES[t]; ok {
 		return alias
 	}

@@ -13,24 +13,10 @@ type (
 )
 
 const (
-	TOKEN_DO TokenType = iota
-	TOKEN_DUMP
-	TOKEN_DUP
-	TOKEN_ELSE
-	TOKEN_END
-	TOKEN_EQUAL
-	TOKEN_FLOAT
-	TOKEN_IF
-	TOKEN_MINUS
-	TOKEN_PLUS
+	TOKEN_DUMP TokenType = iota
 	TOKEN_PUSH_FLOAT
 	TOKEN_PUSH_INT
 	TOKEN_PUSH_STR
-	TOKEN_VAR
-	TOKEN_VAR_READ
-	TOKEN_VAR_TYPE
-	TOKEN_VAR_WRITE
-	TOKEN_WHILE
 
 	TOKEN_TYPE_COUNT
 )
@@ -43,29 +29,13 @@ var REGISTERED_TOKENS = map[TokenType]TokenHandler{
 }
 
 var TOKEN_ALIASES = map[TokenType]string{
-	TOKEN_DO:         "DO",
 	TOKEN_DUMP:       "DUMP",
-	TOKEN_DUP:        "DUP",
-	TOKEN_ELSE:       "ELSE",
-	TOKEN_END:        "END",
-	TOKEN_EQUAL:      "EQUAL",
-	TOKEN_IF:         "IF",
-	TOKEN_MINUS:      "MINUS",
-	TOKEN_PLUS:       "PLUS",
 	TOKEN_PUSH_FLOAT: "PUSH_FLOAT",
 	TOKEN_PUSH_INT:   "PUSH_INT",
 	TOKEN_PUSH_STR:   "PUSH_STR",
-	TOKEN_VAR:        "VAR",
-	TOKEN_VAR_READ:   "VAR_READ",
-	TOKEN_VAR_WRITE:  "VAR_WRITE",
-	TOKEN_WHILE:      "WHILE",
 }
 
 func (t TokenType) String() string {
-	if int(TOKEN_TYPE_COUNT)-1 != len(TOKEN_ALIASES) {
-		panic("TOKEN_TYPE_COUNT exaust handling")
-	}
-
 	if alias, ok := TOKEN_ALIASES[t]; ok {
 		return alias
 	}
