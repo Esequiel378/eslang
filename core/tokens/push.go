@@ -13,7 +13,7 @@ var (
 	IS_STR   = regexp.MustCompile(`^".+"$`)
 )
 
-// TokenPushInt function  Óòß  pushes an integer onto the stack
+// TokenPushInt function  
 func TokenPushInt(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if !IS_INT.MatchString(token) {
 		return false, nil
@@ -32,7 +32,7 @@ func TokenPushInt(token string, lnum, cnum int, program *ops.Program) (bool, err
 	return true, nil
 }
 
-// TokenPushFloat function  Óòß  pushes a float onto the stack
+// TokenPushFloat function    pushes a float onto the stack
 func TokenPushFloat(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if !IS_FLOAT.MatchString(token) {
 		return false, nil
@@ -51,7 +51,7 @@ func TokenPushFloat(token string, lnum, cnum int, program *ops.Program) (bool, e
 	return true, nil
 }
 
-// TokenPushStr function  Óòß  pushes a string onto the stack
+// TokenPushStr function    pushes a string onto the stack
 func TokenPushStr(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if !IS_STR.MatchString(token) {
 		return false, nil

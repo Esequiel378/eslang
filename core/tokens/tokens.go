@@ -12,7 +12,8 @@ type (
 )
 
 const (
-	TOKEN_DUMP TokenType = iota
+	TOKEN_BLOCK_IF_ELSE TokenType = iota
+	TOKEN_DUMP
 	TOKEN_PUSH_FLOAT
 	TOKEN_PUSH_INT
 	TOKEN_PUSH_STR
@@ -22,18 +23,20 @@ const (
 
 // REGISTERED_TOKENS map    is a map of token types to their respective token handlers
 var REGISTERED_TOKENS = map[TokenType]TokenHandler{
-	TOKEN_DUMP:       TokenDump,
-	TOKEN_PUSH_FLOAT: TokenPushFloat,
-	TOKEN_PUSH_INT:   TokenPushInt,
-	TOKEN_PUSH_STR:   TokenPushStr,
+	TOKEN_BLOCK_IF_ELSE: TokenBlockIfElse,
+	TOKEN_DUMP:          TokenDump,
+	TOKEN_PUSH_FLOAT:    TokenPushFloat,
+	TOKEN_PUSH_INT:      TokenPushInt,
+	TOKEN_PUSH_STR:      TokenPushStr,
 }
 
 // TOKEN_ALIASES map    is a map of token types to their respective string representations
 var TOKEN_ALIASES = map[TokenType]string{
-	TOKEN_DUMP:       "DUMP",
-	TOKEN_PUSH_FLOAT: "PUSH_FLOAT",
-	TOKEN_PUSH_INT:   "PUSH_INT",
-	TOKEN_PUSH_STR:   "PUSH_STR",
+	TOKEN_BLOCK_IF_ELSE: "BLOCK_IF_ELSE",
+	TOKEN_DUMP:          "DUMP",
+	TOKEN_PUSH_FLOAT:    "PUSH_FLOAT",
+	TOKEN_PUSH_INT:      "PUSH_INT",
+	TOKEN_PUSH_STR:      "PUSH_STR",
 }
 
 // String method    returns the string representation of a token type
