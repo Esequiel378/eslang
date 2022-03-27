@@ -7,83 +7,56 @@ import (
 )
 
 type (
-	OPHandler      func(*s.Stack, *core.Operation) error
-	OPBlockHandler func(*s.Stack, *core.Operation) (*core.Program, error)
+	OPHandler func(*s.Stack, core.Operation) error
 )
 
-var REGISTERED_OP_BLOCK = map[core.TokenType]OPBlockHandler{
-	core.TOKEN_DO:    OPBlockDo,
-	core.TOKEN_IF:    OPBlockIf,
-	core.TOKEN_WHILE: OPBlockIf,
+var REGISTERED_OPERATIONS = map[core.OPType]OPHandler{
+	core.OP_DUMP:        OPDump,
+	core.OP_PUSH_FLOAT:  OPPushFloat,
+	core.OP_PUSH_INT:    OPPushInt,
+	core.OP_PUSH_STRING: OPPushStr,
 }
 
-func OPBlockDo(_ *s.Stack, op *core.Operation) (*core.Program, error) {
-	program := op.Value().Block().Program()
+func OPPushFloat(stack *s.Stack, _op core.Operation) error {
+	op, ok := _op.(core.OperationPushFloat)
 
-	return program, nil
-}
-
-func OPBlockIf(stack *s.Stack, op *core.Operation) (*core.Program, error) {
-	sValue, err := stack.Peek()
-	if err != nil {
-		return nil, FormatError(op, err)
+	if !ok {
+		panic("OPPushFloat: invalid operation type")
 	}
 
-	truthy, err := sValue.TestTruthy()
-	if err != nil {
-		return nil, FormatError(op, err)
-	}
-
-	block := op.Value().Block()
-
-	// If block
-	if truthy {
-		program := block.Program()
-		return program, nil
-	}
-
-	// Else block
-	if block.HasNext() {
-		return block.Next().Program(), nil
-	}
-
-	// End block
-	return nil, nil
-}
-
-var REGISTERED_OPERATIONS = map[core.OperationType]OPHandler{
-	core.OP_DUMP:       OPDump,
-	core.OP_DUP:        OPDup,
-	core.OP_MOP:        OPMop,
-	core.OP_PUSH_FLOAT: OPPushFloat,
-	core.OP_PUSH_INT:   OPPushInt,
-	core.OP_PUSH_STR:   OPPushStr,
-	core.OP_VAR:        OPVar,
-	core.OP_VAR_WRITE:  OPVarWrite,
-}
-
-func OPPushFloat(stack *s.Stack, op *core.Operation) error {
-	sValue := s.NewStackValueFloat(op.Value().Float())
+	sValue := s.NewStackValueFloat(op.Value())
 	stack.Push(sValue)
 
 	return nil
 }
 
-func OPPushInt(stack *s.Stack, op *core.Operation) error {
-	sValue := s.NewStackValueInt(op.Value().Int())
+func OPPushInt(stack *s.Stack, _op core.Operation) error {
+	op, ok := _op.(core.OperationPushInt)
+
+	if !ok {
+		panic("OPPushInt: invalid operation type")
+	}
+
+	sValue := s.NewStackValueInt(op.Value())
 	stack.Push(sValue)
 
 	return nil
 }
 
-func OPPushStr(stack *s.Stack, op *core.Operation) error {
-	sValue := s.NewStackValueString(op.Value().Str())
+func OPPushStr(stack *s.Stack, _op core.Operation) error {
+	op, ok := _op.(core.OperationPushString)
+
+	if !ok {
+		panic("OPPushStr: invalid operation type")
+	}
+
+	sValue := s.NewStackValueString(op.Value())
 	stack.Push(sValue)
 
 	return nil
 }
 
-func OPDump(stack *s.Stack, _ *core.Operation) error {
+func OPDump(stack *s.Stack, _ core.Operation) error {
 	sValue, err := stack.Pop()
 	if err != nil {
 		return err
@@ -101,109 +74,6 @@ func OPDup(stack *s.Stack, _ *core.Operation) error {
 	}
 
 	stack.Push(sValue)
-	stack.Push(sValue)
-
-	return nil
-}
-
-var REGISTERED_MOPS = map[core.TokenType]func(*s.Stack, *core.Operation) error{
-	core.TOKEN_EQUAL: OPEqual,
-	core.TOKEN_MINUS: OPMinus,
-	core.TOKEN_PLUS:  OPPlus,
-}
-
-func OPMop(stack *s.Stack, op *core.Operation) error {
-	handler, ok := REGISTERED_MOPS[op.TokenStart().Token()]
-
-	if !ok {
-		return fmt.Errorf("exaustive MOPs handiling. %s not found", op.TokenEnd().TokenAlias())
-	}
-
-	if err := handler(stack, op); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func OPPlus(stack *s.Stack, _ *core.Operation) error {
-	lhs, rhs, err := stack.PopTwo()
-	if err != nil {
-		return err
-	}
-
-	sValue, err := s.AddValues(lhs, rhs)
-	if err != nil {
-		return err
-	}
-
-	stack.Push(sValue)
-
-	return nil
-}
-
-func OPMinus(stack *s.Stack, _ *core.Operation) error {
-	lhs, rhs, err := stack.PopTwo()
-	if err != nil {
-		return err
-	}
-
-	sValue, err := s.SubtractValues(lhs, rhs)
-	if err != nil {
-		return err
-	}
-
-	stack.Push(sValue)
-
-	return nil
-}
-
-func OPEqual(stack *s.Stack, _ *core.Operation) error {
-	lhs, rhs, err := stack.PopTwo()
-	if err != nil {
-		return err
-	}
-
-	sValue, err := s.CompareEqualValues(lhs, rhs)
-	if err != nil {
-		return err
-	}
-
-	stack.Push(sValue)
-
-	return nil
-}
-
-func OPVar(stack *s.Stack, op *core.Operation) error {
-	opValue := op.Value()
-
-	name := op.Value().Name()
-	variable, found := stack.GetVariable(name)
-
-	if !found {
-		variable = s.NewStackValueVar(opValue.Name(), nil)
-		stack.SetVariable(name, variable)
-	}
-
-	stack.Push(variable)
-
-	return nil
-}
-
-func OPVarWrite(stack *s.Stack, _ *core.Operation) error {
-	lhs, _rhs, err := stack.PopTwo()
-	if err != nil {
-		return err
-	}
-
-	rhs, ok := _rhs.(s.StackValueVar)
-	if !ok {
-		return fmt.Errorf("cannot write to non-variable")
-	}
-
-	sValue := s.NewStackValueVar(rhs.Name(), lhs)
-
-	stack.SetVariable(sValue.Name(), sValue)
 	stack.Push(sValue)
 
 	return nil

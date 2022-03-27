@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
-	"strings"
 )
 
 type (
 	TokenType int
 	// TokenHandler type    function definition to implement new token handlers
-	TokenHandler func(token, line string, lnum int, program *Program) (bool, error)
+	TokenHandler func(token string, lnum, column int, program *Program) (bool, error)
 )
 
 const (
@@ -32,25 +31,15 @@ const (
 	TOKEN_VAR_TYPE
 	TOKEN_VAR_WRITE
 	TOKEN_WHILE
+
+	TOKEN_TYPE_COUNT
 )
 
 var REGISTERED_TOKENS = map[TokenType]TokenHandler{
-	TOKEN_DO:         TokenDo,
 	TOKEN_DUMP:       TokenDump,
-	TOKEN_DUP:        TokenDup,
-	TOKEN_ELSE:       TokenElse,
-	TOKEN_END:        TokenEnd,
-	TOKEN_EQUAL:      TokenEqual,
-	TOKEN_IF:         TokenIf,
-	TOKEN_MINUS:      TokenMinus,
-	TOKEN_PLUS:       TokenPlus,
 	TOKEN_PUSH_FLOAT: TokenPushFloat,
 	TOKEN_PUSH_INT:   TokenPushInt,
 	TOKEN_PUSH_STR:   TokenPushStr,
-	TOKEN_VAR:        TokenVar,
-	TOKEN_VAR_TYPE:   TokenVarType,
-	TOKEN_VAR_WRITE:  TokenVarWrite,
-	TOKEN_WHILE:      TokenWhile,
 }
 
 var TOKEN_ALIASES = map[TokenType]string{
@@ -72,6 +61,18 @@ var TOKEN_ALIASES = map[TokenType]string{
 	TOKEN_WHILE:      "WHILE",
 }
 
+func (t TokenType) String() string {
+	if int(TOKEN_TYPE_COUNT)-1 != len(TOKEN_ALIASES) {
+		panic("TOKEN_TYPE_COUNT exaust handling")
+	}
+
+	if alias, ok := TOKEN_ALIASES[t]; ok {
+		return alias
+	}
+
+	return "-unknown-"
+}
+
 var (
 	IS_INT            = regexp.MustCompile(`^\d+$`)
 	IS_FLOAT          = regexp.MustCompile(`^\d+\.\d+$`)
@@ -79,30 +80,7 @@ var (
 	IS_VALID_VARIABLE = regexp.MustCompile(`^[a-zA-Z]+$`)
 )
 
-type Token struct {
-	line  int
-	col   int
-	token TokenType
-}
-
-func (t *Token) Token() TokenType {
-	return t.token
-}
-
-func (t *Token) TokenAlias() string {
-	return TOKEN_ALIASES[t.token]
-}
-
-func (t *Token) Position() (int, int) {
-	return t.line, t.col
-}
-
-func (t *Token) SetPostition(line, col int) {
-	t.line = line
-	t.col = col
-}
-
-func TokenPushInt(token, line string, lnum int, program *Program) (bool, error) {
+func TokenPushInt(token string, lnum, cnum int, program *Program) (bool, error) {
 	if !IS_INT.MatchString(token) {
 		return false, nil
 	}
@@ -112,18 +90,15 @@ func TokenPushInt(token, line string, lnum int, program *Program) (bool, error) 
 		return true, fmt.Errorf("error parsing token '%s' to int: %s", token, err.Error())
 	}
 
-	opValue := NewOperationValue().SetInt(value)
-	op := NewOperation(OP_PUSH_INT, opValue, TOKEN_PUSH_INT, TOKEN_PUSH_INT)
-
-	cnum := strings.Index(line, token)
-	op.TokenStart().SetPostition(lnum+1, cnum+1)
+	position := NewPosition(lnum, cnum, "")
+	op := NewOperationInt(value, position)
 
 	program.Push(op)
 
 	return true, nil
 }
 
-func TokenPushFloat(token, line string, lnum int, program *Program) (bool, error) {
+func TokenPushFloat(token string, lnum, cnum int, program *Program) (bool, error) {
 	if !IS_FLOAT.MatchString(token) {
 		return false, nil
 	}
@@ -133,268 +108,37 @@ func TokenPushFloat(token, line string, lnum int, program *Program) (bool, error
 		return true, fmt.Errorf("error parsing token '%s' to float: %s", token, err.Error())
 	}
 
-	opValue := NewOperationValue().SetFloat(value)
-	op := NewOperation(OP_PUSH_FLOAT, opValue, TOKEN_PUSH_FLOAT, TOKEN_PUSH_FLOAT)
-
-	cnum := strings.Index(line, token)
-	op.TokenStart().SetPostition(lnum+1, cnum+1)
+	position := NewPosition(lnum, cnum, "")
+	op := NewOperationFloat(value, position)
 
 	program.Push(op)
 
 	return true, nil
 }
 
-func TokenPushStr(token, line string, lnum int, program *Program) (bool, error) {
+func TokenPushStr(token string, lnum, cnum int, program *Program) (bool, error) {
 	if !IS_STR.MatchString(token) {
 		return false, nil
 	}
 
-	str := token[1 : len(token)-1]
-	opValue := NewOperationValue().SetStr(str)
-	op := NewOperation(OP_PUSH_STR, opValue, TOKEN_PUSH_STR, TOKEN_PUSH_STR)
-
-	cnum := strings.Index(line, token)
-	op.TokenStart().SetPostition(lnum+1, cnum+1)
+	value := token[1 : len(token)-1]
+	position := NewPosition(lnum, cnum, "")
+	op := NewOperationString(value, position)
 
 	program.Push(op)
 
 	return true, nil
 }
 
-var ALIASES_TO_TYPE = map[string]Type{
-	"int":   Int,
-	"float": Float,
-	"str":   String,
-}
-
-func TokenVarType(token, line string, lnum int, program *Program) (bool, error) {
-	t, ok := ALIASES_TO_TYPE[token]
-
-	if !ok {
-		return false, nil
-	}
-
-	lastOP := program.Last()
-
-	if lastOP == nil || lastOP.Type() != OP_VAR {
-		cnum := strings.Index(line, token)
-		return true, fmt.Errorf("error: using type `%s` out of context at line %d:%d", token, lnum+1, cnum+1)
-	}
-
-	lastOP.Value().SetType(t)
-
-	return true, nil
-}
-
-func TokenPlus(token, line string, lnum int, program *Program) (bool, error) {
-	if token != "+" {
-		return false, nil
-	}
-
-	opValue := NewOperationValue()
-	op := NewOperation(OP_MOP, opValue, TOKEN_PLUS, TOKEN_PLUS)
-
-	cnum := strings.Index(line, token)
-	op.TokenStart().SetPostition(lnum+1, cnum+1)
-
-	program.Push(op)
-
-	return true, nil
-}
-
-func TokenVar(token, line string, lnum int, program *Program) (bool, error) {
-	if !IS_VALID_VARIABLE.MatchString(token) || RESERVED_WORDS[token] {
-		return false, nil
-	}
-
-	opValue := NewOperationValue().SetName(token)
-	op := NewOperation(OP_VAR, opValue, TOKEN_VAR, TOKEN_VAR)
-
-	cnum := strings.Index(line, token)
-	op.TokenStart().SetPostition(lnum+1, cnum+1)
-
-	varOp, found := program.GetVariable(token)
-
-	if found {
-		t := varOp.Value().Type()
-		op.Value().SetType(t)
-	} else {
-		program.SetVariable(token, op)
-	}
-
-	program.Push(op)
-
-	return true, nil
-}
-
-func TokenVarWrite(token, line string, lnum int, program *Program) (bool, error) {
-	if token != "." {
-		return false, nil
-	}
-
-	opValue := NewOperationValue()
-	op := NewOperation(OP_VAR_WRITE, opValue, TOKEN_VAR_WRITE, TOKEN_VAR_WRITE)
-
-	cnum := strings.Index(line, token)
-	op.TokenStart().SetPostition(lnum+1, cnum+1)
-
-	program.Push(op)
-
-	return true, nil
-}
-
-func TokenWhile(token, line string, lnum int, program *Program) (bool, error) {
-	if token != "while" {
-		return false, nil
-	}
-
-	cnum := strings.Index(line, token)
-
-	block := NewBlock(TOKEN_WHILE, TOKEN_END)
-	opValue := NewOperationValue().SetBlock(block)
-	opValue.Block().TokenStart().SetPostition(lnum+1, cnum+1)
-
-	op := NewOperation(OP_BLOCK, opValue, TOKEN_WHILE, TOKEN_END)
-	op.TokenStart().SetPostition(lnum+1, cnum+1)
-
-	program.Push(op)
-
-	return true, nil
-}
-
-func TokenMinus(token, line string, lnum int, program *Program) (bool, error) {
-	if token != "-" {
-		return false, nil
-	}
-
-	opValue := NewOperationValue()
-	op := NewOperation(OP_MOP, opValue, TOKEN_MINUS, TOKEN_MINUS)
-
-	cnum := strings.Index(line, token)
-	op.TokenStart().SetPostition(lnum+1, cnum+1)
-
-	program.Push(op)
-
-	return true, nil
-}
-
-func TokenEqual(token, line string, lnum int, program *Program) (bool, error) {
-	if token != "=" {
-		return false, nil
-	}
-
-	opValue := NewOperationValue()
-	op := NewOperation(OP_MOP, opValue, TOKEN_EQUAL, TOKEN_EQUAL)
-
-	cnum := strings.Index(line, token)
-	op.TokenStart().SetPostition(lnum+1, cnum+1)
-
-	program.Push(op)
-
-	return true, nil
-}
-
-func TokenDump(token, line string, lnum int, program *Program) (bool, error) {
+func TokenDump(token string, lnum, cnum int, program *Program) (bool, error) {
 	if token != "dump" {
 		return false, nil
 	}
 
-	opValue := NewOperationValue()
-	op := NewOperation(OP_DUMP, opValue, TOKEN_DUMP, TOKEN_DUMP)
-
-	cnum := strings.Index(line, token)
-	op.TokenStart().SetPostition(lnum+1, cnum+1)
+	position := NewPosition(lnum, cnum, "")
+	op := NewOperationDump(position)
 
 	program.Push(op)
-
-	return true, nil
-}
-
-func TokenDup(token, line string, lnum int, program *Program) (bool, error) {
-	if token != "dup" {
-		return false, nil
-	}
-
-	cnum := strings.Index(line, token)
-
-	opValue := NewOperationValue()
-	opValue.Block().TokenStart().SetPostition(lnum+1, cnum+1)
-
-	op := NewOperation(OP_DUP, opValue, TOKEN_DUP, TOKEN_DUP)
-	op.TokenStart().SetPostition(lnum+1, cnum+1)
-
-	program.Push(op)
-
-	return true, nil
-}
-
-func TokenDo(token, line string, lnum int, program *Program) (bool, error) {
-	if token != "do" {
-		return false, nil
-	}
-
-	cnum := strings.Index(line, token)
-
-	block := NewBlock(TOKEN_DO, TOKEN_END)
-	opValue := NewOperationValue().SetBlock(block)
-	opValue.Block().TokenStart().SetPostition(lnum+1, cnum+1)
-
-	op := NewOperation(OP_BLOCK, opValue, TOKEN_DO, TOKEN_END)
-	op.TokenStart().SetPostition(lnum+1, cnum+1)
-
-	program.Push(op)
-
-	return true, nil
-}
-
-func TokenIf(token, line string, lnum int, program *Program) (bool, error) {
-	if token != "if" {
-		return false, nil
-	}
-
-	cnum := strings.Index(line, token)
-
-	block := NewBlock(TOKEN_IF, TOKEN_END)
-	opValue := NewOperationValue().SetBlock(block)
-	opValue.Block().TokenStart().SetPostition(lnum+1, cnum+1)
-
-	op := NewOperation(OP_BLOCK, opValue, TOKEN_IF, TOKEN_END)
-	op.TokenStart().SetPostition(lnum+1, cnum+1)
-
-	program.Push(op)
-
-	return true, nil
-}
-
-func TokenElse(token, line string, lnum int, program *Program) (bool, error) {
-	if token != "else" {
-		return false, nil
-	}
-
-	cnum := strings.Index(line, token)
-
-	if err := program.CloseLastBlock(lnum+1, cnum+1); err != nil {
-		return true, err
-	}
-
-	block := NewBlock(TOKEN_ELSE, TOKEN_END)
-	block.TokenStart().SetPostition(lnum+1, cnum+1)
-
-	program.Last().Value().Block().SetNext(block)
-
-	return true, nil
-}
-
-func TokenEnd(token, line string, lnum int, program *Program) (bool, error) {
-	if token != "end" {
-		return false, nil
-	}
-
-	cnum := strings.Index(line, token)
-
-	if err := program.CloseLastBlock(lnum+1, cnum+1); err != nil {
-		return true, err
-	}
 
 	return true, nil
 }

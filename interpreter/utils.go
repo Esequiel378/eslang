@@ -5,9 +5,9 @@ import (
 	"fmt"
 )
 
-func FormatError(op *core.Operation, err error) error {
-	line, col := op.TokenStart().Position()
-	token := op.TokenStart().TokenAlias()
+func FormatError(op core.Operation, err error) error {
+	line, col := op.Position().Ruler()
+	file := op.Position().File()
 
-	return fmt.Errorf("%s - Token %s in line %d:%d", err.Error(), token, line, col)
+	return fmt.Errorf("%s:%d:%d - %s in %s", file, line, col, err.Error(), op.Type())
 }

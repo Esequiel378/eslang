@@ -1,31 +1,75 @@
 package core
 
-type OperationType int
+type OPType int
 
 const (
-	OP_BLOCK OperationType = iota
+	OP_BLOCK OPType = iota
 	OP_DUMP
 	OP_DUP
 	OP_MOP
 	OP_PUSH_FLOAT
 	OP_PUSH_INT
-	OP_PUSH_STR
+	OP_PUSH_STRING
 	OP_VAR
 	OP_VAR_WRITE
 	OP_WHILE
+
+	OP_TYPE_COUNT
 )
 
-var OPERATION_TYPE_ALIASES = map[OperationType]string{
-	OP_BLOCK:      "OP_BLOCK",
-	OP_DUMP:       "OP_DUMP",
-	OP_DUP:        "OP_DUP",
-	OP_MOP:        "OP_MOP",
-	OP_PUSH_FLOAT: "OP_PUSH_FLOAT",
-	OP_PUSH_INT:   "OP_PUSH_INT",
-	OP_PUSH_STR:   "OP_PUSH_STR",
-	OP_VAR:        "OP_VAR",
-	OP_VAR_WRITE:  "OP_VAR_WRITE",
-	OP_WHILE:      "OP_WHILE",
+var OPERATION_TYPE_ALIASES = map[OPType]string{
+	OP_BLOCK:       "OP_BLOCK",
+	OP_DUMP:        "OP_DUMP",
+	OP_DUP:         "OP_DUP",
+	OP_MOP:         "OP_MOP",
+	OP_PUSH_FLOAT:  "OP_PUSH_FLOAT",
+	OP_PUSH_INT:    "OP_PUSH_INT",
+	OP_PUSH_STRING: "OP_PUSH_STRING",
+	OP_VAR:         "OP_VAR",
+	OP_VAR_WRITE:   "OP_VAR_WRITE",
+	OP_WHILE:       "OP_WHILE",
+}
+
+func (opType OPType) String() string {
+	if int(OP_TYPE_COUNT)-1 != len(OPERATION_TYPE_ALIASES) {
+		panic("OPERATION_TYPE_ALIASES exaust handling")
+	}
+
+	if alias, ok := OPERATION_TYPE_ALIASES[opType]; ok {
+		return alias
+	}
+
+	return "-unknown-"
+}
+
+type Type int
+
+const (
+	Float Type = iota
+	Int
+	Nil
+	String
+
+	TYPE_COUNT
+)
+
+var TYPE_ALIASES = map[Type]string{
+	Float:  "float",
+	Int:    "int",
+	Nil:    "nil",
+	String: "str",
+}
+
+func (t Type) String() string {
+	if int(TYPE_COUNT)-1 != len(TYPE_ALIASES) {
+		panic("TYPE_ALIASES exaust handling")
+	}
+
+	if alias, ok := TYPE_ALIASES[t]; ok {
+		return alias
+	}
+
+	return "-unknown-"
 }
 
 var RESERVED_WORDS = map[string]bool{
@@ -41,209 +85,143 @@ var RESERVED_WORDS = map[string]bool{
 	"while": true,
 }
 
-type Block struct {
-	current    *Program
-	next       *Block
-	tokenStart *Token
-	tokenEnd   *Token
+// Position struct    represents the operation position in the source code
+type Position struct {
+	line   int
+	column int
+	file   string
 }
 
-func NewEmptyBlock() *Block {
-	return &Block{
-		current:    &Program{},
-		next:       nil,
-		tokenStart: &Token{},
-		tokenEnd:   &Token{},
+// NewPosition function    creates a new Position
+func NewPosition(line, column int, file string) *Position {
+	return &Position{
+		line:   line,
+		column: column,
+		file:   file,
 	}
 }
 
-func NewBlock(tokenStart, tokenEnd TokenType) *Block {
-	return &Block{
-		current:    &Program{},
-		next:       nil,
-		tokenStart: &Token{token: tokenStart},
-		tokenEnd:   &Token{token: tokenEnd},
+// File method    returns the file where the operation is located
+func (p *Position) File() string {
+	return p.file
+}
+
+// Ruler method    returns the line and column of the operation
+func (p Position) Ruler() (int, int) {
+	return p.line, p.column
+}
+
+// Operation interface    represents a single operation in the program
+type Operation interface {
+	Position() *Position
+	Type() OPType
+}
+
+// OperationPushInt struct    represents a  operation that pushes an integer onto the stack
+type OperationPushInt struct {
+	position *Position
+	value    int64
+}
+
+// NewOperationInt function    creates a new OperationPushInt
+func NewOperationInt(value int64, position *Position) Operation {
+	return OperationPushInt{
+		value:    value,
+		position: position,
 	}
 }
 
-func (b *Block) Program() *Program {
-	return b.current
+// Position method    returns the position of the operation
+func (op OperationPushInt) Position() *Position {
+	return op.position
 }
 
-func (b *Block) SetNext(next *Block) {
-	b.next = next
+// Type method    returns the type of the operation
+func (op OperationPushInt) Type() OPType {
+	return OP_PUSH_INT
 }
 
-func (b *Block) HasNext() bool {
-	return b.next != nil
+// Value method    returns the value of the operation
+func (op OperationPushInt) Value() int64 {
+	return op.value
 }
 
-func (b *Block) Next() *Block {
-	return b.next
+// OperationPushFloat struct    represents a  operation that pushes a float onto the stack
+type OperationPushFloat struct {
+	position *Position
+	value    float64
 }
 
-func (b *Block) Last() *Block {
-	if b.HasNext() {
-		return b.Next().Last()
-	}
-
-	return b
-}
-
-func (b *Block) IsClose() bool {
-	return !b.IsOpen()
-}
-
-func (b *Block) IsOpen() bool {
-	line, col := b.tokenEnd.Position()
-
-	return line == 0 && col == 0
-}
-
-func (b *Block) TokenStart() *Token {
-	return b.tokenStart
-}
-
-func (b *Block) TokenEnd() *Token {
-	return b.tokenEnd
-}
-
-type Type int
-
-const (
-	Float Type = iota
-	Int
-	Nil
-	String
-)
-
-var TYPE_ALIASES = map[Type]string{
-	Float:  "float",
-	Int:    "int",
-	Nil:    "nil",
-	String: "str",
-}
-
-func (t Type) String() string {
-
-	if typ, ok := TYPE_ALIASES[t]; ok {
-		return typ
-	}
-
-	return "-UNKNOWN-"
-}
-
-type OperationValue struct {
-	intValue   int64
-	floatValue float64
-	strValue   string
-	block      *Block
-	name       string
-	_type      Type
-}
-
-func NewOperationValue() *OperationValue {
-	return &OperationValue{
-		block: NewEmptyBlock(),
-		_type: Nil,
+// NewOperationFloat function  
+func NewOperationFloat(value float64, position *Position) Operation {
+	return OperationPushFloat{
+		value:    value,
+		position: position,
 	}
 }
 
-func (o *OperationValue) Type() Type {
-	return o._type
+// Position method    returns the position of the operation
+func (op OperationPushFloat) Position() *Position {
+	return op.position
 }
 
-func (o *OperationValue) SetType(t Type) *OperationValue {
-	o._type = t
-
-	return o
+// Type method    returns the type of the operation
+func (op OperationPushFloat) Type() OPType {
+	return OP_PUSH_FLOAT
 }
 
-func (o *OperationValue) Name() string {
-	return o.name
+// Value method    returns the value of the operation
+func (op OperationPushFloat) Value() float64 {
+	return op.value
 }
 
-func (o *OperationValue) SetName(name string) *OperationValue {
-	o.name = name
-
-	return o
+// OperationPushString struct    represents a  operation that pushes a string onto the stack
+type OperationPushString struct {
+	position *Position
+	value    string
 }
 
-func (o *OperationValue) Str() string {
-	return o.strValue
-}
-
-func (o *OperationValue) SetStr(str string) *OperationValue {
-	o._type = String
-	o.strValue = str
-
-	return o
-}
-
-func (o *OperationValue) Int() int64 {
-	return o.intValue
-}
-
-func (o *OperationValue) SetInt(value int64) *OperationValue {
-	o.intValue = value
-	o._type = Int
-
-	return o
-}
-
-func (o *OperationValue) Float() float64 {
-	return o.floatValue
-}
-
-func (o *OperationValue) SetFloat(value float64) *OperationValue {
-	o.floatValue = value
-	o._type = Float
-
-	return o
-}
-
-func (o *OperationValue) Block() *Block {
-	return o.block
-}
-
-func (o *OperationValue) SetBlock(block *Block) *OperationValue {
-	o.block = block
-
-	return o
-}
-
-type Operation struct {
-	opType     OperationType
-	opValue    *OperationValue
-	tokenStart *Token
-	tokenEnd   *Token
-}
-
-func NewOperation(op OperationType, value *OperationValue, tokenStart, tokenEnd TokenType) *Operation {
-	return &Operation{
-		opType:     op,
-		opValue:    value,
-		tokenStart: &Token{token: tokenStart},
-		tokenEnd:   &Token{token: tokenEnd},
+// NewOperationString function    creates a new OperationPushStr
+func NewOperationString(value string, position *Position) Operation {
+	return OperationPushString{
+		value:    value,
+		position: position,
 	}
 }
 
-func (o Operation) TypeAlias() string {
-	return OPERATION_TYPE_ALIASES[o.opType]
+// Position method    returns the position of the operation
+func (op OperationPushString) Position() *Position {
+	return op.position
 }
 
-func (o Operation) Type() OperationType {
-	return o.opType
+// Type method    returns the type of the operation
+func (op OperationPushString) Type() OPType {
+	return OP_PUSH_STRING
 }
 
-func (o Operation) Value() *OperationValue {
-	return o.opValue
+// Value method    returns the value of the operation
+func (op OperationPushString) Value() string {
+	return op.value
 }
 
-func (o Operation) TokenStart() *Token {
-	return o.tokenStart
+// OperationDump struct    represents a  operation that dumps the stack
+type OperationDump struct {
+	position *Position
 }
 
-func (o Operation) TokenEnd() *Token {
-	return o.tokenEnd
+// NewOperationDump function    creates a new OperationDump
+func NewOperationDump(position *Position) Operation {
+	return OperationDump{
+		position: position,
+	}
+}
+
+// Position method    returns the position of the operation
+func (op OperationDump) Position() *Position {
+	return op.position
+}
+
+// Type method    returns the type of the operation
+func (op OperationDump) Type() OPType {
+	return OP_DUMP
 }

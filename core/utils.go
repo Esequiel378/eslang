@@ -2,80 +2,64 @@ package core
 
 import (
 	"fmt"
-	"strconv"
+	"os"
 	"strings"
 
-	"github.com/TwiN/go-color"
+	"github.com/anmitsu/go-shlex"
 )
 
-func PrintProgram(program *Program, ident int) error {
-	for _, op := range program.Operations() {
-		lnum, cnum := op.TokenStart().Position()
-		token := op.TokenStart().TokenAlias()
-		spacing := strings.Repeat("\t", ident)
+func LoadProgramFromFile(program *Program, filename string) error {
+	rawLines, err := os.ReadFile(filename)
+	if err != nil {
+		return err
+	}
 
-		token = color.InYellow(token)
+	lines := strings.Split(string(rawLines), "\n")
 
-		line := color.InBold(strconv.Itoa(lnum))
-		col := color.InBold(strconv.Itoa(cnum))
+	for lnum, line := range lines {
+		line = strings.Split(line, "//")[0]
 
-		switch op.Type() {
-		case OP_BLOCK:
-			lnum, cnum := op.TokenEnd().Position()
-			eline := color.InBold(strconv.Itoa(lnum))
-			ecol := color.InBold(strconv.Itoa(cnum))
+		if len(line) == 0 || line == "" {
+			continue
+		}
 
-			fmt.Printf("%s%s in lines [%s:%s:%s:%s]\n", spacing, token, line, col, eline, ecol)
+		tokens, err := shlex.Split(line, false)
+		if err != nil {
+			return err
+		}
 
-			if err := PrintProgram(op.Value().Block().Program(), ident+1); err != nil {
-				return err
+		for _, token := range tokens {
+			token = strings.Trim(token, " ")
+
+			if len(token) == 0 {
+				continue
 			}
 
-			block := op.Value().Block()
+			found := false
+			cnum := strings.Index(line, token)
 
-			if block.HasNext() {
-				token := color.InYellow(TOKEN_ALIASES[TOKEN_ELSE])
-
-				lnum, cnum := block.Next().TokenEnd().Position()
-				eline := color.InBold(strconv.Itoa(lnum))
-				ecol := color.InBold(strconv.Itoa(cnum))
-
-				fmt.Printf("%s%s in lines [%s:%s:%s:%s]\n", spacing, token, line, col, eline, ecol)
-
-				if err := PrintProgram(block.Next().Program(), ident+1); err != nil {
+			for _, tokenHandler := range REGISTERED_TOKENS {
+				ok, err := tokenHandler(token, lnum, cnum, program)
+				if err != nil {
 					return err
 				}
+
+				if !ok {
+					continue
+				}
+
+				found = true
+				break
 			}
 
-			endToken := color.InYellow(TOKEN_ALIASES[TOKEN_END])
-
-			lnum, cnum = block.Last().TokenEnd().Position()
-			line := color.InBold(strconv.Itoa(lnum))
-			col := color.InBold(strconv.Itoa(cnum))
-
-			fmt.Printf("%s%s in line %s:%s\n", spacing, endToken, line, col)
-
-		default:
-			var value string
-
-			switch op.Type() {
-			case OP_PUSH_STR:
-				v := op.Value().Str()
-				value = fmt.Sprintf("%v", v)
-				value = fmt.Sprintf(" %s ", color.InCyan(value))
-			case OP_PUSH_INT:
-				v := op.Value().Int()
-				value = fmt.Sprintf("%v", v)
-				value = fmt.Sprintf(" %s ", color.InCyan(value))
-			case OP_PUSH_FLOAT:
-				v := op.Value().Int()
-				value = fmt.Sprintf("%v", v)
-				value = fmt.Sprintf(" %s ", color.InCyan(value))
-			default:
-				value = " "
+			if !found {
+				// TODO: improve error mesage using colors and stuff
+				return fmt.Errorf(
+					"Token error in %d:%d - '%s' is not a valid token",
+					lnum+1, cnum+1,
+					token,
+				)
 			}
-
-			fmt.Printf("%s%s%sin line %s:%s\n", spacing, token, value, line, col)
 		}
 	}
 
