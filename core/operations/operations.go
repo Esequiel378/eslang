@@ -1,4 +1,4 @@
-package core
+package operations
 
 type OPType int
 

@@ -1,4 +1,4 @@
-package core
+package operations
 
 // Program struct    represents a program block (entry point of the code)
 type Program struct {

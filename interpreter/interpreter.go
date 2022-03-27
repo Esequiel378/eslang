@@ -1,12 +1,12 @@
 package interpreter
 
 import (
-	"eslang/core"
+	ops "eslang/core/operations"
 	"eslang/interpreter/stack"
 	"fmt"
 )
 
-func executeProgram(program *core.Program, stack *stack.Stack) error {
+func executeProgram(program *ops.Program, stack *stack.Stack) error {
 	for _, op := range program.Operations() {
 		switch op.Type() {
 		default:
@@ -28,7 +28,7 @@ func executeProgram(program *core.Program, stack *stack.Stack) error {
 	return nil
 }
 
-func SimulateProgram(program *core.Program) error {
+func SimulateProgram(program *ops.Program) error {
 	stack := stack.NewStack()
 
 	if err := executeProgram(program, &stack); err != nil {

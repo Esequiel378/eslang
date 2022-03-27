@@ -1,11 +1,11 @@
 package interpreter
 
 import (
-	"eslang/core"
+	ops "eslang/core/operations"
 	"fmt"
 )
 
-func FormatError(op core.Operation, err error) error {
+func FormatError(op ops.Operation, err error) error {
 	line, col := op.Position().Ruler()
 	file := op.Position().File()
 

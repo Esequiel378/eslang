@@ -1,6 +1,7 @@
 package core
 
 import (
+	ops "eslang/core/operations"
 	"fmt"
 	"os"
 	"strings"
@@ -8,7 +9,7 @@ import (
 	"github.com/anmitsu/go-shlex"
 )
 
-func LoadProgramFromFile(program *Program, filename string) error {
+func LoadProgramFromFile(program *ops.Program, filename string) error {
 	rawLines, err := os.ReadFile(filename)
 	if err != nil {
 		return err

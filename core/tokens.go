@@ -1,6 +1,7 @@
 package core
 
 import (
+	ops "eslang/core/operations"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -9,7 +10,7 @@ import (
 type (
 	TokenType int
 	// TokenHandler type    function definition to implement new token handlers
-	TokenHandler func(token string, lnum, column int, program *Program) (bool, error)
+	TokenHandler func(token string, lnum, column int, program *ops.Program) (bool, error)
 )
 
 const (
@@ -45,7 +46,7 @@ var (
 	IS_STR   = regexp.MustCompile(`^".+"$`)
 )
 
-func TokenPushInt(token string, lnum, cnum int, program *Program) (bool, error) {
+func TokenPushInt(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if !IS_INT.MatchString(token) {
 		return false, nil
 	}
@@ -55,15 +56,15 @@ func TokenPushInt(token string, lnum, cnum int, program *Program) (bool, error) 
 		return true, fmt.Errorf("error parsing token '%s' to int: %s", token, err.Error())
 	}
 
-	position := NewPosition(lnum, cnum, "")
-	op := NewOPPushInt(value, position)
+	position := ops.NewPosition(lnum, cnum, "")
+	op := ops.NewOPPushInt(value, position)
 
 	program.Push(op)
 
 	return true, nil
 }
 
-func TokenPushFloat(token string, lnum, cnum int, program *Program) (bool, error) {
+func TokenPushFloat(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if !IS_FLOAT.MatchString(token) {
 		return false, nil
 	}
@@ -73,35 +74,35 @@ func TokenPushFloat(token string, lnum, cnum int, program *Program) (bool, error
 		return true, fmt.Errorf("error parsing token '%s' to float: %s", token, err.Error())
 	}
 
-	position := NewPosition(lnum, cnum, "")
-	op := NewOPPushFloat(value, position)
+	position := ops.NewPosition(lnum, cnum, "")
+	op := ops.NewOPPushFloat(value, position)
 
 	program.Push(op)
 
 	return true, nil
 }
 
-func TokenPushStr(token string, lnum, cnum int, program *Program) (bool, error) {
+func TokenPushStr(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if !IS_STR.MatchString(token) {
 		return false, nil
 	}
 
 	value := token[1 : len(token)-1]
-	position := NewPosition(lnum, cnum, "")
-	op := NewOPPushString(value, position)
+	position := ops.NewPosition(lnum, cnum, "")
+	op := ops.NewOPPushString(value, position)
 
 	program.Push(op)
 
 	return true, nil
 }
 
-func TokenDump(token string, lnum, cnum int, program *Program) (bool, error) {
+func TokenDump(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if token != "dump" {
 		return false, nil
 	}
 
-	position := NewPosition(lnum, cnum, "")
-	op := NewOPDump(position)
+	position := ops.NewPosition(lnum, cnum, "")
+	op := ops.NewOPDump(position)
 
 	program.Push(op)
 
