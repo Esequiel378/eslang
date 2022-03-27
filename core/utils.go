@@ -41,7 +41,8 @@ func LoadProgramFromFile(program *ops.Program, filename string) error {
 			cnum := strings.Index(line, token)
 
 			for _, tokenHandler := range tkns.REGISTERED_TOKENS {
-				ok, err := tokenHandler(token, lnum, cnum, program)
+				// TODO: send filename to toke handler
+				ok, err := tokenHandler(token, lnum+1, cnum+1, program)
 				if err != nil {
 					return err
 				}
@@ -62,6 +63,25 @@ func LoadProgramFromFile(program *ops.Program, filename string) error {
 					token,
 				)
 			}
+		}
+	}
+
+	lastOP := program.LastOP()
+
+	if lastOP.Type().IsBlock() {
+		block := lastOP.(ops.OperationBlock)
+
+		if !block.IsClosed() {
+			line, column := block.Position().Ruler()
+
+			// Check if the block has liked blocks and update the line and column values
+			if b, ok := block.(ops.OperationLinkedBlocks); ok {
+				fmt.Println("Here!")
+				block := b.LastBlock().(ops.OperationBlock)
+				line, column = block.Position().Ruler()
+			}
+
+			return fmt.Errorf("unclosed block at %s:%d:%d", filename, line, column)
 		}
 	}
 

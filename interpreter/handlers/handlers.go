@@ -6,12 +6,22 @@ import (
 )
 
 type (
+	// OPHandler    is a handler for operations
 	OPHandler func(*s.Stack, ops.Operation) error
+
+	// OPBinaryHandler    is a handler for block operation
+	OPBlockHandler func(*s.Stack, ops.Operation) (*ops.Program, error)
 )
 
+// REGISTERED_OPERATIONS    is a map of operation handlers
 var REGISTERED_OPERATIONS = map[ops.OPType]OPHandler{
 	ops.OP_DUMP:        OPDump,
 	ops.OP_PUSH_FLOAT:  OPPushFloat,
 	ops.OP_PUSH_INT:    OPPushInt,
 	ops.OP_PUSH_STRING: OPPushStr,
+}
+
+// REGISTERED_BLOCK_OPERATIONS    is a map of block operation handlers
+var REGISTERED_BLOCK_OPERATIONS = map[ops.OPType]OPBlockHandler{
+	ops.OP_BLOCK_IF_ELSE: OPBlockIfElse,
 }

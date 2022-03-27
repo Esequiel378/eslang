@@ -1,5 +1,8 @@
 package operations
 
+// TODO: check if there is any open block at the end of the program
+// TODO: and end token to close blocks
+
 // Program struct    represents a program block (entry point of the code)
 type Program struct {
 	position   Position
@@ -38,10 +41,27 @@ func (op *Program) IsEmpty() bool {
 
 // Push method    pushes an operation to the program
 func (op *Program) Push(operation Operation) {
+	lastOP := op.LastOP()
+
+	// Check if the last operation is a block
+	if lastOP != nil && lastOP.Type().IsBlock() {
+		block := lastOP.(OperationBlock)
+
+		// Push the operation to the block is it's not close
+		if !block.IsClosed() {
+			block.Push(operation)
+			return
+		}
+	}
+
 	op.operations = append(op.operations, operation)
 }
 
 // LastOP method    returns the last operation of the program
 func (op *Program) LastOP() Operation {
+	if op.IsEmpty() {
+		return nil
+	}
+
 	return op.operations[len(op.operations)-1]
 }

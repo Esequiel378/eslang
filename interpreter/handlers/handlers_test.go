@@ -6,7 +6,7 @@ import (
 )
 
 func TestExaustiveOperationsHandling(t *testing.T) {
-	got := len(REGISTERED_OPERATIONS)
+	got := len(REGISTERED_OPERATIONS) + len(REGISTERED_BLOCK_OPERATIONS)
 	want := int(ops.OP_TYPE_COUNT) - 1
 
 	if got != want {

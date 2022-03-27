@@ -17,7 +17,7 @@ const (
 // OP_TYPE_ALIASES map   is a map of OPType to their respective string representations
 var OP_TYPE_ALIASES = map[OPType]string{
 	OP_PROGRAM:       "OP_PROGRAM",
-	OP_BLOCK_IF_ELSE: "OP_IF_ELSE",
+	OP_BLOCK_IF_ELSE: "OP_BLOCK_IF_ELSE",
 	OP_DUMP:          "OP_DUMP",
 	OP_PUSH_FLOAT:    "OP_PUSH_FLOAT",
 	OP_PUSH_INT:      "OP_PUSH_INT",
@@ -27,6 +27,16 @@ var OP_TYPE_ALIASES = map[OPType]string{
 // String method    returns the string representation of the operation
 func (opType OPType) String() string {
 	return OP_TYPE_ALIASES[opType]
+}
+
+// IsBlock method    returns true if the operation is a block
+func (opType OPType) IsBlock() bool {
+	switch opType {
+	case OP_BLOCK_IF_ELSE:
+		return true
+	}
+
+	return false
 }
 
 // Position struct    represents the operation position in the source code
@@ -69,14 +79,18 @@ type OperationBlock interface {
 	Position() Position
 	// Type method    returns the type of the operation
 	Type() OPType
-	// Operations method    returns the operations of the block
-	Operations() []Operation
+	// Program method    returns the program of the block
+	Program() *Program
 	// IsEmpty method    returns true if the block is empty
 	IsEmpty() bool
 	// Push method    adds an operation to the block
 	Push(operation Operation)
 	// Last method    returns the last operation of the block
 	LastOP() Operation
+	// IsClosed method    returns true if the block is closed
+	IsClosed() bool
+	// CloseBlock method    closes the last inner block
+	CloseBlock()
 }
 
 // OperationLinkedBlocks interface    represents a block of operations that can be linked to other blocks
@@ -89,8 +103,6 @@ type OperationLinkedBlocks interface {
 	Next() OperationLinkedBlocks
 	// LastBlock method    returns the last block attached to the current block
 	LastBlock() OperationLinkedBlocks
-	// Close method    closes the last inner block
+	// CloseLastBlock method    closes the last inner block
 	CloseLastBlock()
-	// IsClosed method    returns true if the block is closed
-	IsClosed() bool
 }

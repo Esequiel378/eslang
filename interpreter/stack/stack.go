@@ -1,8 +1,16 @@
 package stack
 
 import (
+	"eslang/core"
 	"fmt"
 )
+
+// StackValue interface  Óòß  represents a value in the stack.
+type StackValue interface {
+	Type() core.Type
+	Value() any
+	TestTruthy() (bool, error)
+}
 
 // Stack struct    represents a stack of elements.
 type Stack struct {

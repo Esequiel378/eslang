@@ -2,13 +2,6 @@ package stack
 
 import "eslang/core"
 
-// StackValue interface    represents a value in the stack.
-type StackValue interface {
-	Type() core.Type
-	Value() any
-	TestTruthy() (bool, error)
-}
-
 // StackValueInt struct    represents an integer value.
 type StackValueInt struct {
 	value int64

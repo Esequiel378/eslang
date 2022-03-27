@@ -13,6 +13,7 @@ type (
 
 const (
 	TOKEN_BLOCK_IF_ELSE TokenType = iota
+	TOKEN_BLOCK_END
 	TOKEN_DUMP
 	TOKEN_PUSH_FLOAT
 	TOKEN_PUSH_INT
@@ -24,6 +25,7 @@ const (
 // REGISTERED_TOKENS map    is a map of token types to their respective token handlers
 var REGISTERED_TOKENS = map[TokenType]TokenHandler{
 	TOKEN_BLOCK_IF_ELSE: TokenBlockIfElse,
+	TOKEN_BLOCK_END:     TokenBlockEnd,
 	TOKEN_DUMP:          TokenDump,
 	TOKEN_PUSH_FLOAT:    TokenPushFloat,
 	TOKEN_PUSH_INT:      TokenPushInt,
