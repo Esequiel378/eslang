@@ -16,13 +16,17 @@ var ALIASES_TO_TYPE = map[string]core.Type{
 }
 
 // TokenVariable function    create and push a variable onto the stack
-func TokenVariable(token string, lnum, cnum int, program *ops.Program) (bool, error) {
-	if !IS_VALID_VARIABLE.MatchString(token) || core.RESERVED_WORDS[token] {
+func TokenVariable(name string, lnum, cnum int, program *ops.Program) (bool, error) {
+	if !IS_VALID_VARIABLE.MatchString(name) || core.RESERVED_WORDS[name] {
 		return false, nil
 	}
 
 	position := ops.NewPosition(lnum, cnum, "")
-	op := ops.NewOPVariable(token, nil, position)
+	op := ops.NewOPVariable(name, nil, position)
+
+	if variable, found := program.GetVariable(name); found {
+		op = ops.NewOPVariable(name, variable.Value(), position)
+	}
 
 	err := program.Push(op)
 
@@ -69,6 +73,7 @@ func TokenSetVariableType(token string, lnum, cnum int, program *ops.Program) (b
 
 	variable.SetValue(value)
 	program.SetVariable(variable.Name(), variable)
+	program.ChangeLastOP(variable)
 
 	return true, nil
 }
@@ -84,12 +89,7 @@ func TokenVariableWrite(token string, lnum, cnum int, program *ops.Program) (boo
 		return false, err
 	}
 
-	name := rhs.(*ops.OPVariable).Name()
-	variable, found := program.GetVariable(name)
-
-	if !found {
-		return true, fmt.Errorf("variable `%s` not defined in line %d:%d", name, lnum, cnum)
-	}
+	variable := rhs.(*ops.OPVariable)
 
 	variableValueType := variable.Value().Type()
 

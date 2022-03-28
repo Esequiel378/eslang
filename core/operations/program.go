@@ -2,9 +2,6 @@ package operations
 
 import "fmt"
 
-// TODO: check if there is any open block at the end of the program
-// TODO: and end token to close blocks
-
 // Program struct    represents a program block (entry point of the code)
 type Program struct {
 	position   Position
@@ -33,6 +30,11 @@ func (p *Program) GetVariable(name string) (*OPVariable, bool) {
 	variable, found := p.variables[name]
 
 	return variable, found
+}
+
+// ChangeLastOP method    changes the last operation of the program
+func (p *Program) ChangeLastOP(operation Operation) {
+	p.operations[len(p.operations)-1] = operation
 }
 
 // PeekTwo method    returns the two last operations of the program without removing them
