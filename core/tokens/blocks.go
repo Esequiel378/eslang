@@ -35,6 +35,20 @@ func TokenBlockIfElse(token string, lnum, column int, program *ops.Program) (boo
 	return false, nil
 }
 
+func TokenBlockWhile(token string, lnum, column int, program *ops.Program) (bool, error) {
+	if token != "while" {
+		return false, nil
+	}
+
+	position := ops.NewPosition(lnum, column, "")
+	op := ops.NewOPBlockWhile(position)
+
+	err := program.Push(op)
+
+	return true, err
+}
+
+// TokenBlockEnd function    closes a block of code that can be executed
 func TokenBlockEnd(token string, _, _ int, program *ops.Program) (bool, error) {
 	if token != "end" {
 		return false, nil

@@ -25,6 +25,24 @@ func executeProgram(program *ops.Program, stack *stack.Stack) error {
 				return FormatError(op, err)
 			}
 
+		case ops.OP_BLOCK_WHILE:
+			handler := handlers.REGISTERED_BLOCK_OPERATIONS[ops.OP_BLOCK_WHILE]
+
+			for {
+				program, err := handler(stack, op)
+				if err != nil {
+					return FormatError(op, err)
+				}
+
+				if program == nil {
+					break
+				}
+
+				if err := executeProgram(program, stack); err != nil {
+					return FormatError(op, err)
+				}
+			}
+
 		default:
 			handler := handlers.REGISTERED_OPERATIONS[op.Type()]
 

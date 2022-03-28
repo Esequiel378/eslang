@@ -26,4 +26,5 @@ var REGISTERED_OPERATIONS = map[ops.OPType]OPHandler{
 // REGISTERED_BLOCK_OPERATIONS    is a map of block operation handlers
 var REGISTERED_BLOCK_OPERATIONS = map[ops.OPType]OPBlockHandler{
 	ops.OP_BLOCK_IF_ELSE: OPBlockIfElse,
+	ops.OP_BLOCK_WHILE:   OPBlockWhile,
 }

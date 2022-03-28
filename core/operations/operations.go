@@ -6,6 +6,7 @@ type OPType int
 const (
 	OP_PROGRAM OPType = iota
 	OP_BLOCK_IF_ELSE
+	OP_BLOCK_WHILE
 	OP_DUMP
 	OP_PUSH_FLOAT
 	OP_PUSH_INT
@@ -21,6 +22,7 @@ var OP_TYPE_ALIASES = map[OPType]string{
 	OP_PROGRAM: "OP_PROGRAM",
 
 	OP_BLOCK_IF_ELSE:  "OP_BLOCK_IF_ELSE",
+	OP_BLOCK_WHILE:    "OP_BLOCK_WHILE",
 	OP_DUMP:           "OP_DUMP",
 	OP_PUSH_FLOAT:     "OP_PUSH_FLOAT",
 	OP_PUSH_INT:       "OP_PUSH_INT",
@@ -38,6 +40,7 @@ func (opType OPType) String() string {
 func (opType OPType) IsBlock() bool {
 	switch opType {
 	case OP_BLOCK_IF_ELSE:
+	case OP_BLOCK_WHILE:
 		return true
 	}
 

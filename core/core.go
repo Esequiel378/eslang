@@ -34,4 +34,5 @@ var RESERVED_WORDS = map[string]bool{
 	"if":    true,
 	"int":   true,
 	"str":   true,
+	"while": true,
 }

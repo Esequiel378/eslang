@@ -1,5 +1,7 @@
 package operations
 
+import "fmt"
+
 // OPBlockIfElse struct    represents a  operation that starts a new block
 type OPBlockIfElse struct {
 	position Position
@@ -45,10 +47,14 @@ func (op *OPBlockIfElse) Push(operation Operation) error {
 		return err
 	}
 
-	next := op.Next().(*OPBlockIfElse)
-	err := next.Push(operation)
+	if op.HasNext() {
+		next := op.Next().(*OPBlockIfElse)
+		err := next.Push(operation)
 
-	return err
+		return err
+	}
+
+	return fmt.Errorf("block is closed")
 }
 
 // LastOP method    returns the last operation of the block
@@ -116,4 +122,69 @@ func (op *OPBlockIfElse) LastBlock() OperationLinkedBlocks {
 	}
 
 	return op.Next()
+}
+
+// OPBlockWhile struct    represents a  operation that starts a while block
+type OPBlockWhile struct {
+	position Position
+	program  *Program
+	isClosed bool
+}
+
+// NewOPBlockWhile function    creates a new OPBlockWhile
+func NewOPBlockWhile(position Position) *OPBlockWhile {
+	return &OPBlockWhile{
+		program:  &Program{},
+		position: position,
+		isClosed: false,
+	}
+}
+
+// Position method    returns the position of the operation
+func (op *OPBlockWhile) Position() Position {
+	return op.position
+}
+
+// Type method    returns the type of the operation
+func (op *OPBlockWhile) Type() OPType {
+	return OP_BLOCK_WHILE
+}
+
+// Program method    returns the program of the block
+func (op *OPBlockWhile) Program() *Program {
+	return op.program
+}
+
+// IsEmpty method    returns true if the block is empty
+func (op *OPBlockWhile) IsEmpty() bool {
+	return op.program.IsEmpty()
+}
+
+// Push method    adds an operation to the block
+func (op *OPBlockWhile) Push(operation Operation) error {
+	if !op.isClosed {
+		err := op.Program().Push(operation)
+		return err
+	}
+
+	return fmt.Errorf("block is closed")
+}
+
+// LastOP method    returns the last operation of the block
+func (op *OPBlockWhile) LastOP() Operation {
+	if op.IsEmpty() {
+		return nil
+	}
+
+	return op.program.LastOP()
+}
+
+// IsClosed method    returns true if the block is closed
+func (op *OPBlockWhile) IsClosed() bool {
+	return op.isClosed
+}
+
+// CloseBlock method    closes the block
+func (op *OPBlockWhile) CloseBlock() {
+	op.isClosed = true
 }
