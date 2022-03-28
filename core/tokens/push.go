@@ -27,9 +27,9 @@ func TokenPushInt(token string, lnum, cnum int, program *ops.Program) (bool, err
 	position := ops.NewPosition(lnum, cnum, "")
 	op := ops.NewOPPushInt(value, position)
 
-	program.Push(op)
+	err = program.Push(op)
 
-	return true, nil
+	return true, err
 }
 
 // TokenPushFloat function    pushes a float onto the stack
@@ -46,9 +46,9 @@ func TokenPushFloat(token string, lnum, cnum int, program *ops.Program) (bool, e
 	position := ops.NewPosition(lnum, cnum, "")
 	op := ops.NewOPPushFloat(value, position)
 
-	program.Push(op)
+	err = program.Push(op)
 
-	return true, nil
+	return true, err
 }
 
 // TokenPushStr function    pushes a string onto the stack
@@ -61,7 +61,7 @@ func TokenPushStr(token string, lnum, cnum int, program *ops.Program) (bool, err
 	position := ops.NewPosition(lnum, cnum, "")
 	op := ops.NewOPPushString(value, position)
 
-	program.Push(op)
+	err := program.Push(op)
 
-	return true, nil
+	return true, err
 }

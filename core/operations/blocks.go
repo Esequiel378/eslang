@@ -39,14 +39,16 @@ func (op *OPBlockIfElse) IsEmpty() bool {
 }
 
 // Push method    adds an operation to the block
-func (op *OPBlockIfElse) Push(operation Operation) {
+func (op *OPBlockIfElse) Push(operation Operation) error {
 	if !op.isClosed {
-		op.Program().Push(operation)
-		return
+		err := op.Program().Push(operation)
+		return err
 	}
 
 	next := op.Next().(*OPBlockIfElse)
-	next.Push(operation)
+	err := next.Push(operation)
+
+	return err
 }
 
 // LastOP method    returns the last operation of the block

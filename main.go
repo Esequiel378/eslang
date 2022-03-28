@@ -1,8 +1,8 @@
 package main
 
 import (
-	"eslang/core"
 	ops "eslang/core/operations"
+	"eslang/core/utils"
 	"eslang/interpreter"
 	"flag"
 	"log"
@@ -14,7 +14,7 @@ func main() {
 
 	program := ops.NewProgram(*inputFile)
 
-	if err := core.LoadProgramFromFile(program, *inputFile); err != nil {
+	if err := utils.LoadProgramFromFile(program, *inputFile); err != nil {
 		log.Fatal(err)
 	}
 

@@ -10,12 +10,14 @@ import (
 func TokenBlockIfElse(token string, lnum, column int, program *ops.Program) (bool, error) {
 	position := ops.NewPosition(lnum, column, "")
 
-	switch token {
-	case "if":
+	if token == "if" {
 		op := ops.NewOPBlockIfElse(position)
-		program.Push(op)
+		err := program.Push(op)
 
-	case "else":
+		return true, err
+	}
+
+	if token == "else" {
 		lastOp := program.LastOP()
 
 		if lastOp.Type() != ops.OP_BLOCK_IF_ELSE {
@@ -27,11 +29,10 @@ func TokenBlockIfElse(token string, lnum, column int, program *ops.Program) (boo
 		ifBlock.CloseLastBlock()
 		ifBlock.SetNext(position)
 
-	default:
-		return false, nil
+		return true, nil
 	}
 
-	return true, nil
+	return false, nil
 }
 
 func TokenBlockEnd(token string, _, _ int, program *ops.Program) (bool, error) {

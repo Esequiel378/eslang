@@ -13,7 +13,7 @@ func TokenDump(token string, lnum, cnum int, program *ops.Program) (bool, error)
 	position := ops.NewPosition(lnum, cnum, "")
 	op := ops.NewOPDump(position)
 
-	program.Push(op)
+	err := program.Push(op)
 
-	return true, nil
+	return true, err
 }

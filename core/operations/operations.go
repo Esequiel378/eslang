@@ -10,6 +10,7 @@ const (
 	OP_PUSH_FLOAT
 	OP_PUSH_INT
 	OP_PUSH_STRING
+	OP_VARIABLE
 
 	OP_TYPE_COUNT
 )
@@ -22,6 +23,7 @@ var OP_TYPE_ALIASES = map[OPType]string{
 	OP_PUSH_FLOAT:    "OP_PUSH_FLOAT",
 	OP_PUSH_INT:      "OP_PUSH_INT",
 	OP_PUSH_STRING:   "OP_PUSH_STRING",
+	OP_VARIABLE:      "OP_VARIABLE",
 }
 
 // String method    returns the string representation of the operation
@@ -84,7 +86,7 @@ type OperationBlock interface {
 	// IsEmpty method    returns true if the block is empty
 	IsEmpty() bool
 	// Push method    adds an operation to the block
-	Push(operation Operation)
+	Push(operation Operation) error
 	// Last method    returns the last operation of the block
 	LastOP() Operation
 	// IsClosed method    returns true if the block is closed

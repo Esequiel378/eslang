@@ -1,5 +1,7 @@
 package operations
 
+import "fmt"
+
 // TODO: check if there is any open block at the end of the program
 // TODO: and end token to close blocks
 
@@ -40,7 +42,7 @@ func (op *Program) IsEmpty() bool {
 }
 
 // Push method    pushes an operation to the program
-func (op *Program) Push(operation Operation) {
+func (op *Program) Push(operation Operation) error {
 	lastOP := op.LastOP()
 
 	// Check if the last operation is a block
@@ -49,12 +51,25 @@ func (op *Program) Push(operation Operation) {
 
 		// Push the operation to the block is it's not close
 		if !block.IsClosed() {
-			block.Push(operation)
-			return
+			err := block.Push(operation)
+			return err
 		}
 	}
 
+	// Check if the last operation is a variable declaration
+	if lastOP != nil && lastOP.Type() == OP_VARIABLE {
+		variable := lastOP.(*OPVariable)
+
+		// Check if the variable is not initialized and return an error
+		if variable.Value() == nil {
+			return fmt.Errorf("uninitialised variable %s", variable.Name())
+		}
+	}
+
+	// Push the operation to the program
 	op.operations = append(op.operations, operation)
+
+	return nil
 }
 
 // LastOP method    returns the last operation of the program
