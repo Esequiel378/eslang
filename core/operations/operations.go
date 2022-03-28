@@ -5,14 +5,28 @@ type OPType int
 
 const (
 	OP_PROGRAM OPType = iota
+	// blocks
 	OP_BLOCK_IF_ELSE
 	OP_BLOCK_WHILE
+
+	// std
 	OP_DUMP
+
+	// push
 	OP_PUSH_FLOAT
 	OP_PUSH_INT
 	OP_PUSH_STRING
+
+	// variables
 	OP_VARIABLE
 	OP_VARIABLE_WRITE
+
+	// operators
+	OP_OPERATOR_ADD
+	OP_OPERATOR_SUB
+	OP_OPERATOR_MUL
+	OP_OPERATOR_DIV
+	OP_OPERATOR_MOD
 
 	OP_TYPE_COUNT
 )
@@ -21,14 +35,28 @@ const (
 var OP_TYPE_ALIASES = map[OPType]string{
 	OP_PROGRAM: "OP_PROGRAM",
 
-	OP_BLOCK_IF_ELSE:  "OP_BLOCK_IF_ELSE",
-	OP_BLOCK_WHILE:    "OP_BLOCK_WHILE",
-	OP_DUMP:           "OP_DUMP",
-	OP_PUSH_FLOAT:     "OP_PUSH_FLOAT",
-	OP_PUSH_INT:       "OP_PUSH_INT",
-	OP_PUSH_STRING:    "OP_PUSH_STRING",
+	// blocks
+	OP_BLOCK_IF_ELSE: "OP_BLOCK_IF_ELSE",
+	OP_BLOCK_WHILE:   "OP_BLOCK_WHILE",
+
+	// std
+	OP_DUMP: "OP_DUMP",
+
+	// push
+	OP_PUSH_FLOAT:  "OP_PUSH_FLOAT",
+	OP_PUSH_INT:    "OP_PUSH_INT",
+	OP_PUSH_STRING: "OP_PUSH_STRING",
+
+	// variables
 	OP_VARIABLE:       "OP_VARIABLE",
 	OP_VARIABLE_WRITE: "OP_VARIABLE_WRITE",
+
+	// operators
+	OP_OPERATOR_ADD: "OP_OPERATOR_ADD",
+	OP_OPERATOR_SUB: "OP_OPERATOR_SUB",
+	OP_OPERATOR_MUL: "OP_OPERATOR_MUL",
+	OP_OPERATOR_DIV: "OP_OPERATOR_DIV",
+	OP_OPERATOR_MOD: "OP_OPERATOR_MOD",
 }
 
 // String method    returns the string representation of the operation
@@ -79,6 +107,30 @@ type Operation interface {
 	Position() Position
 	// Type method    returns the type of the operation
 	Type() OPType
+}
+
+// MiscOperation struct    represents a operation that only holds a type and a position
+type MiscOperation struct {
+	position Position
+	opType   OPType
+}
+
+// NewMiscOperation function    creates a new MiscOperation
+func NewMiscOperation(position Position, opType OPType) Operation {
+	return MiscOperation{
+		position: position,
+		opType:   opType,
+	}
+}
+
+// Position method    returns the position of the operation
+func (op MiscOperation) Position() Position {
+	return op.position
+}
+
+// Type method    returns the type of the operation
+func (op MiscOperation) Type() OPType {
+	return op.opType
 }
 
 // OperationBlock interface    represents a block of operations

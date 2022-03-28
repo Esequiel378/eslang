@@ -15,12 +15,24 @@ type (
 
 // REGISTERED_OPERATIONS    is a map of operation handlers
 var REGISTERED_OPERATIONS = map[ops.OPType]OPHandler{
-	ops.OP_DUMP:           OPDump,
-	ops.OP_PUSH_FLOAT:     OPPushFloat,
-	ops.OP_PUSH_INT:       OPPushInt,
-	ops.OP_PUSH_STRING:    OPPushStr,
+	// std
+	ops.OP_DUMP: OPDump,
+
+	// push
+	ops.OP_PUSH_FLOAT:  OPPushFloat,
+	ops.OP_PUSH_INT:    OPPushInt,
+	ops.OP_PUSH_STRING: OPPushStr,
+
+	// variables
 	ops.OP_VARIABLE:       OPVariable,
 	ops.OP_VARIABLE_WRITE: OPVariableWrite,
+
+	// operators
+	ops.OP_OPERATOR_ADD: OPOperatorAdd,
+	ops.OP_OPERATOR_SUB: OPOperatorSub,
+	ops.OP_OPERATOR_MUL: OPOperatorMul,
+	ops.OP_OPERATOR_DIV: OPOperatorDiv,
+	ops.OP_OPERATOR_MOD: OPOperatorMod,
 }
 
 // REGISTERED_BLOCK_OPERATIONS    is a map of block operation handlers

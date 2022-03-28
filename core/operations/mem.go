@@ -40,25 +40,3 @@ func (o OPVariable) Position() Position {
 func (o OPVariable) Name() string {
 	return o.name
 }
-
-// OPVariableWrite struct    Write a value to a variable
-type OPVariableWrite struct {
-	position Position
-}
-
-// NewOPVariableWrite function    Create a new variable write operation
-func NewOPVariableWrite(position Position) *OPVariableWrite {
-	return &OPVariableWrite{
-		position: position,
-	}
-}
-
-// Type method    Get the type of the operation
-func (o OPVariableWrite) Type() OPType {
-	return OP_VARIABLE_WRITE
-}
-
-// Position method    Get the position of the operation
-func (o OPVariableWrite) Position() Position {
-	return o.position
-}

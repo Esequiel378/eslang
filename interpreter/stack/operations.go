@@ -3,6 +3,7 @@ package stack
 import (
 	"eslang/core"
 	"fmt"
+	"math"
 )
 
 // TODO: use a generic function for opertaions with numbers
@@ -55,6 +56,43 @@ func MultiplyValues(lhs StackValue, rhs StackValue) (StackValue, error) {
 	}
 
 	return nil, fmt.Errorf("can not multiply values of type %s", lhs.Type())
+}
+
+// DivideValues function  Óòß  divides two values
+func DivideValues(lhs StackValue, rhs StackValue) (StackValue, error) {
+	if lhs.Type() != rhs.Type() {
+		return nil, fmt.Errorf("can not divide values of different types")
+	}
+
+	switch lhs.Type() {
+	case core.Int:
+		return NewStackValueInt(lhs.Value().(int64) / rhs.Value().(int64)), nil
+	case core.Float:
+		return NewStackValueFloat(lhs.Value().(float64) / rhs.Value().(float64)), nil
+	}
+
+	return nil, fmt.Errorf("can not divide values of type %s", lhs.Type())
+}
+
+// ModuloValues function    returns the remainder of the divition between two values
+func ModuloValues(lhs StackValue, rhs StackValue) (StackValue, error) {
+	if lhs.Type() != rhs.Type() {
+		return nil, fmt.Errorf("can not modulo values of different types")
+	}
+
+	switch lhs.Type() {
+	case core.Int:
+		return NewStackValueInt(lhs.Value().(int64) % rhs.Value().(int64)), nil
+	case core.Float:
+		return NewStackValueFloat(
+			math.Mod(
+				lhs.Value().(float64),
+				rhs.Value().(float64),
+			),
+		), nil
+	}
+
+	return nil, fmt.Errorf("can not modulo values of type %s", lhs.Type())
 }
 
 // CompareEqualValues function    compares if two values are equal

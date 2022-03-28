@@ -11,7 +11,7 @@ func TokenDump(token string, lnum, cnum int, program *ops.Program) (bool, error)
 	}
 
 	position := ops.NewPosition(lnum, cnum, "")
-	op := ops.NewOPDump(position)
+	op := ops.NewMiscOperation(position, ops.OP_DUMP)
 
 	err := program.Push(op)
 

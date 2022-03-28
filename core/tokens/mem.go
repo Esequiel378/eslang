@@ -98,7 +98,7 @@ func TokenVariableWrite(token string, lnum, cnum int, program *ops.Program) (boo
 	}
 
 	position := ops.NewPosition(lnum, cnum, "")
-	op := ops.NewOPVariableWrite(position)
+	op := ops.NewMiscOperation(position, ops.OP_VARIABLE_WRITE)
 
 	err = program.Push(op)
 
