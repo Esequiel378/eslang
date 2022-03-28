@@ -40,11 +40,19 @@ func TokenSetVariableType(token string, lnum, cnum int, program *ops.Program) (b
 	lastOP := program.LastOP()
 
 	if lastOP == nil || lastOP.Type() != ops.OP_VARIABLE {
-		return true, fmt.Errorf("using type `%s` out of context at line %d:%d", token, lnum+1, cnum+1)
+		return true, fmt.Errorf("using type `%s` out of context at line %d:%d", token, lnum, cnum)
 	}
 
 	position := ops.NewPosition(lnum, cnum, "")
 	variable := lastOP.(*ops.OPVariable)
+
+	if variable, found := program.GetVariable(variable.Name()); found {
+		line, column := variable.Position().Ruler()
+		file := variable.Position().File()
+		name := variable.Name()
+
+		return true, fmt.Errorf("variable `%s` already defined in %s:%d:%d", name, file, line, column)
+	}
 
 	var value ops.Operation
 
