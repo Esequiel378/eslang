@@ -35,6 +35,19 @@ func (p *Program) GetVariable(name string) (*OPVariable, bool) {
 	return variable, found
 }
 
+// PeekTwo method    returns the two last operations of the program without removing them
+func (p *Program) PeekTwo() (lhs Operation, rhs Operation, err error) {
+	if len(p.operations) < 2 {
+		err = fmt.Errorf("not enough operations in program")
+		return
+	}
+
+	lhs = p.operations[len(p.operations)-2]
+	rhs = p.operations[len(p.operations)-1]
+
+	return
+}
+
 // Position method    returns the position of the operation
 func (op *Program) Position() Position {
 	return op.position

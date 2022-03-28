@@ -40,7 +40,7 @@ func TokenSetVariableType(token string, lnum, cnum int, program *ops.Program) (b
 	lastOP := program.LastOP()
 
 	if lastOP == nil || lastOP.Type() != ops.OP_VARIABLE {
-		return true, fmt.Errorf("using type `%s` out of context at line %d:%d", token, lnum, cnum)
+		return true, fmt.Errorf("using type `%s` out of context in line %d:%d", token, lnum, cnum)
 	}
 
 	position := ops.NewPosition(lnum, cnum, "")
@@ -64,7 +64,7 @@ func TokenSetVariableType(token string, lnum, cnum int, program *ops.Program) (b
 	case core.String:
 		value = ops.NewOPPushString("", position)
 	default:
-		return true, fmt.Errorf("unknown type `%s` at line %d:%d", token, lnum, cnum)
+		return true, fmt.Errorf("unknown type `%s` in line %d:%d", token, lnum, cnum)
 	}
 
 	variable.SetValue(value)
@@ -79,10 +79,28 @@ func TokenVariableWrite(token string, lnum, cnum int, program *ops.Program) (boo
 		return false, nil
 	}
 
+	lhs, rhs, err := program.PeekTwo()
+	if err != nil {
+		return false, err
+	}
+
+	name := rhs.(*ops.OPVariable).Name()
+	variable, found := program.GetVariable(name)
+
+	if !found {
+		return true, fmt.Errorf("variable `%s` not defined in line %d:%d", name, lnum, cnum)
+	}
+
+	variableValueType := variable.Value().Type()
+
+	if lhs.Type() != variableValueType {
+		return false, fmt.Errorf("cannot assign `%s` to `%s` in line %d:%d", lhs.Type(), variableValueType, lnum, cnum)
+	}
+
 	position := ops.NewPosition(lnum, cnum, "")
 	op := ops.NewOPVariableWrite(position)
 
-	err := program.Push(op)
+	err = program.Push(op)
 
 	return true, err
 }
