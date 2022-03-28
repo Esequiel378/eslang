@@ -21,12 +21,20 @@ const (
 	OP_VARIABLE
 	OP_VARIABLE_WRITE
 
-	// operators
+	// arithmetic operators
 	OP_OPERATOR_ADD
 	OP_OPERATOR_SUB
 	OP_OPERATOR_MUL
 	OP_OPERATOR_DIV
 	OP_OPERATOR_MOD
+
+	// realtional operators
+	OP_R_OPERATOR_EQUAL
+	OP_R_OPERATOR_NOT_EQUAL
+	OP_R_OPERATOR_LESS_THAN
+	OP_R_OPERATOR_LESS_THAN_OR_EQUAL
+	OP_R_OPERATOR_GREATER_THAN
+	OP_R_OPERATOR_GREATER_THAN_OR_EQUAL
 
 	OP_TYPE_COUNT
 )
@@ -51,12 +59,20 @@ var OP_TYPE_ALIASES = map[OPType]string{
 	OP_VARIABLE:       "OP_VARIABLE",
 	OP_VARIABLE_WRITE: "OP_VARIABLE_WRITE",
 
-	// operators
+	// arithmetic operators
 	OP_OPERATOR_ADD: "OP_OPERATOR_ADD",
 	OP_OPERATOR_SUB: "OP_OPERATOR_SUB",
 	OP_OPERATOR_MUL: "OP_OPERATOR_MUL",
 	OP_OPERATOR_DIV: "OP_OPERATOR_DIV",
 	OP_OPERATOR_MOD: "OP_OPERATOR_MOD",
+
+	// relational operators
+	OP_R_OPERATOR_EQUAL:                 "OP_R_OPERATOR_EQUAL",
+	OP_R_OPERATOR_NOT_EQUAL:             "OP_R_OPERATOR_NOT_EQUAL",
+	OP_R_OPERATOR_LESS_THAN:             "OP_R_OPERATOR_LESS_THAN",
+	OP_R_OPERATOR_LESS_THAN_OR_EQUAL:    "OP_R_OPERATOR_LESS_THAN_EQUAL",
+	OP_R_OPERATOR_GREATER_THAN:          "OP_R_OPERATOR_GREATER_THAN",
+	OP_R_OPERATOR_GREATER_THAN_OR_EQUAL: "OP_R_OPERATOR_GREATER_THAN_EQUAL",
 }
 
 // String method    returns the string representation of the operation
@@ -67,8 +83,7 @@ func (opType OPType) String() string {
 // IsBlock method    returns true if the operation is a block
 func (opType OPType) IsBlock() bool {
 	switch opType {
-	case OP_BLOCK_IF_ELSE:
-	case OP_BLOCK_WHILE:
+	case OP_BLOCK_IF_ELSE, OP_BLOCK_WHILE:
 		return true
 	}
 

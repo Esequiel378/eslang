@@ -27,12 +27,20 @@ var REGISTERED_OPERATIONS = map[ops.OPType]OPHandler{
 	ops.OP_VARIABLE:       OPVariable,
 	ops.OP_VARIABLE_WRITE: OPVariableWrite,
 
-	// operators
+	// arithmetic operators
 	ops.OP_OPERATOR_ADD: OPOperatorAdd,
 	ops.OP_OPERATOR_SUB: OPOperatorSub,
 	ops.OP_OPERATOR_MUL: OPOperatorMul,
 	ops.OP_OPERATOR_DIV: OPOperatorDiv,
 	ops.OP_OPERATOR_MOD: OPOperatorMod,
+
+	// relational operators
+	ops.OP_R_OPERATOR_EQUAL:                 OPREqual,
+	ops.OP_R_OPERATOR_NOT_EQUAL:             OPRNotEqual,
+	ops.OP_R_OPERATOR_LESS_THAN:             OPRLessThan,
+	ops.OP_R_OPERATOR_LESS_THAN_OR_EQUAL:    OPRLessThanOrEqual,
+	ops.OP_R_OPERATOR_GREATER_THAN:          OPRGreaterThan,
+	ops.OP_R_OPERATOR_GREATER_THAN_OR_EQUAL: OPRGreaterThanOrEqual,
 }
 
 // REGISTERED_BLOCK_OPERATIONS    is a map of block operation handlers

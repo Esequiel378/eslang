@@ -2,6 +2,10 @@ package tokens
 
 import ops "eslang/core/operations"
 
+// ======================
+// ARITHMETIC OPERATIONS
+// ======================
+
 // TokenOperatorAdd function    push the add operation onto the stack
 func TokenOperatorAdd(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if token != "+" {
@@ -66,6 +70,94 @@ func TokenOperatorMod(token string, lnum, cnum int, program *ops.Program) (bool,
 
 	position := ops.NewPosition(lnum, cnum, "")
 	op := ops.NewMiscOperation(position, ops.OP_OPERATOR_MOD)
+
+	err := program.Push(op)
+
+	return true, err
+}
+
+// ======================
+// RELATIONAL OPERATIONS
+// ======================
+
+// TokenROperatorEqual function    push the equal operation onto the stack
+func TokenROperatorEqual(token string, lnum, cnum int, program *ops.Program) (bool, error) {
+	if token != "=" {
+		return false, nil
+	}
+
+	position := ops.NewPosition(lnum, cnum, "")
+	op := ops.NewMiscOperation(position, ops.OP_R_OPERATOR_EQUAL)
+
+	err := program.Push(op)
+
+	return true, err
+}
+
+// TokenROperatorNotEqual function    push the not equal operation onto the stack
+func TokenROperatorNotEqual(token string, lnum, cnum int, program *ops.Program) (bool, error) {
+	if token != "!=" {
+		return false, nil
+	}
+
+	position := ops.NewPosition(lnum, cnum, "")
+	op := ops.NewMiscOperation(position, ops.OP_R_OPERATOR_NOT_EQUAL)
+
+	err := program.Push(op)
+
+	return true, err
+}
+
+// TokenROperatorLessThan function    push the less than operation onto the stack
+func TokenROperatorLessThan(token string, lnum, cnum int, program *ops.Program) (bool, error) {
+	if token != "<" {
+		return false, nil
+	}
+
+	position := ops.NewPosition(lnum, cnum, "")
+	op := ops.NewMiscOperation(position, ops.OP_R_OPERATOR_LESS_THAN)
+
+	err := program.Push(op)
+
+	return true, err
+}
+
+// TokenROperatorLessThanOrEqual function    push the less than or equal operation onto the stack
+func TokenROperatorLessThanOrEqual(token string, lnum, cnum int, program *ops.Program) (bool, error) {
+	if token != "<=" {
+		return false, nil
+	}
+
+	position := ops.NewPosition(lnum, cnum, "")
+	op := ops.NewMiscOperation(position, ops.OP_R_OPERATOR_LESS_THAN_OR_EQUAL)
+
+	err := program.Push(op)
+
+	return true, err
+}
+
+// TokenROperatorGreaterThan function    push the greater than operation onto the stack
+func TokenROperatorGreaterThan(token string, lnum, cnum int, program *ops.Program) (bool, error) {
+	if token != ">" {
+		return false, nil
+	}
+
+	position := ops.NewPosition(lnum, cnum, "")
+	op := ops.NewMiscOperation(position, ops.OP_R_OPERATOR_GREATER_THAN)
+
+	err := program.Push(op)
+
+	return true, err
+}
+
+// TokenROperatorGreaterThanOrEqual function    push the greater than or equal operation onto the stack
+func TokenROperatorGreaterThanOrEqual(token string, lnum, cnum int, program *ops.Program) (bool, error) {
+	if token != ">=" {
+		return false, nil
+	}
+
+	position := ops.NewPosition(lnum, cnum, "")
+	op := ops.NewMiscOperation(position, ops.OP_R_OPERATOR_GREATER_THAN_OR_EQUAL)
 
 	err := program.Push(op)
 
