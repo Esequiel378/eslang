@@ -28,9 +28,9 @@ func NewStack() Stack {
 
 // GetVariable method    returns a StackValue for the variable and a boolean indicating if the variable was found.
 func (s *Stack) GetVariable(name string) (StackValue, bool) {
-	value, ok := s.variables[name]
+	value, found := s.variables[name]
 
-	return value, ok
+	return value, found
 }
 
 // SetVariable method    sets the value of the variable.

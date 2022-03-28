@@ -1,6 +1,9 @@
 package stack
 
-import "eslang/core"
+import (
+	"eslang/core"
+	"fmt"
+)
 
 // StackValueInt struct    represents an integer value.
 type StackValueInt struct {
@@ -89,8 +92,8 @@ type StackValueVar struct {
 	name  string
 }
 
-// NewStackValueVar function    creates a new variable value.
-func NewStackValueVar(name string, value StackValue) StackValueVar {
+// NewStackValueVariable function    creates a new variable value.
+func NewStackValueVariable(name string, value StackValue) StackValueVar {
 	return StackValueVar{
 		value: value,
 		name:  name,
@@ -99,10 +102,8 @@ func NewStackValueVar(name string, value StackValue) StackValueVar {
 
 // Type method    returns the type of the variable value.
 func (v StackValueVar) Type() core.Type {
-	var zero StackValue
-
 	if v.value == nil {
-		return zero.Type()
+		return core.Nil
 	}
 
 	return v.value.Type()
@@ -110,10 +111,8 @@ func (v StackValueVar) Type() core.Type {
 
 // Value method    returns the value of the variable.
 func (v StackValueVar) Value() any {
-	var zero StackValue
-
 	if v.value == nil {
-		return zero.Value()
+		return nil
 	}
 
 	return v.value.Value()
@@ -121,10 +120,8 @@ func (v StackValueVar) Value() any {
 
 // TestTruthy method    returns true if the value of the variable is truthy.
 func (v StackValueVar) TestTruthy() (bool, error) {
-	var zero StackValue
-
 	if v.value == nil {
-		return zero.TestTruthy()
+		return false, fmt.Errorf("variable %s is not defined", v.name)
 	}
 
 	return v.value.TestTruthy()

@@ -9,6 +9,7 @@ import "fmt"
 type Program struct {
 	position   Position
 	operations []Operation
+	variables  map[string]*OPVariable
 }
 
 // NewProgram function    creates a new program block
@@ -18,7 +19,20 @@ func NewProgram(filename string) *Program {
 	return &Program{
 		position:   position,
 		operations: make([]Operation, 0),
+		variables:  make(map[string]*OPVariable),
 	}
+}
+
+// SetVariable method    sets a variable in the program
+func (p *Program) SetVariable(name string, value *OPVariable) {
+	p.variables[name] = value
+}
+
+// GetVariable method    returns the variable of the program
+func (p *Program) GetVariable(name string) (*OPVariable, bool) {
+	variable, found := p.variables[name]
+
+	return variable, found
 }
 
 // Position method    returns the position of the operation
@@ -59,10 +73,14 @@ func (op *Program) Push(operation Operation) error {
 	// Check if the last operation is a variable declaration
 	if lastOP != nil && lastOP.Type() == OP_VARIABLE {
 		variable := lastOP.(*OPVariable)
+		name := variable.Name()
 
 		// Check if the variable is not initialized and return an error
-		if variable.Value() == nil {
-			return fmt.Errorf("uninitialised variable %s", variable.Name())
+		if _, found := op.GetVariable(name); !found {
+			line, column := variable.Position().Ruler()
+			file := variable.Position().File()
+
+			return fmt.Errorf("uninitialised variable %s in %s:%d:%d", name, file, line, column)
 		}
 	}
 

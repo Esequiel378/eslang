@@ -11,19 +11,22 @@ const (
 	OP_PUSH_INT
 	OP_PUSH_STRING
 	OP_VARIABLE
+	OP_VARIABLE_WRITE
 
 	OP_TYPE_COUNT
 )
 
 // OP_TYPE_ALIASES map   is a map of OPType to their respective string representations
 var OP_TYPE_ALIASES = map[OPType]string{
-	OP_PROGRAM:       "OP_PROGRAM",
-	OP_BLOCK_IF_ELSE: "OP_BLOCK_IF_ELSE",
-	OP_DUMP:          "OP_DUMP",
-	OP_PUSH_FLOAT:    "OP_PUSH_FLOAT",
-	OP_PUSH_INT:      "OP_PUSH_INT",
-	OP_PUSH_STRING:   "OP_PUSH_STRING",
-	OP_VARIABLE:      "OP_VARIABLE",
+	OP_PROGRAM: "OP_PROGRAM",
+
+	OP_BLOCK_IF_ELSE:  "OP_BLOCK_IF_ELSE",
+	OP_DUMP:           "OP_DUMP",
+	OP_PUSH_FLOAT:     "OP_PUSH_FLOAT",
+	OP_PUSH_INT:       "OP_PUSH_INT",
+	OP_PUSH_STRING:    "OP_PUSH_STRING",
+	OP_VARIABLE:       "OP_VARIABLE",
+	OP_VARIABLE_WRITE: "OP_VARIABLE_WRITE",
 }
 
 // String method    returns the string representation of the operation
