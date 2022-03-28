@@ -19,17 +19,19 @@ const (
 	TOKEN_PUSH_INT
 	TOKEN_PUSH_STR
 	TOKEN_VARIABLE
+	TOKEN_SET_VARIABLE_TYPE
 
 	TOKEN_TYPE_COUNT
 )
 
 // REGISTERED_TOKENS map    is a map of token types to their respective token handlers
 var REGISTERED_TOKENS = map[TokenType]TokenHandler{
-	TOKEN_BLOCK_IF_ELSE: TokenBlockIfElse,
-	TOKEN_BLOCK_END:     TokenBlockEnd,
-	TOKEN_DUMP:          TokenDump,
-	TOKEN_PUSH_FLOAT:    TokenPushFloat,
-	TOKEN_PUSH_INT:      TokenPushInt,
-	TOKEN_PUSH_STR:      TokenPushStr,
-	TOKEN_VARIABLE:      TokenVariable,
+	TOKEN_BLOCK_IF_ELSE:     TokenBlockIfElse,
+	TOKEN_BLOCK_END:         TokenBlockEnd,
+	TOKEN_DUMP:              TokenDump,
+	TOKEN_PUSH_FLOAT:        TokenPushFloat,
+	TOKEN_PUSH_INT:          TokenPushInt,
+	TOKEN_PUSH_STR:          TokenPushStr,
+	TOKEN_VARIABLE:          TokenVariable,
+	TOKEN_SET_VARIABLE_TYPE: TokenSetVariableType,
 }

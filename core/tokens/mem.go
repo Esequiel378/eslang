@@ -28,7 +28,7 @@ func TokenVariable(token string, lnum, cnum int, program *ops.Program) (bool, er
 	return true, err
 }
 
-func TokenVarType(token string, lnum, cnum int, program *ops.Program) (bool, error) {
+func TokenSetVariableType(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	t, ok := ALIASES_TO_TYPE[token]
 
 	if !ok {
