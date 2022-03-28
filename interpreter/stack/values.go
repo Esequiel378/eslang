@@ -86,6 +86,33 @@ func (v StackValueString) TestTruthy() (bool, error) {
 	return v.value != "", nil
 }
 
+// StackValueBool
+type StackValueBool struct {
+	value bool
+}
+
+// NewStackValueBool function    creates a new boolean value.
+func NewStackValueBool(value bool) StackValue {
+	return StackValueBool{
+		value: value,
+	}
+}
+
+// Type method    return the type of the value.
+func (v StackValueBool) Type() core.Type {
+	return core.Bool
+}
+
+// Value method    returns a boolean value.
+func (v StackValueBool) Value() any {
+	return v.value
+}
+
+// TestTruthy method    returns true if the value is truthy.
+func (v StackValueBool) TestTruthy() (bool, error) {
+	return v.value, nil
+}
+
 // StackValueVar struct    contains a variable value.
 type StackValueVar struct {
 	value StackValue

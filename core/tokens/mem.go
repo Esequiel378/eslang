@@ -13,6 +13,7 @@ var ALIASES_TO_TYPE = map[string]core.Type{
 	"int":   core.Int,
 	"float": core.Float,
 	"str":   core.String,
+	"bool":  core.Bool,
 }
 
 // TokenVariable function    create and push a variable onto the stack

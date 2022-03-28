@@ -107,13 +107,9 @@ func EqualValues(lhs StackValue, rhs StackValue) (StackValue, error) {
 		return nil, fmt.Errorf("can not compare values of different types")
 	}
 
-	var truthty int64 = 0
+	truthty := lhs.Value() == rhs.Value()
 
-	if lhs.Value() == rhs.Value() {
-		truthty = 1
-	}
-
-	return NewStackValueInt(truthty), nil
+	return NewStackValueBool(truthty), nil
 }
 
 // NotEqualValues function    compares if two values are not equal
@@ -122,13 +118,9 @@ func NotEqualValues(lhs StackValue, rhs StackValue) (StackValue, error) {
 		return nil, fmt.Errorf("can not compare values of different types")
 	}
 
-	var truthty int64 = 0
+	truthty := lhs.Value() != rhs.Value()
 
-	if lhs.Value() != rhs.Value() {
-		truthty = 1
-	}
-
-	return NewStackValueInt(truthty), nil
+	return NewStackValueBool(truthty), nil
 }
 
 // LessThanValues function    compares if one value is less than another
@@ -137,26 +129,20 @@ func LessThanValues(lhs StackValue, rhs StackValue) (StackValue, error) {
 		return nil, fmt.Errorf("can not compare values of different types")
 	}
 
-	var truthty int64 = 0
+	var truthty bool
 
 	switch lhs.Type() {
 	case core.Int:
-		if lhs.Value().(int64) < rhs.Value().(int64) {
-			truthty = 1
-		}
+		truthty = lhs.Value().(int64) < rhs.Value().(int64)
 	case core.Float:
-		if lhs.Value().(float64) < rhs.Value().(float64) {
-			truthty = 1
-		}
+		truthty = lhs.Value().(float64) < rhs.Value().(float64)
 	case core.String:
-		if lhs.Value().(string) < rhs.Value().(string) {
-			truthty = 1
-		}
+		truthty = lhs.Value().(string) < rhs.Value().(string)
 	default:
 		return nil, fmt.Errorf("can not compare values of type %s", lhs.Type())
 	}
 
-	return NewStackValueInt(truthty), nil
+	return NewStackValueBool(truthty), nil
 }
 
 // GreaterThanValues function    compares if one value is greater than another
@@ -165,26 +151,20 @@ func GreaterThanValues(lhs StackValue, rhs StackValue) (StackValue, error) {
 		return nil, fmt.Errorf("can not compare values of different types")
 	}
 
-	var truthty int64 = 0
+	var truthty bool
 
 	switch lhs.Type() {
 	case core.Int:
-		if lhs.Value().(int64) > rhs.Value().(int64) {
-			truthty = 1
-		}
+		truthty = lhs.Value().(int64) > rhs.Value().(int64)
 	case core.Float:
-		if lhs.Value().(float64) > rhs.Value().(float64) {
-			truthty = 1
-		}
+		truthty = lhs.Value().(float64) > rhs.Value().(float64)
 	case core.String:
-		if lhs.Value().(string) > rhs.Value().(string) {
-			truthty = 1
-		}
+		truthty = lhs.Value().(string) > rhs.Value().(string)
 	default:
 		return nil, fmt.Errorf("can not compare values of type %s", lhs.Type())
 	}
 
-	return NewStackValueInt(truthty), nil
+	return NewStackValueBool(truthty), nil
 }
 
 // LessThanOrEqualValues function    compares if one value is less than or equal to another
@@ -193,26 +173,20 @@ func LessThanOrEqualValues(lhs StackValue, rhs StackValue) (StackValue, error) {
 		return nil, fmt.Errorf("can not compare values of different types")
 	}
 
-	var truthty int64 = 0
+	var truthty bool
 
 	switch lhs.Type() {
 	case core.Int:
-		if lhs.Value().(int64) <= rhs.Value().(int64) {
-			truthty = 1
-		}
+		truthty = lhs.Value().(int64) <= rhs.Value().(int64)
 	case core.Float:
-		if lhs.Value().(float64) <= rhs.Value().(float64) {
-			truthty = 1
-		}
+		truthty = lhs.Value().(float64) <= rhs.Value().(float64)
 	case core.String:
-		if lhs.Value().(string) <= rhs.Value().(string) {
-			truthty = 1
-		}
+		truthty = lhs.Value().(string) <= rhs.Value().(string)
 	default:
 		return nil, fmt.Errorf("can not compare values of type %s", lhs.Type())
 	}
 
-	return NewStackValueInt(truthty), nil
+	return NewStackValueBool(truthty), nil
 }
 
 // GreaterThanOrEqualValues function    compares if one value is greater than or equal to another
@@ -221,24 +195,18 @@ func GreaterThanOrEqualValues(lhs StackValue, rhs StackValue) (StackValue, error
 		return nil, fmt.Errorf("can not compare values of different types")
 	}
 
-	var truthty int64 = 0
+	var truthty bool
 
 	switch lhs.Type() {
 	case core.Int:
-		if lhs.Value().(int64) >= rhs.Value().(int64) {
-			truthty = 1
-		}
+		truthty = lhs.Value().(int64) >= rhs.Value().(int64)
 	case core.Float:
-		if lhs.Value().(float64) >= rhs.Value().(float64) {
-			truthty = 1
-		}
+		truthty = lhs.Value().(float64) >= rhs.Value().(float64)
 	case core.String:
-		if lhs.Value().(string) >= rhs.Value().(string) {
-			truthty = 1
-		}
+		truthty = lhs.Value().(string) >= rhs.Value().(string)
 	default:
 		return nil, fmt.Errorf("can not compare values of type %s", lhs.Type())
 	}
 
-	return NewStackValueInt(truthty), nil
+	return NewStackValueBool(truthty), nil
 }

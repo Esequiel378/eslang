@@ -22,6 +22,7 @@ var REGISTERED_OPERATIONS = map[ops.OPType]OPHandler{
 	ops.OP_PUSH_FLOAT:  OPPushFloat,
 	ops.OP_PUSH_INT:    OPPushInt,
 	ops.OP_PUSH_STRING: OPPushStr,
+	ops.OP_PUSH_BOOL:   OPPushBool,
 
 	// variables
 	ops.OP_VARIABLE:       OPVariable,

@@ -16,6 +16,7 @@ const (
 	OP_PUSH_FLOAT
 	OP_PUSH_INT
 	OP_PUSH_STRING
+	OP_PUSH_BOOL
 
 	// variables
 	OP_VARIABLE
@@ -54,6 +55,7 @@ var OP_TYPE_ALIASES = map[OPType]string{
 	OP_PUSH_FLOAT:  "OP_PUSH_FLOAT",
 	OP_PUSH_INT:    "OP_PUSH_INT",
 	OP_PUSH_STRING: "OP_PUSH_STRING",
+	OP_PUSH_BOOL:   "OP_PUSH_BOOL",
 
 	// variables
 	OP_VARIABLE:       "OP_VARIABLE",

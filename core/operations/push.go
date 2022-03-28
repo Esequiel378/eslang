@@ -86,3 +86,32 @@ func (op OPPushString) Type() OPType {
 func (op OPPushString) Value() string {
 	return op.value
 }
+
+// OPPushBool struct    represents a  operation that pushes a bool onto the stack
+type OPPushBool struct {
+	position Position
+	value    bool
+}
+
+// NewOPPushBool function    creates a new OperationPushBool
+func NewOPPushBool(value bool, position Position) Operation {
+	return OPPushBool{
+		value:    value,
+		position: position,
+	}
+}
+
+// Position method    returns the position of the operation
+func (op OPPushBool) Position() Position {
+	return op.position
+}
+
+// Type method    returns the type of the operation
+func (op OPPushBool) Type() OPType {
+	return OP_PUSH_BOOL
+}
+
+// Value method    returns the value of the operation
+func (op OPPushBool) Value() bool {
+	return op.value
+}

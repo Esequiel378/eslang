@@ -23,7 +23,8 @@ const (
 	// push
 	TOKEN_PUSH_FLOAT
 	TOKEN_PUSH_INT
-	TOKEN_PUSH_STR
+	TOKEN_PUSH_STRING
+	TOKEN_PUSH_BOOl
 
 	// variables
 	TOKEN_SET_VARIABLE_TYPE
@@ -59,9 +60,10 @@ var REGISTERED_TOKENS = map[TokenType]TokenHandler{
 	TOKEN_DUMP: TokenDump,
 
 	// push
-	TOKEN_PUSH_FLOAT: TokenPushFloat,
-	TOKEN_PUSH_INT:   TokenPushInt,
-	TOKEN_PUSH_STR:   TokenPushStr,
+	TOKEN_PUSH_FLOAT:  TokenPushFloat,
+	TOKEN_PUSH_INT:    TokenPushInt,
+	TOKEN_PUSH_STRING: TokenPushStr,
+	TOKEN_PUSH_BOOl:   TokenPushBool,
 
 	// variables
 	TOKEN_SET_VARIABLE_TYPE: TokenSetVariableType,

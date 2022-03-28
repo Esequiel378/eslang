@@ -65,3 +65,18 @@ func TokenPushStr(token string, lnum, cnum int, program *ops.Program) (bool, err
 
 	return true, err
 }
+
+// TokenPushBool function    pushes a bool onto the stack
+func TokenPushBool(token string, lnum, cnum int, program *ops.Program) (bool, error) {
+	if token != "true" && token != "false" {
+		return false, nil
+	}
+
+	value := token == "true"
+	position := ops.NewPosition(lnum, cnum, "")
+	op := ops.NewOPPushBool(value, position)
+
+	err := program.Push(op)
+
+	return true, err
+}

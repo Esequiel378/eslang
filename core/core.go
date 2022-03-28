@@ -3,7 +3,8 @@ package core
 type Type int
 
 const (
-	Float Type = iota
+	Bool Type = iota
+	Float
 	Int
 	Nil
 	String
@@ -12,6 +13,7 @@ const (
 )
 
 var TYPE_ALIASES = map[Type]string{
+	Bool:   "bool",
 	Float:  "float",
 	Int:    "int",
 	Nil:    "nil",
@@ -19,20 +21,19 @@ var TYPE_ALIASES = map[Type]string{
 }
 
 func (t Type) String() string {
-	if alias, ok := TYPE_ALIASES[t]; ok {
-		return alias
-	}
-
-	return "-unknown-"
+	return TYPE_ALIASES[t]
 }
 
 var RESERVED_WORDS = map[string]bool{
+	"bool":  true,
 	"dump":  true,
 	"else":  true,
 	"end":   true,
+	"false": true,
 	"float": true,
 	"if":    true,
 	"int":   true,
 	"str":   true,
+	"true":  true,
 	"while": true,
 }
