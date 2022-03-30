@@ -15,8 +15,12 @@ type (
 
 // REGISTERED_OPERATIONS    is a map of operation handlers
 var REGISTERED_OPERATIONS = map[ops.OPType]OPHandler{
-	// std
+	// stack
+	ops.OP_DROP: OPDrop,
 	ops.OP_DUMP: OPDump,
+	ops.OP_DUP:  OPDup,
+	ops.OP_OVER: OPOver,
+	ops.OP_SWAP: OPSwap,
 
 	// push
 	ops.OP_PUSH_FLOAT:  OPPushFloat,

@@ -9,8 +9,12 @@ const (
 	OP_BLOCK_IF_ELSE
 	OP_BLOCK_WHILE
 
-	// std
+	// stack
+	OP_DROP
 	OP_DUMP
+	OP_DUP
+	OP_OVER
+	OP_SWAP
 
 	// push
 	OP_PUSH_FLOAT
@@ -48,8 +52,12 @@ var OP_TYPE_ALIASES = map[OPType]string{
 	OP_BLOCK_IF_ELSE: "OP_BLOCK_IF_ELSE",
 	OP_BLOCK_WHILE:   "OP_BLOCK_WHILE",
 
-	// std
+	// stack
+	OP_DROP: "OP_DROP",
 	OP_DUMP: "OP_DUMP",
+	OP_DUP:  "OP_DUP",
+	OP_OVER: "OP_OVER",
+	OP_SWAP: "OP_SWAP",
 
 	// push
 	OP_PUSH_FLOAT:  "OP_PUSH_FLOAT",

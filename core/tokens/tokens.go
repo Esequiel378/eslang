@@ -17,8 +17,12 @@ const (
 	TOKEN_BLOCK_END
 	TOKEN_BLOCK_WHILE
 
-	// std
+	// stack
+	TOKEN_DROP
 	TOKEN_DUMP
+	TOKEN_DUP
+	TOKEN_OVER
+	TOKEN_SWAP
 
 	// push
 	TOKEN_PUSH_FLOAT
@@ -56,8 +60,12 @@ var REGISTERED_TOKENS = map[TokenType]TokenHandler{
 	TOKEN_BLOCK_WHILE:   TokenBlockWhile,
 	TOKEN_BLOCK_IF_ELSE: TokenBlockIfElse,
 
-	// std
+	// stack
+	TOKEN_DROP: TokenDrop,
 	TOKEN_DUMP: TokenDump,
+	TOKEN_DUP:  TokenDup,
+	TOKEN_OVER: TokenOver,
+	TOKEN_SWAP: TokenSwap,
 
 	// push
 	TOKEN_PUSH_FLOAT:  TokenPushFloat,

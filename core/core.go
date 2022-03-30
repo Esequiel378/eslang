@@ -26,7 +26,9 @@ func (t Type) String() string {
 
 var RESERVED_WORDS = map[string]bool{
 	"bool":  true,
+	"drop":  true,
 	"dump":  true,
+	"dup":   true,
 	"else":  true,
 	"end":   true,
 	"false": true,
@@ -36,4 +38,6 @@ var RESERVED_WORDS = map[string]bool{
 	"str":   true,
 	"true":  true,
 	"while": true,
+	"over":  true,
+	"swap":  true,
 }

@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// StackValue interface  Óòß  represents a value in the stack.
+// StackValue interface    represents a value in the stack.
 type StackValue interface {
 	Type() core.Type
 	Value() any
@@ -48,7 +48,20 @@ func (s *Stack) Push(value StackValue) {
 	s.stack = append(s.stack, value)
 }
 
-// Peek method    returns the top element of the stack without removing it.
+// PeekAt method    returns the element at the specified index.
+// Accepts negative indices, which are relative to the end of the stack.
+func (s *Stack) PeekAt(index int) (StackValue, error) {
+	if index < 0 {
+		index = len(s.stack) + index
+	}
+
+	if index < 0 || index >= len(s.stack) {
+		return nil, fmt.Errorf("index out of bounds")
+	}
+
+	return s.stack[index], nil
+}
+
 func (s *Stack) Peek() (StackValue, error) {
 	if s.IsEmpty() {
 		return nil, fmt.Errorf("can not perform `Stack.Peek()`, stack is empty")
@@ -63,6 +76,7 @@ func (s *Stack) Peek() (StackValue, error) {
 }
 
 // Pop method    removes and returns the top element of the stack.
+// TODO: Improve this method, it is not very efficient.
 func (s *Stack) Pop() (StackValue, error) {
 	if s.IsEmpty() {
 		return nil, fmt.Errorf("can not perform `Stack.Pop()`, stack is empty")
