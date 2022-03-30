@@ -46,6 +46,11 @@ var REGISTERED_OPERATIONS = map[ops.OPType]OPHandler{
 	ops.OP_R_OPERATOR_LESS_THAN_OR_EQUAL:    OPRLessThanOrEqual,
 	ops.OP_R_OPERATOR_GREATER_THAN:          OPRGreaterThan,
 	ops.OP_R_OPERATOR_GREATER_THAN_OR_EQUAL: OPRGreaterThanOrEqual,
+
+	// logical operators
+	ops.OP_L_OPERATOR_AND: OPLOperatorAnd,
+	ops.OP_L_OPERATOR_NOT: OPLOperatorNot,
+	ops.OP_L_OPERATOR_OR:  OPLOperatorOr,
 }
 
 // REGISTERED_BLOCK_OPERATIONS    is a map of block operation handlers

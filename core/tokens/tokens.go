@@ -50,6 +50,11 @@ const (
 	TOKEN_R_OPERTATOR_GREATER_THAN
 	TOKEN_R_OPERTATOR_GREATER_THAN_OR_EQUAL
 
+	// logical operators
+	TOKEN_L_OPERTATOR_AND
+	TOKEN_L_OPERTATOR_NOT
+	TOKEN_L_OPERTATOR_OR
+
 	TOKEN_TYPE_COUNT
 )
 
@@ -92,4 +97,9 @@ var REGISTERED_TOKENS = map[TokenType]TokenHandler{
 	TOKEN_R_OPERTATOR_LESS_THAN_OR_EQUAL:    TokenROperatorLessThanOrEqual,
 	TOKEN_R_OPERTATOR_GREATER_THAN:          TokenROperatorGreaterThan,
 	TOKEN_R_OPERTATOR_GREATER_THAN_OR_EQUAL: TokenROperatorGreaterThanOrEqual,
+
+	// logical operators
+	TOKEN_L_OPERTATOR_AND: TokenLOperatorAnd,
+	TOKEN_L_OPERTATOR_NOT: TokenLOperatorNot,
+	TOKEN_L_OPERTATOR_OR:  TokenLOperatorOr,
 }

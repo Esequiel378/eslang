@@ -95,7 +95,7 @@ func (op *Program) Push(operation Operation) error {
 			line, column := variable.Position().Ruler()
 			file := variable.Position().File()
 
-			return fmt.Errorf("uninitialised variable %s in %s:%d:%d", name, file, line, column)
+			return fmt.Errorf("uninitialised variable `%s` in %s:%d:%d", name, file, line, column)
 		}
 	}
 

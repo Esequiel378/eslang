@@ -210,3 +210,51 @@ func GreaterThanOrEqualValues(lhs StackValue, rhs StackValue) (StackValue, error
 
 	return NewStackValueBool(truthty), nil
 }
+
+// ======================
+// LOGICAL OPERATIONS
+// ======================
+
+// LogicalAndOperator function    returns the logical AND of two values
+func LogicalAndOperator(lhs StackValue, rhs StackValue) (StackValue, error) {
+	lhsTruthty, err := lhs.TestTruthy()
+	if err != nil {
+		return nil, err
+	}
+
+	rhsTruthty, err := rhs.TestTruthy()
+	if err != nil {
+		return nil, err
+	}
+
+	truthty := lhsTruthty && rhsTruthty
+
+	return NewStackValueBool(truthty), nil
+}
+
+// LogicalNotOperator function    returns the logical NOT of a value
+func LogicalNotOperator(value StackValue) (StackValue, error) {
+	truthty, err := value.TestTruthy()
+	if err != nil {
+		return nil, err
+	}
+
+	return NewStackValueBool(!truthty), nil
+}
+
+// LogicalOrOperator function    returns the logical OR of two values
+func LogicalOrOperator(lhs StackValue, rhs StackValue) (StackValue, error) {
+	lhsTruthty, err := lhs.TestTruthy()
+	if err != nil {
+		return nil, err
+	}
+
+	rhsTruthty, err := rhs.TestTruthy()
+	if err != nil {
+		return nil, err
+	}
+
+	truthty := lhsTruthty || rhsTruthty
+
+	return NewStackValueBool(truthty), nil
+}

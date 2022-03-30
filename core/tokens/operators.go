@@ -163,3 +163,49 @@ func TokenROperatorGreaterThanOrEqual(token string, lnum, cnum int, program *ops
 
 	return true, err
 }
+
+// ==================
+// LOGICAL OPERATIONS
+// ==================
+
+// TokenLOperatorOr function    push the or operation onto the stack
+func TokenLOperatorOr(token string, lnum, cnum int, program *ops.Program) (bool, error) {
+	if token != "||" {
+		return false, nil
+	}
+
+	position := ops.NewPosition(lnum, cnum, "")
+	op := ops.NewMiscOperation(position, ops.OP_L_OPERATOR_OR)
+
+	err := program.Push(op)
+
+	return true, err
+}
+
+// TokenLOperatorAnd function    push the and operation onto the stack
+func TokenLOperatorAnd(token string, lnum, cnum int, program *ops.Program) (bool, error) {
+	if token != "&&" {
+		return false, nil
+	}
+
+	position := ops.NewPosition(lnum, cnum, "")
+	op := ops.NewMiscOperation(position, ops.OP_L_OPERATOR_AND)
+
+	err := program.Push(op)
+
+	return true, err
+}
+
+// TokenLOperatorNot function    push the not operation onto the stack
+func TokenLOperatorNot(token string, lnum, cnum int, program *ops.Program) (bool, error) {
+	if token != "!" {
+		return false, nil
+	}
+
+	position := ops.NewPosition(lnum, cnum, "")
+	op := ops.NewMiscOperation(position, ops.OP_L_OPERATOR_NOT)
+
+	err := program.Push(op)
+
+	return true, err
+}
