@@ -51,10 +51,10 @@ func TokenSetVariableType(token string, lnum, cnum int, program *ops.Program) (b
 	position := ops.NewPosition(lnum, cnum, "")
 	variable := lastOP.(*ops.OPVariable)
 
-	if variable, found := program.GetVariable(variable.Name()); found {
-		line, column := variable.Position().Ruler()
-		file := variable.Position().File()
-		name := variable.Name()
+	if _var, found := program.GetVariable(variable.Name()); found {
+		line, column := _var.Position().Ruler()
+		file := _var.Position().File()
+		name := _var.Name()
 
 		return true, fmt.Errorf("variable `%s` already defined in %s:%d:%d", name, file, line, column)
 	}
@@ -85,23 +85,10 @@ func TokenVariableWrite(token string, lnum, cnum int, program *ops.Program) (boo
 		return false, nil
 	}
 
-	lhs, rhs, err := program.PeekTwo()
-	if err != nil {
-		return false, err
-	}
-
-	variable := rhs.(*ops.OPVariable)
-
-	variableValueType := variable.Value().Type()
-
-	if lhs.Type() != variableValueType {
-		return false, fmt.Errorf("cannot assign `%s` to `%s` in line %d:%d", lhs.Type(), variableValueType, lnum, cnum)
-	}
-
 	position := ops.NewPosition(lnum, cnum, "")
 	op := ops.NewMiscOperation(position, ops.OP_VARIABLE_WRITE)
 
-	err = program.Push(op)
+	err := program.Push(op)
 
 	return true, err
 }

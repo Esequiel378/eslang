@@ -11,7 +11,8 @@ func TokenBlockIfElse(token string, lnum, column int, program *ops.Program) (boo
 	position := ops.NewPosition(lnum, column, "")
 
 	if token == "if" {
-		op := ops.NewOPBlockIfElse(position)
+		ifProgram := program.Copy()
+		op := ops.NewOPBlockIfElse(ifProgram, position)
 		err := program.Push(op)
 
 		return true, err
@@ -27,7 +28,11 @@ func TokenBlockIfElse(token string, lnum, column int, program *ops.Program) (boo
 		ifBlock := lastOp.(*ops.OPBlockIfElse)
 
 		ifBlock.CloseLastBlock()
-		ifBlock.SetNext(position)
+
+		elseProgram := program.Copy()
+		esleBlock := ops.NewOPBlockIfElse(elseProgram, position)
+
+		ifBlock.SetNext(esleBlock)
 
 		return true, nil
 	}
@@ -41,7 +46,9 @@ func TokenBlockWhile(token string, lnum, column int, program *ops.Program) (bool
 	}
 
 	position := ops.NewPosition(lnum, column, "")
-	op := ops.NewOPBlockWhile(position)
+	whileProgram := program.Copy()
+
+	op := ops.NewOPBlockWhile(whileProgram, position)
 
 	err := program.Push(op)
 

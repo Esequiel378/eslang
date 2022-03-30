@@ -193,7 +193,7 @@ type OperationLinkedBlocks interface {
 	// HasNext method    returns true if the block has a next block attached
 	HasNext() bool
 	// SetNext method    set the next block to start pushing operations
-	SetNext(Position)
+	SetNext(OperationLinkedBlocks)
 	// Next method    returns the next block attached to the current block
 	Next() OperationLinkedBlocks
 	// LastBlock method    returns the last block attached to the current block

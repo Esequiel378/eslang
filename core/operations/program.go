@@ -2,22 +2,33 @@ package operations
 
 import "fmt"
 
+type Variables map[string]*OPVariable
+
 // Program struct    represents a program block (entry point of the code)
 type Program struct {
 	position   Position
 	operations []Operation
-	variables  map[string]*OPVariable
+	variables  Variables
 }
 
 // NewProgram function    creates a new program block
 func NewProgram(filename string) *Program {
 	position := NewPosition(0, 0, filename)
 
+	// TODO: set a fix length of the variables and make it a flag
 	return &Program{
 		position:   position,
 		operations: make([]Operation, 0),
-		variables:  make(map[string]*OPVariable),
+		variables:  make(Variables),
 	}
+}
+
+// Copy method    returns a copy of the program that only contains the variables scope
+func (p *Program) Copy() *Program {
+	program := NewProgram(p.Position().File())
+	program.variables = p.variables
+
+	return program
 }
 
 // SetVariable method    sets a variable in the program

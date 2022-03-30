@@ -11,9 +11,9 @@ type OPBlockIfElse struct {
 }
 
 // NewOPBlockIfElse function    creates a new OperationBlock
-func NewOPBlockIfElse(position Position) *OPBlockIfElse {
+func NewOPBlockIfElse(program *Program, position Position) *OPBlockIfElse {
 	return &OPBlockIfElse{
-		program:  &Program{},
+		program:  program,
 		position: position,
 		next:     nil,
 		isClosed: false,
@@ -106,8 +106,8 @@ func (op *OPBlockIfElse) HasNext() bool {
 }
 
 // SetNext method    set the next block to start pushing operations
-func (op *OPBlockIfElse) SetNext(position Position) {
-	op.next = NewOPBlockIfElse(position)
+func (op *OPBlockIfElse) SetNext(block OperationLinkedBlocks) {
+	op.next = block
 }
 
 // Next method    returns the next block
@@ -132,9 +132,9 @@ type OPBlockWhile struct {
 }
 
 // NewOPBlockWhile function    creates a new OPBlockWhile
-func NewOPBlockWhile(position Position) *OPBlockWhile {
+func NewOPBlockWhile(program *Program, position Position) *OPBlockWhile {
 	return &OPBlockWhile{
-		program:  &Program{},
+		program:  program,
 		position: position,
 		isClosed: false,
 	}
