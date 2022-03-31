@@ -33,7 +33,6 @@ func OPDup(stack *s.Stack, _ ops.Operation) error {
 	}
 
 	stack.Push(sValue)
-	stack.Push(sValue)
 
 	return nil
 }
