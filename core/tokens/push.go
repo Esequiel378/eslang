@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 var (
-	IS_INT   = regexp.MustCompile(`^\d+$`)
+	IS_INT   = regexp.MustCompile(`^(\d{1,3})(_?\d{1,3})*?$`)
 	IS_FLOAT = regexp.MustCompile(`^\d+\.\d+$`)
 	IS_STR   = regexp.MustCompile(`^".+"$`)
 )
@@ -18,6 +19,8 @@ func TokenPushInt(token string, lnum, cnum int, program *ops.Program) (bool, err
 	if !IS_INT.MatchString(token) {
 		return false, nil
 	}
+
+	token = strings.ReplaceAll(token, "_", "")
 
 	value, err := strconv.ParseInt(token, 10, 64)
 	if err != nil {
