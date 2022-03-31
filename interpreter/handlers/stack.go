@@ -27,7 +27,7 @@ func OPDump(stack *s.Stack, _ ops.Operation) error {
 
 // OPDup function    duplicate the top of the stack
 func OPDup(stack *s.Stack, _ ops.Operation) error {
-	sValue, err := stack.Pop()
+	sValue, err := stack.Peek()
 	if err != nil {
 		return err
 	}

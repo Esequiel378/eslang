@@ -85,17 +85,6 @@ func (op *Program) IsEmpty() bool {
 func (op *Program) Push(operation Operation) error {
 	lastOP := op.LastOP()
 
-	// Check if the last operation is a block
-	if lastOP != nil && lastOP.Type().IsBlock() {
-		block := lastOP.(OperationBlock)
-
-		// Push the operation to the block is it's not close
-		if !block.IsClosed() {
-			err := block.Push(operation)
-			return err
-		}
-	}
-
 	// Check if the last operation is a variable declaration
 	if lastOP != nil && lastOP.Type() == OP_VARIABLE {
 		variable := lastOP.(*OPVariable)
@@ -109,6 +98,20 @@ func (op *Program) Push(operation Operation) error {
 			return fmt.Errorf("uninitialised variable `%s` in %s:%d:%d", name, file, line, column)
 		}
 	}
+
+	// Check if the last operation is a block
+	if lastOP != nil && lastOP.Type().IsBlock() {
+		block := lastOP.(OperationBlock).LastNestedBlock()
+
+		// Push the operation to the block if it's open
+		if block.IsOpen() {
+			// fmt.Println("last open block: ", block.Type())
+			err := block.Push(operation)
+			return err
+		}
+	}
+
+	// fmt.Println("push: ", operation.Type())
 
 	// Push the operation to the program
 	op.operations = append(op.operations, operation)

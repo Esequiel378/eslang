@@ -55,7 +55,7 @@ func executeProgram(program *ops.Program, stack *stack.Stack) error {
 	return nil
 }
 
-func SimulateProgram(program *ops.Program) error {
+func RunProgram(program *ops.Program) error {
 	stack := stack.NewStack()
 
 	if err := executeProgram(program, &stack); err != nil {

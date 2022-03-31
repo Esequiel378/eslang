@@ -68,21 +68,16 @@ func LoadProgramFromFile(program *ops.Program, filename string) error {
 
 	lastOP := program.LastOP()
 
-	if lastOP.Type().IsBlock() {
-		block := lastOP.(ops.OperationBlock)
+	if block, ok := lastOP.(ops.OperationBlock); ok && block.IsOpen() {
+		line, column := block.Position().Ruler()
 
-		if !block.IsClosed() {
-			line, column := block.Position().Ruler()
-
-			// Check if the block has liked blocks and update the line and column values
-			if b, ok := block.(ops.OperationLinkedBlocks); ok {
-				fmt.Println("Here!")
-				block := b.LastBlock().(ops.OperationBlock)
-				line, column = block.Position().Ruler()
-			}
-
-			return fmt.Errorf("unclosed block at %s:%d:%d", filename, line, column)
+		// Check if the block has liked blocks and update the line and column values
+		if b, ok := block.(ops.OperationLinkedBlocks); ok {
+			block := b.LastBlock()
+			line, column = block.Position().Ruler()
 		}
+
+		return fmt.Errorf("unclosed block at %s:%d:%d", filename, line, column)
 	}
 
 	return nil

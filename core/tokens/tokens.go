@@ -16,6 +16,7 @@ const (
 	TOKEN_BLOCK_IF_ELSE TokenType = iota
 	TOKEN_BLOCK_END
 	TOKEN_BLOCK_WHILE
+	TOKEN_DO
 
 	// stack
 	TOKEN_DROP
@@ -64,6 +65,7 @@ var REGISTERED_TOKENS = map[TokenType]TokenHandler{
 	TOKEN_BLOCK_END:     TokenBlockEnd,
 	TOKEN_BLOCK_WHILE:   TokenBlockWhile,
 	TOKEN_BLOCK_IF_ELSE: TokenBlockIfElse,
+	TOKEN_DO:            TokenDo,
 
 	// stack
 	TOKEN_DROP: TokenDrop,

@@ -170,10 +170,8 @@ func (op MiscOperation) Type() OPType {
 
 // OperationBlock interface    represents a block of operations
 type OperationBlock interface {
-	// Position method    returns the position of the operation
-	Position() Position
-	// Type method    returns the type of the operation
-	Type() OPType
+	Operation
+
 	// Program method    returns the program of the block
 	Program() *Program
 	// IsEmpty method    returns true if the block is empty
@@ -182,14 +180,18 @@ type OperationBlock interface {
 	Push(operation Operation) error
 	// Last method    returns the last operation of the block
 	LastOP() Operation
-	// IsClosed method    returns true if the block is closed
-	IsClosed() bool
+	// Last method    returns the last operation of the block that also is a block
+	LastNestedBlock() OperationBlock
+	// IsOpen method    returns true if the block is closed
+	IsOpen() bool
 	// CloseBlock method    closes the last inner block
 	CloseBlock()
 }
 
 // OperationLinkedBlocks interface    represents a block of operations that can be linked to other blocks
 type OperationLinkedBlocks interface {
+	OperationBlock
+
 	// HasNext method    returns true if the block has a next block attached
 	HasNext() bool
 	// SetNext method    set the next block to start pushing operations
@@ -200,4 +202,16 @@ type OperationLinkedBlocks interface {
 	LastBlock() OperationLinkedBlocks
 	// CloseLastBlock method    closes the last inner block
 	CloseLastBlock()
+}
+
+// OperationLoopCondition interface    represents a block that has a condition that should run on every iteration
+type OperationLoop interface {
+	OperationBlock
+
+	// ConditionBlock method    returns the condition block
+	ConditionBlock() []Operation
+	// IsConditionBlockOpen method    returns true if the condition block is open
+	IsConditionBlockOpen() bool
+	// CloseConditionBlock method    closes the condition block
+	CloseConditionBlock()
 }

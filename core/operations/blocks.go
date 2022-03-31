@@ -7,16 +7,16 @@ type OPBlockIfElse struct {
 	position Position
 	program  *Program
 	next     OperationLinkedBlocks
-	isClosed bool
+	isOpen   bool
 }
 
 // NewOPBlockIfElse function    creates a new OperationBlock
-func NewOPBlockIfElse(program *Program, position Position) *OPBlockIfElse {
+func NewOPBlockIfElse(program *Program, position Position) OperationLinkedBlocks {
 	return &OPBlockIfElse{
 		program:  program,
 		position: position,
 		next:     nil,
-		isClosed: false,
+		isOpen:   true,
 	}
 }
 
@@ -42,7 +42,7 @@ func (op *OPBlockIfElse) IsEmpty() bool {
 
 // Push method    adds an operation to the block
 func (op *OPBlockIfElse) Push(operation Operation) error {
-	if !op.isClosed {
+	if op.isOpen {
 		err := op.Program().Push(operation)
 		return err
 	}
@@ -66,6 +66,23 @@ func (op *OPBlockIfElse) LastOP() Operation {
 	return op.program.LastOP()
 }
 
+// LastNestedBlock method    returns the last nested block
+func (op *OPBlockIfElse) LastNestedBlock() OperationBlock {
+	block := op.Program().LastOP()
+
+	if block == nil || !block.Type().IsBlock() {
+		return op
+	}
+
+	b := block.(OperationBlock)
+
+	if b.IsOpen() {
+		return b.LastNestedBlock()
+	}
+
+	return op
+}
+
 // CloseLastBlock method    closes the last inner block
 func (op *OPBlockIfElse) CloseLastBlock() {
 	if op.HasNext() {
@@ -80,7 +97,7 @@ func (op *OPBlockIfElse) CloseLastBlock() {
 		return
 	}
 
-	op.isClosed = true
+	op.isOpen = false
 }
 
 // CloseBlock method    closes the block
@@ -88,16 +105,15 @@ func (op *OPBlockIfElse) CloseBlock() {
 	op.CloseLastBlock()
 }
 
-// IsClosed method    returns true if the block is closed
-func (op *OPBlockIfElse) IsClosed() bool {
-	closed := op.isClosed
+// IsOpen method    returns true if the block is closed
+func (op *OPBlockIfElse) IsOpen() bool {
+	open := op.isOpen
 
 	if op.HasNext() {
-		next := op.Next().(*OPBlockIfElse)
-		closed = next.IsClosed()
+		open = op.Next().IsOpen()
 	}
 
-	return closed
+	return open
 }
 
 // HasNext    returns true if the block has a linked block
@@ -126,17 +142,21 @@ func (op *OPBlockIfElse) LastBlock() OperationLinkedBlocks {
 
 // OPBlockWhile struct    represents a  operation that starts a while block
 type OPBlockWhile struct {
-	position Position
-	program  *Program
-	isClosed bool
+	position        Position
+	program         *Program
+	isOpen          bool
+	condition       []Operation
+	isConditionOpen bool
 }
 
 // NewOPBlockWhile function    creates a new OPBlockWhile
-func NewOPBlockWhile(program *Program, position Position) *OPBlockWhile {
+func NewOPBlockWhile(program *Program, position Position) OperationLoop {
 	return &OPBlockWhile{
-		program:  program,
-		position: position,
-		isClosed: false,
+		program:         program,
+		position:        position,
+		condition:       make([]Operation, 0),
+		isOpen:          true,
+		isConditionOpen: true,
 	}
 }
 
@@ -162,7 +182,12 @@ func (op *OPBlockWhile) IsEmpty() bool {
 
 // Push method    adds an operation to the block
 func (op *OPBlockWhile) Push(operation Operation) error {
-	if !op.isClosed {
+	if op.isConditionOpen {
+		op.condition = append(op.condition, operation)
+		return nil
+	}
+
+	if op.isOpen {
 		err := op.Program().Push(operation)
 		return err
 	}
@@ -179,12 +204,44 @@ func (op *OPBlockWhile) LastOP() Operation {
 	return op.program.LastOP()
 }
 
-// IsClosed method    returns true if the block is closed
-func (op *OPBlockWhile) IsClosed() bool {
-	return op.isClosed
+// LastNestedBlock method    returns the last nested block
+func (op *OPBlockWhile) LastNestedBlock() OperationBlock {
+	block := op.Program().LastOP()
+
+	if block == nil || !block.Type().IsBlock() {
+		return op
+	}
+
+	b := block.(OperationBlock)
+
+	if b.IsOpen() {
+		return b.LastNestedBlock()
+	}
+
+	return op
+}
+
+// IsOpen method    returns true if the block is closed
+func (op *OPBlockWhile) IsOpen() bool {
+	return op.isOpen
 }
 
 // CloseBlock method    closes the block
 func (op *OPBlockWhile) CloseBlock() {
-	op.isClosed = true
+	op.isOpen = false
+}
+
+// ConditionBlock method    returns the condition block
+func (op *OPBlockWhile) ConditionBlock() []Operation {
+	return op.condition
+}
+
+// IsConditionBlockOpen method    returns true if the condition block is open
+func (op *OPBlockWhile) IsConditionBlockOpen() bool {
+	return op.isConditionOpen
+}
+
+// CloseConditionBlock method    closes the condition block
+func (op *OPBlockWhile) CloseConditionBlock() {
+	op.isConditionOpen = false
 }

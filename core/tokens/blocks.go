@@ -20,12 +20,17 @@ func TokenBlockIfElse(token string, lnum, column int, program *ops.Program) (boo
 
 	if token == "else" {
 		lastOp := program.LastOP()
+		var lastBlock ops.OperationBlock
 
-		if lastOp.Type() != ops.OP_BLOCK_IF_ELSE {
+		if lastOp.Type().IsBlock() {
+			lastBlock = lastOp.(ops.OperationBlock).LastNestedBlock()
+		}
+
+		if lastBlock.Type() != ops.OP_BLOCK_IF_ELSE {
 			return false, fmt.Errorf("`else` must be used after `if` block")
 		}
 
-		ifBlock := lastOp.(*ops.OPBlockIfElse)
+		ifBlock := lastBlock.(*ops.OPBlockIfElse)
 
 		ifBlock.CloseLastBlock()
 
@@ -67,8 +72,27 @@ func TokenBlockEnd(token string, _, _ int, program *ops.Program) (bool, error) {
 		return false, fmt.Errorf("`end` must be used to close a block")
 	}
 
-	block := lastOp.(ops.OperationBlock)
-	block.CloseBlock()
+	lastBlock := lastOp.(ops.OperationBlock).LastNestedBlock()
+
+	lastBlock.CloseBlock()
+
+	return true, nil
+}
+
+// TokenDo function    starts a block of code that can be executed closing a previous condition block
+func TokenDo(token string, _, _ int, program *ops.Program) (bool, error) {
+	if token != "do" {
+		return false, nil
+	}
+
+	lastOP := program.LastOP()
+
+	block, ok := lastOP.(ops.OperationLoop)
+	if !ok {
+		return true, fmt.Errorf("`do` must be used after a loop operation")
+	}
+
+	block.CloseConditionBlock()
 
 	return true, nil
 }
