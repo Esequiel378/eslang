@@ -1,6 +1,7 @@
 // Finds the sum of all the multiples of 3 or 5 below 1000.
 // https://projecteuler.net/problem=1
-0 1 while dup 1_000 < do
+0
+1 while dup 1_000 < do
     dup  3 % 0 = 
     over 5 % 0 = 
     || if
