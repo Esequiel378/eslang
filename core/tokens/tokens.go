@@ -23,9 +23,10 @@ const (
 	TOKEN_DUMP
 	TOKEN_DUP
 	TOKEN_OVER
-	TOKEN_SWAP
-	TOKEN_ROT
 	TOKEN_O_ROT
+	TOKEN_ROT
+	TOKEN_SWAP
+	TOKEN_TUCK
 
 	// push
 	TOKEN_PUSH_FLOAT
@@ -74,9 +75,10 @@ var REGISTERED_TOKENS = map[TokenType]TokenHandler{
 	TOKEN_DUMP:  TokenDump,
 	TOKEN_DUP:   TokenDup,
 	TOKEN_OVER:  TokenOver,
-	TOKEN_SWAP:  TokenSwap,
-	TOKEN_ROT:   TokenRot,
 	TOKEN_O_ROT: TokenORot,
+	TOKEN_ROT:   TokenRot,
+	TOKEN_SWAP:  TokenSwap,
+	TOKEN_TUCK:  TokenTuck,
 
 	// push
 	TOKEN_PUSH_FLOAT:  TokenPushFloat,

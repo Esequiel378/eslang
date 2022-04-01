@@ -101,3 +101,17 @@ func TokenORot(token string, lnum, cnum int, program *ops.Program) (bool, error)
 
 	return true, err
 }
+
+// TokenTuck function    duplicates the top of the stack and places it below the second-to-top
+func TokenTuck(token string, lnum, cnum int, program *ops.Program) (bool, error) {
+	if token != "tuck" {
+		return false, nil
+	}
+
+	position := ops.NewPosition(lnum, cnum, "")
+	op := ops.NewMiscOperation(position, ops.OP_TUCK)
+
+	err := program.Push(op)
+
+	return true, err
+}

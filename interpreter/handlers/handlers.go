@@ -23,6 +23,7 @@ var REGISTERED_OPERATIONS = map[ops.OPType]OPHandler{
 	ops.OP_SWAP:  OPSwap,
 	ops.OP_ROT:   OPRot,
 	ops.OP_O_ROT: OPORot,
+	ops.OP_TUCK:  OPTuck,
 
 	// push
 	ops.OP_PUSH_FLOAT:  OPPushFloat,

@@ -42,5 +42,6 @@ var RESERVED_WORDS = map[string]bool{
 	"str":   true,
 	"swap":  true,
 	"true":  true,
+	"tuck":  true,
 	"while": true,
 }

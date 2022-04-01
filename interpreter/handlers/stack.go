@@ -102,3 +102,17 @@ func OPORot(stack *s.Stack, _ ops.Operation) error {
 
 	return nil
 }
+
+// OPTuck function    duplicates the top of the stack and places it below the second-to-top
+func OPTuck(stack *s.Stack, _ ops.Operation) error {
+	lhs, rhs, err := stack.PopTwo()
+	if err != nil {
+		return err
+	}
+
+	stack.Push(rhs)
+	stack.Push(lhs)
+	stack.Push(rhs)
+
+	return nil
+}
