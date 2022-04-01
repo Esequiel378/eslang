@@ -115,3 +115,17 @@ func TokenTuck(token string, lnum, cnum int, program *ops.Program) (bool, error)
 
 	return true, err
 }
+
+// TokenTwoDup function    duplicates the top two elements of the stack
+func TokenTwoDup(token string, lnum, cnum int, program *ops.Program) (bool, error) {
+	if token != "2dup" {
+		return false, nil
+	}
+
+	position := ops.NewPosition(lnum, cnum, "")
+	op := ops.NewMiscOperation(position, ops.OP_TWO_DUP)
+
+	err := program.Push(op)
+
+	return true, err
+}

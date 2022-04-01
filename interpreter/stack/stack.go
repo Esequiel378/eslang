@@ -21,8 +21,9 @@ type Stack struct {
 
 // NewStack function    returns a new stack.
 func NewStack() Stack {
+	// TODO: Set a limit on the stack size. (add a flag to control this)
 	return Stack{
-		stack:     []StackValue{},
+		stack:     make([]StackValue, 0),
 		variables: make(map[string]StackValue),
 	}
 }
@@ -76,6 +77,21 @@ func (s *Stack) Peek() (StackValue, error) {
 	return value, nil
 }
 
+// PeekTwo method    returns the top two elements of the stack
+func (s *Stack) PeekTwo() (lhs, rhs StackValue, err error) {
+	rhs, err = s.Peek()
+	if err != nil {
+		return lhs, rhs, err
+	}
+
+	lhs, err = s.PeekAt(-2)
+	if err != nil {
+		return lhs, rhs, err
+	}
+
+	return lhs, rhs, err
+}
+
 // Pop method    removes and returns the top element of the stack.
 // TODO: Improve this method, it is not very efficient.
 func (s *Stack) Pop() (StackValue, error) {
@@ -95,7 +111,7 @@ func (s *Stack) Pop() (StackValue, error) {
 
 // PopTwo method    removes and returns the top two elements of the
 // stack as pairs of cells.
-func (s *Stack) PopTwo() (lhs StackValue, rhs StackValue, err error) {
+func (s *Stack) PopTwo() (lhs, rhs StackValue, err error) {
 	rhs, err = s.Pop()
 
 	if err != nil {

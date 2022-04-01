@@ -116,3 +116,16 @@ func OPTuck(stack *s.Stack, _ ops.Operation) error {
 
 	return nil
 }
+
+// OPTwoDup function    duplicates the top two items on the stack
+func OPTwoDup(stack *s.Stack, _ ops.Operation) error {
+	lhs, rhs, err := stack.PeekTwo()
+	if err != nil {
+		return err
+	}
+
+	stack.Push(lhs)
+	stack.Push(rhs)
+
+	return nil
+}

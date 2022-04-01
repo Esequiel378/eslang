@@ -27,12 +27,13 @@ const (
 	TOKEN_ROT
 	TOKEN_SWAP
 	TOKEN_TUCK
+	TOKEN_TWO_DUP
 
 	// push
 	TOKEN_PUSH_FLOAT
 	TOKEN_PUSH_INT
 	TOKEN_PUSH_STRING
-	TOKEN_PUSH_BOOl
+	TOKEN_PUSH_BOOL
 
 	// variables
 	TOKEN_SET_VARIABLE_TYPE
@@ -71,20 +72,21 @@ var REGISTERED_TOKENS = map[TokenType]TokenHandler{
 	TOKEN_DO:            TokenDo,
 
 	// stack
-	TOKEN_DROP:  TokenDrop,
-	TOKEN_DUMP:  TokenDump,
-	TOKEN_DUP:   TokenDup,
-	TOKEN_OVER:  TokenOver,
-	TOKEN_O_ROT: TokenORot,
-	TOKEN_ROT:   TokenRot,
-	TOKEN_SWAP:  TokenSwap,
-	TOKEN_TUCK:  TokenTuck,
+	TOKEN_DROP:    TokenDrop,
+	TOKEN_DUMP:    TokenDump,
+	TOKEN_DUP:     TokenDup,
+	TOKEN_OVER:    TokenOver,
+	TOKEN_O_ROT:   TokenORot,
+	TOKEN_ROT:     TokenRot,
+	TOKEN_SWAP:    TokenSwap,
+	TOKEN_TUCK:    TokenTuck,
+	TOKEN_TWO_DUP: TokenTwoDup,
 
 	// push
 	TOKEN_PUSH_FLOAT:  TokenPushFloat,
 	TOKEN_PUSH_INT:    TokenPushInt,
 	TOKEN_PUSH_STRING: TokenPushStr,
-	TOKEN_PUSH_BOOl:   TokenPushBool,
+	TOKEN_PUSH_BOOL:   TokenPushBool,
 
 	// variables
 	TOKEN_SET_VARIABLE_TYPE: TokenSetVariableType,
