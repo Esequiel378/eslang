@@ -1,0 +1,11 @@
+// Finds the largest prime factor of a number
+// https://projecteuler.net/problem=3
+600_851_475_143 2 while 2dup >  do
+    2dup % 0 = if
+        tuck / swap
+    else
+         1 +
+    end
+end
+
+dump
