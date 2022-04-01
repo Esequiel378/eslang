@@ -1,0 +1,14 @@
+// By considering the terms in the Fibonacci sequence whose values do not 
+// exceed four million, find the sum of the even-valued terms.
+// https://projecteuler.net/problem=2
+
+2
+1 2 while dup 4_000_000 < do
+    swap over  + 
+    dup 2 % 0 = if
+        rot over
+        +   -rot
+    end
+end rot
+
+dump
