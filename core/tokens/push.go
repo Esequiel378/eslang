@@ -14,7 +14,7 @@ var (
 	IS_STR   = regexp.MustCompile(`^".+"$`)
 )
 
-// TokenPushInt function  
+// TokenPushInt function    Pushes an 64 bytes int onto the stack
 func TokenPushInt(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if !IS_INT.MatchString(token) {
 		return false, nil
@@ -35,7 +35,7 @@ func TokenPushInt(token string, lnum, cnum int, program *ops.Program) (bool, err
 	return true, err
 }
 
-// TokenPushFloat function    pushes a float onto the stack
+// TokenPushFloat function    Pushes a 64 bytes float onto the stack
 func TokenPushFloat(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if !IS_FLOAT.MatchString(token) {
 		return false, nil
@@ -54,7 +54,7 @@ func TokenPushFloat(token string, lnum, cnum int, program *ops.Program) (bool, e
 	return true, err
 }
 
-// TokenPushStr function    pushes a string onto the stack
+// TokenPushStr function    Pushes a string onto the stack
 func TokenPushStr(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if !IS_STR.MatchString(token) {
 		return false, nil
@@ -69,7 +69,7 @@ func TokenPushStr(token string, lnum, cnum int, program *ops.Program) (bool, err
 	return true, err
 }
 
-// TokenPushBool function    pushes a bool onto the stack
+// TokenPushBool function    Pushes a boolean onto the stack
 func TokenPushBool(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if token != "true" && token != "false" {
 		return false, nil

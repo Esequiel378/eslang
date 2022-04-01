@@ -6,7 +6,7 @@ import ops "eslang/core/operations"
 // ARITHMETIC OPERATIONS
 // ======================
 
-// TokenOperatorAdd function    push the add operation onto the stack
+// TokenOperatorAdd function    Push the addition of the two topmost values on the stack onto the stack
 func TokenOperatorAdd(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if token != "+" {
 		return false, nil
@@ -20,7 +20,7 @@ func TokenOperatorAdd(token string, lnum, cnum int, program *ops.Program) (bool,
 	return true, err
 }
 
-// TokenOperatorSub function    push the sub operation onto the stack
+// TokenOperatorSub function    Push the subtraction of the two topmost values on the stack onto the stack
 func TokenOperatorSub(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if token != "-" {
 		return false, nil
@@ -34,7 +34,7 @@ func TokenOperatorSub(token string, lnum, cnum int, program *ops.Program) (bool,
 	return true, err
 }
 
-// TokenOperatorMul function    push the mul operation onto the stack
+// TokenOperatorMul function    Push the multiplication of the two topmost values on the stack onto the stack
 func TokenOperatorMul(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if token != "*" {
 		return false, nil
@@ -48,7 +48,7 @@ func TokenOperatorMul(token string, lnum, cnum int, program *ops.Program) (bool,
 	return true, err
 }
 
-// TokenOperatorDiv function    push the div operation onto the stack
+// TokenOperatorDiv function    Push the division of the two topmost values on the stack onto the stack
 func TokenOperatorDiv(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if token != "/" {
 		return false, nil
@@ -62,7 +62,7 @@ func TokenOperatorDiv(token string, lnum, cnum int, program *ops.Program) (bool,
 	return true, err
 }
 
-// TokenOperatorMod function    push the mod operation onto the stack
+// TokenOperatorMod function    Push the modulo of the two topmost values on the stack onto the stack
 func TokenOperatorMod(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if token != "%" {
 		return false, nil
