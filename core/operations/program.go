@@ -15,7 +15,7 @@ type Program struct {
 func NewProgram(filename string) *Program {
 	position := NewPosition(0, 0, filename)
 
-	// TODO: set a fix length of the variables and make it a flag
+	// TODO: set a fix length for operations (add it a flag to control this)
 	return &Program{
 		position:   position,
 		operations: make([]Operation, 0),

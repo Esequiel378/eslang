@@ -93,8 +93,12 @@ func (op *OPBlockIfElse) CloseLastBlock() {
 
 	if lastOP != nil && lastOP.Type() == OP_PROGRAM {
 		block := lastOP.(OperationLinkedBlocks)
-		block.CloseLastBlock()
-		return
+
+		if block.LastBlock().IsOpen() {
+			block.CloseLastBlock()
+			return
+
+		}
 	}
 
 	op.isOpen = false
@@ -205,6 +209,7 @@ func (op *OPBlockWhile) LastOP() Operation {
 }
 
 // LastNestedBlock method    returns the last nested block
+// TODO: somehow check when the block condition is not closed and rise error
 func (op *OPBlockWhile) LastNestedBlock() OperationBlock {
 	block := op.Program().LastOP()
 

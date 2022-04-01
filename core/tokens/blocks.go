@@ -61,7 +61,7 @@ func TokenBlockWhile(token string, lnum, column int, program *ops.Program) (bool
 }
 
 // TokenBlockEnd function    closes a block of code that can be executed
-func TokenBlockEnd(token string, _, _ int, program *ops.Program) (bool, error) {
+func TokenBlockEnd(token string, lnum, column int, program *ops.Program) (bool, error) {
 	if token != "end" {
 		return false, nil
 	}
@@ -69,7 +69,7 @@ func TokenBlockEnd(token string, _, _ int, program *ops.Program) (bool, error) {
 	lastOp := program.LastOP()
 
 	if !lastOp.Type().IsBlock() {
-		return false, fmt.Errorf("`end` must be used to close a block")
+		return true, fmt.Errorf("`end` must be used after a block operation in line %d:%d", lnum, column)
 	}
 
 	lastBlock := lastOp.(ops.OperationBlock).LastNestedBlock()
@@ -80,14 +80,20 @@ func TokenBlockEnd(token string, _, _ int, program *ops.Program) (bool, error) {
 }
 
 // TokenDo function    starts a block of code that can be executed closing a previous condition block
-func TokenDo(token string, _, _ int, program *ops.Program) (bool, error) {
+func TokenDo(token string, lnum, column int, program *ops.Program) (bool, error) {
 	if token != "do" {
 		return false, nil
 	}
 
-	lastOP := program.LastOP()
+	lastOp := program.LastOP()
 
-	block, ok := lastOP.(ops.OperationLoop)
+	if !lastOp.Type().IsBlock() {
+		return true, fmt.Errorf("`do` must be used after a loop operation in line %d:%d", lnum, column)
+	}
+
+	lastBlock := lastOp.(ops.OperationBlock).LastNestedBlock()
+
+	block, ok := lastBlock.(ops.OperationLoop)
 	if !ok {
 		return true, fmt.Errorf("`do` must be used after a loop operation")
 	}
