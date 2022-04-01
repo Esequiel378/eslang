@@ -73,3 +73,31 @@ func TokenSwap(token string, lnum, cnum int, program *ops.Program) (bool, error)
 
 	return true, err
 }
+
+// TokenRot function    rotates the top three elements of the stack
+func TokenRot(token string, lnum, cnum int, program *ops.Program) (bool, error) {
+	if token != "rot" {
+		return false, nil
+	}
+
+	position := ops.NewPosition(lnum, cnum, "")
+	op := ops.NewMiscOperation(position, ops.OP_ROT)
+
+	err := program.Push(op)
+
+	return true, err
+}
+
+// TokenORot function    rotates the top three elements of the stack in the opposite direction
+func TokenORot(token string, lnum, cnum int, program *ops.Program) (bool, error) {
+	if token != "-rot" {
+		return false, nil
+	}
+
+	position := ops.NewPosition(lnum, cnum, "")
+	op := ops.NewMiscOperation(position, ops.OP_O_ROT)
+
+	err := program.Push(op)
+
+	return true, err
+}

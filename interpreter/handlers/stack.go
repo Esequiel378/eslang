@@ -61,3 +61,44 @@ func OPSwap(stack *s.Stack, _ ops.Operation) error {
 
 	return nil
 }
+
+// OPRot function    rotates the top three items on the stack
+// TODO: make this operation more efficient
+func OPRot(stack *s.Stack, _ ops.Operation) error {
+	lhs, rhs, err := stack.PopTwo()
+	if err != nil {
+		return err
+	}
+
+	rotValue, err := stack.Pop()
+	if err != nil {
+		return err
+	}
+
+	stack.Push(lhs)
+	stack.Push(rhs)
+
+	stack.Push(rotValue)
+
+	return nil
+}
+
+// OPORot function    rotates the top three items on the stack in the opposite direction
+func OPORot(stack *s.Stack, _ ops.Operation) error {
+	rotValue, err := stack.Pop()
+	if err != nil {
+		return err
+	}
+
+	lhs, rhs, err := stack.PopTwo()
+	if err != nil {
+		return err
+	}
+
+	stack.Push(rotValue)
+
+	stack.Push(lhs)
+	stack.Push(rhs)
+
+	return nil
+}

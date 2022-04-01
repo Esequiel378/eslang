@@ -14,6 +14,7 @@ type StackValue interface {
 
 // Stack struct    represents a stack of elements.
 type Stack struct {
+	// TODO: considering to use liked list instead of slice.
 	stack     []StackValue
 	variables map[string]StackValue
 }
@@ -92,7 +93,8 @@ func (s *Stack) Pop() (StackValue, error) {
 	return value, nil
 }
 
-// PopTwo method    removes and returns the top two elements of the stack.
+// PopTwo method    removes and returns the top two elements of the
+// stack as pairs of cells.
 func (s *Stack) PopTwo() (lhs StackValue, rhs StackValue, err error) {
 	rhs, err = s.Pop()
 
