@@ -74,7 +74,7 @@ $ go run main.go -f test.esl
 |-------------------|:------:|---------------------------------------------------------------------------------|
 | OP_L_OPERATOR_AND | &&     | Push the logical or between the two topmost values on the stack onto the stack  |
 | OP_L_OPERATOR_NOT | !      | Push the logical and between the two topmost values on the stack onto the stack |
-| OP_L_OPERATOR_OR  | ||     | Push the logical not between the two topmost values on the stack onto the stack |
+| OP_L_OPERATOR_OR  | \|\|   | Push the logical not between the two topmost values on the stack onto the stack |
 
 <small>[Top ▲](#toc)</small>
 
@@ -137,7 +137,7 @@ counter int
 
 > Where `counter` is the variable name and `int` is the variable type
 
-##### By default vairables will have a zero value.
+##### By default variables will have a zero value.
 
 | Type  | Zero value |
 |-------|------------|
