@@ -80,7 +80,7 @@ func TokenOperatorMod(token string, lnum, cnum int, program *ops.Program) (bool,
 // RELATIONAL OPERATIONS
 // ======================
 
-// TokenROperatorEqual function    push the equal operation onto the stack
+// TokenROperatorEqual function    Push the equal comparition between the two topmost values on the stack onto the stack
 func TokenROperatorEqual(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if token != "=" {
 		return false, nil
@@ -94,7 +94,7 @@ func TokenROperatorEqual(token string, lnum, cnum int, program *ops.Program) (bo
 	return true, err
 }
 
-// TokenROperatorNotEqual function    push the not equal operation onto the stack
+// TokenROperatorNotEqual function    Push the not equal comparition between the two topmost values on the stack onto the stack
 func TokenROperatorNotEqual(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if token != "!=" {
 		return false, nil
@@ -108,7 +108,7 @@ func TokenROperatorNotEqual(token string, lnum, cnum int, program *ops.Program) 
 	return true, err
 }
 
-// TokenROperatorLessThan function    push the less than operation onto the stack
+// TokenROperatorLessThan function    Push the less than comparition between the two topmost values on the stack onto the stack
 func TokenROperatorLessThan(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if token != "<" {
 		return false, nil
@@ -122,7 +122,7 @@ func TokenROperatorLessThan(token string, lnum, cnum int, program *ops.Program) 
 	return true, err
 }
 
-// TokenROperatorLessThanOrEqual function    push the less than or equal operation onto the stack
+// TokenROperatorLessThanOrEqual function    Push the less than or equal comparition between the two topmost values on the stack onto the stack
 func TokenROperatorLessThanOrEqual(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if token != "<=" {
 		return false, nil
@@ -136,7 +136,7 @@ func TokenROperatorLessThanOrEqual(token string, lnum, cnum int, program *ops.Pr
 	return true, err
 }
 
-// TokenROperatorGreaterThan function    push the greater than operation onto the stack
+// TokenROperatorGreaterThan function    Push the greater than comparition between the two topmost values on the stack onto the stack
 func TokenROperatorGreaterThan(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if token != ">" {
 		return false, nil
@@ -150,7 +150,7 @@ func TokenROperatorGreaterThan(token string, lnum, cnum int, program *ops.Progra
 	return true, err
 }
 
-// TokenROperatorGreaterThanOrEqual function    push the greater than or equal operation onto the stack
+// TokenROperatorGreaterThanOrEqual function    Push the greater than or equal comparition between the two topmost values on the stack onto the stack
 func TokenROperatorGreaterThanOrEqual(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if token != ">=" {
 		return false, nil
@@ -168,7 +168,7 @@ func TokenROperatorGreaterThanOrEqual(token string, lnum, cnum int, program *ops
 // LOGICAL OPERATIONS
 // ==================
 
-// TokenLOperatorOr function    push the or operation onto the stack
+// TokenLOperatorOr function    Push the logical or between the two topmost values on the stack onto the stack
 func TokenLOperatorOr(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if token != "||" {
 		return false, nil
@@ -182,7 +182,7 @@ func TokenLOperatorOr(token string, lnum, cnum int, program *ops.Program) (bool,
 	return true, err
 }
 
-// TokenLOperatorAnd function    push the and operation onto the stack
+// TokenLOperatorAnd function    Push the logical and between the two topmost values on the stack onto the stack
 func TokenLOperatorAnd(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if token != "&&" {
 		return false, nil
@@ -196,7 +196,7 @@ func TokenLOperatorAnd(token string, lnum, cnum int, program *ops.Program) (bool
 	return true, err
 }
 
-// TokenLOperatorNot function    push the not operation onto the stack
+// TokenLOperatorNot function    Push the logical not between the two topmost values on the stack onto the stack
 func TokenLOperatorNot(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if token != "!" {
 		return false, nil

@@ -5,8 +5,7 @@ import (
 	"fmt"
 )
 
-// TokenBlockIfElse function    pushes a block of code that can be executed
-// if a condition is met onto the stack
+// TokenBlockIfElse function    Push a block of code that can be executed if a condition is met onto the stack
 func TokenBlockIfElse(token string, lnum, column int, program *ops.Program) (bool, error) {
 	position := ops.NewPosition(lnum, column, "")
 
@@ -45,6 +44,7 @@ func TokenBlockIfElse(token string, lnum, column int, program *ops.Program) (boo
 	return false, nil
 }
 
+// TokenBlockWhile function    Push a block of code that can be executed while a condition is met onto the stack
 func TokenBlockWhile(token string, lnum, column int, program *ops.Program) (bool, error) {
 	if token != "while" {
 		return false, nil

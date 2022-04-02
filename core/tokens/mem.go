@@ -16,7 +16,7 @@ var ALIASES_TO_TYPE = map[string]core.Type{
 	"bool":  core.Bool,
 }
 
-// TokenVariable function    create and push a variable onto the stack
+// TokenVariable function    Create a variable if it doesn't exist and push it to the stack
 func TokenVariable(name string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if !IS_VALID_VARIABLE.MatchString(name) || core.RESERVED_WORDS[name] {
 		return false, nil
@@ -34,7 +34,7 @@ func TokenVariable(name string, lnum, cnum int, program *ops.Program) (bool, err
 	return true, err
 }
 
-// TokenSetVariableType function    set the last variable pushed to a specific type
+// TokenSetVariableType function    Set the last variable pushed to a specific type
 func TokenSetVariableType(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	t, ok := ALIASES_TO_TYPE[token]
 
@@ -79,7 +79,7 @@ func TokenSetVariableType(token string, lnum, cnum int, program *ops.Program) (b
 	return true, nil
 }
 
-// TokenVariableWrite function    write a value into a variable
+// TokenVariableWrite function    Write the value top of the stack to a variable in the second top of the stack
 func TokenVariableWrite(token string, lnum, cnum int, program *ops.Program) (bool, error) {
 	if token != "." {
 		return false, nil
