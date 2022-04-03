@@ -191,7 +191,7 @@ func OPNip(stack *s.Stack, _ ops.Operation) error {
 	return nil
 }
 
-// OPTwoDrop function    Removes the top two items from the stack
+// OPTwoDrop function    Drops the top two items from the stack
 // Ex: ( a b -- )
 func OPTwoDrop(stack *s.Stack, _ ops.Operation) error {
 	_, _, err := stack.PopTwo()
@@ -199,7 +199,7 @@ func OPTwoDrop(stack *s.Stack, _ ops.Operation) error {
 	return err
 }
 
-// OPTwoOver function    Copies the second-to-top two items to the top of the stack
+// OPTwoOver function    Duplicates the second-to-top two items to the top of the stack
 // Ex: ( a b c d -- a b c d a b )
 func OPTwoOver(stack *s.Stack, _ ops.Operation) error {
 	lhs_a, err := stack.PeekAt(-4)

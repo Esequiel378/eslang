@@ -20,6 +20,7 @@ $ go run main.go -f test.esl
 + [Blocks](#blocks)
     + [Conditions](#conditions)
     + [Loops](#loops)
++ [Variables](#variables)
 
 ### Push operations <a name="push-operations" />
 
@@ -87,12 +88,16 @@ $ go run main.go -f test.esl
 | OP_DROP       | drop       | ( a -- )                     | Drops the top of the stack                                            |
 | OP_DUMP       | dump       | ( a -- )                     | Dumps the stack                                                       |
 | OP_DUP        | dup        | ( a -- a a )                 | Duplicates the top of the stack                                       |
+| OP_NIP        | nip        | ( a b -- b ) swap drop       | Drops the second-to-top element of the stack                          |
 | OP_OVER       | over       | ( a b -- a b a )             | Duplicate the second-to-top of the stack                              |
 | OP_O_ROT      | rot        | ( a b c -- b c a )           | Rotates the top three elements of the stack                           |
 | OP_ROT        | -rot       | ( a b c -- c a b ) rot rot   | Rotates the top three elements of the stack in the opposite direction |
 | OP_SWAP       | swap       | ( a b -- b a )               | Swaps the top two elements of the stack                               |
 | OP_TUCK       | tuck       | ( a b -- b a b ) swap over   | Duplicates the top of the stack and places it below the second-to-top |
+| OP_TWO_DROP   | 2drop      | ( a b -- )                   | Drops the top two items from the stack 
 | OP_TWO_DUP    | 2dup       | ( a b -- a b a b ) over over | Duplicates the top two elements of the stack                          |
+| OP_TWO_OVER   | 2over      | ( a b c d -- a b c d a b )   | Duplicates the second-to-top two items to the top of the stack 
+| OP_TWO_SWAP   | 2swap      | ( a b c d -- c d a b )       | Swaps the second-to-top two items on the stack 
 
 <small>[Top ▲](#toc)</small>
 
