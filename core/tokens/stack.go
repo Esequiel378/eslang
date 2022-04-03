@@ -129,3 +129,59 @@ func TokenTwoDup(token string, lnum, cnum int, program *ops.Program) (bool, erro
 
 	return true, err
 }
+
+// TokenNip function    Drops the second-to-top element of the stack
+func TokenNip(token string, lnum, cnum int, program *ops.Program) (bool, error) {
+	if token != "nip" {
+		return false, nil
+	}
+
+	position := ops.NewPosition(lnum, cnum, "")
+	op := ops.NewMiscOperation(position, ops.OP_NIP)
+
+	err := program.Push(op)
+
+	return true, err
+}
+
+// TokenTwoDrop function    Drops the top two elements of the stack
+func TokenTwoDrop(token string, lnum, cnum int, program *ops.Program) (bool, error) {
+	if token != "2drop" {
+		return false, nil
+	}
+
+	position := ops.NewPosition(lnum, cnum, "")
+	op := ops.NewMiscOperation(position, ops.OP_TWO_DROP)
+
+	err := program.Push(op)
+
+	return true, err
+}
+
+// TokenTwoOver function    Duplicates the second-to-top two elements of the stack
+func TokenTwoOver(token string, lnum, cnum int, program *ops.Program) (bool, error) {
+	if token != "2over" {
+		return false, nil
+	}
+
+	position := ops.NewPosition(lnum, cnum, "")
+	op := ops.NewMiscOperation(position, ops.OP_TWO_OVER)
+
+	err := program.Push(op)
+
+	return true, err
+}
+
+// TokenTwoSwap function    Swaps the second-to-top two elements of the stack
+func TokenTwoSwap(token string, lnum, cnum int, program *ops.Program) (bool, error) {
+	if token != "2swap" {
+		return false, nil
+	}
+
+	position := ops.NewPosition(lnum, cnum, "")
+	op := ops.NewMiscOperation(position, ops.OP_TWO_SWAP)
+
+	err := program.Push(op)
+
+	return true, err
+}
