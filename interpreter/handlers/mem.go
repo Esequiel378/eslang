@@ -14,28 +14,28 @@ func OPVariable(stack *s.Stack, _op ops.Operation) error {
 
 	variable, found := stack.GetVariable(name)
 
-	if !found {
-
-		variableValue := op.Value()
-		var value s.StackValue
-
-		switch op.Value().Type() {
-		case ops.OP_PUSH_INT:
-			v := variableValue.(ops.OPPushInt)
-			value = s.NewStackValueInt(v.Value())
-		case ops.OP_PUSH_FLOAT:
-			v := variableValue.(ops.OPPushFloat)
-			value = s.NewStackValueFloat(v.Value())
-		case ops.OP_PUSH_STRING:
-			v := variableValue.(ops.OPPushString)
-			value = s.NewStackValueString(v.Value())
-		}
-
-		variable = s.NewStackValueVariable(name, value)
-		stack.SetVariable(name, variable)
+	if found {
+		stack.Push(variable)
+		return nil
 	}
 
-	stack.Push(variable)
+	variableValue := op.Value()
+	var value s.StackValue
+
+	switch op.Value().Type() {
+	case ops.OP_PUSH_INT:
+		v := variableValue.(ops.OPPushInt)
+		value = s.NewStackValueInt(v.Value())
+	case ops.OP_PUSH_FLOAT:
+		v := variableValue.(ops.OPPushFloat)
+		value = s.NewStackValueFloat(v.Value())
+	case ops.OP_PUSH_STRING:
+		v := variableValue.(ops.OPPushString)
+		value = s.NewStackValueString(v.Value())
+	}
+
+	variable = s.NewStackValueVariable(name, value)
+	stack.SetVariable(name, variable)
 
 	return nil
 }
@@ -55,7 +55,6 @@ func OPVariableWrite(stack *s.Stack, _ ops.Operation) error {
 	sValue := s.NewStackValueVariable(rhs.Name(), lhs)
 
 	stack.SetVariable(sValue.Name(), sValue)
-	stack.Push(sValue)
 
 	return nil
 }
