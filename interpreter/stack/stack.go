@@ -5,21 +5,21 @@ import (
 	"fmt"
 )
 
-// StackValue interface    represents a value in the stack.
+// StackValue interface    Represents a value in the stack.
 type StackValue interface {
 	Type() core.Type
 	Value() any
 	TestTruthy() (bool, error)
 }
 
-// Stack struct    represents a stack of elements.
+// Stack struct    Represents a stack of elements.
 type Stack struct {
 	// TODO: considering to use liked list instead of slice.
 	stack     []StackValue
 	variables map[string]StackValue
 }
 
-// NewStack function    returns a new stack.
+// NewStack function    Returns a new stack.
 func NewStack() Stack {
 	// TODO: Set a limit on the stack size. (add a flag to control this)
 	return Stack{
@@ -28,29 +28,39 @@ func NewStack() Stack {
 	}
 }
 
-// GetVariable method    returns a StackValue for the variable and a boolean indicating if the variable was found.
+// Content method    Returns the stack content.
+func (s *Stack) Content() []StackValue {
+	return s.stack
+}
+
+// Size method    Returns the number of elements in the stack.
+func (s *Stack) Size() int {
+	return len(s.stack)
+}
+
+// GetVariable method    Returns a StackValue for the variable and a boolean indicating if the variable was found.
 func (s *Stack) GetVariable(name string) (StackValue, bool) {
 	value, found := s.variables[name]
 
 	return value, found
 }
 
-// SetVariable method    sets the value of the variable.
+// SetVariable method    Sets the value of the variable.
 func (s *Stack) SetVariable(name string, value StackValue) {
 	s.variables[name] = value
 }
 
-// IsEmpty method    returns true if the stack is empty.
+// IsEmpty method    Returns true if the stack is empty.
 func (s *Stack) IsEmpty() bool {
 	return len(s.stack) == 0
 }
 
-// Push method    pushes the element onto the stack.
+// Push method    Pushes the element onto the stack.
 func (s *Stack) Push(value StackValue) {
 	s.stack = append(s.stack, value)
 }
 
-// PeekAt method    returns the element at the specified index.
+// PeekAt method    Returns the element at the specified index.
 // Accepts negative indices, which are relative to the end of the stack.
 func (s *Stack) PeekAt(index int) (StackValue, error) {
 	if index < 0 {
@@ -77,7 +87,7 @@ func (s *Stack) Peek() (StackValue, error) {
 	return value, nil
 }
 
-// PeekTwo method    returns the top two elements of the stack
+// PeekTwo method    Returns the top two elements of the stack
 func (s *Stack) PeekTwo() (lhs, rhs StackValue, err error) {
 	rhs, err = s.Peek()
 	if err != nil {
@@ -92,7 +102,7 @@ func (s *Stack) PeekTwo() (lhs, rhs StackValue, err error) {
 	return lhs, rhs, err
 }
 
-// Pop method    removes and returns the top element of the stack.
+// Pop method    Removes and returns the top element of the stack.
 // TODO: Improve this method, it is not very efficient.
 func (s *Stack) Pop() (StackValue, error) {
 	if s.IsEmpty() {
@@ -109,7 +119,7 @@ func (s *Stack) Pop() (StackValue, error) {
 	return value, nil
 }
 
-// PopTwo method    removes and returns the top two elements of the
+// PopTwo method    Removes and returns the top two elements of the
 // stack as pairs of cells.
 func (s *Stack) PopTwo() (lhs, rhs StackValue, err error) {
 	rhs, err = s.Pop()
