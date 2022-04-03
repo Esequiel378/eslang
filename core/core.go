@@ -31,6 +31,7 @@ var RESERVED_WORDS = map[string]bool{
 	"2over": true,
 	"2swap": true,
 	"bool":  true,
+	"debug": true,
 	"do":    true,
 	"drop":  true,
 	"dump":  true,

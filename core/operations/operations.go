@@ -5,6 +5,7 @@ type OPType int
 
 const (
 	OP_PROGRAM OPType = iota
+
 	// blocks
 	OP_BLOCK_IF_ELSE
 	OP_BLOCK_WHILE
@@ -20,7 +21,6 @@ const (
 	OP_SWAP
 	OP_TUCK
 	OP_TWO_DROP
-	OP_TWO_DUMP
 	OP_TWO_DUP
 	OP_TWO_OVER
 	OP_TWO_SWAP
@@ -54,6 +54,9 @@ const (
 	OP_L_OPERATOR_AND
 	OP_L_OPERATOR_NOT
 	OP_L_OPERATOR_OR
+
+	// debug
+	OP_DEBUG
 
 	OP_TYPE_COUNT
 )
@@ -106,6 +109,9 @@ var OP_TYPE_ALIASES = map[OPType]string{
 	OP_L_OPERATOR_AND: "OP_L_OPERATOR_AND",
 	OP_L_OPERATOR_NOT: "OP_L_OPERATOR_NOT",
 	OP_L_OPERATOR_OR:  "OP_L_OPERATOR_OR",
+
+	// misc
+	OP_DEBUG: "OP_DEBUG",
 }
 
 // String method    returns the string representation of the operation

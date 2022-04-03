@@ -1,3 +1,4 @@
+// TODO: make variables scoped to blocks
 package operations
 
 import "fmt"

@@ -64,6 +64,9 @@ const (
 	TOKEN_L_OPERTATOR_NOT
 	TOKEN_L_OPERTATOR_OR
 
+	// debug
+	TOKEN_DEBUG
+
 	TOKEN_TYPE_COUNT
 )
 
@@ -120,4 +123,7 @@ var REGISTERED_TOKENS = map[TokenType]TokenHandler{
 	TOKEN_L_OPERTATOR_AND: TokenLOperatorAnd,
 	TOKEN_L_OPERTATOR_NOT: TokenLOperatorNot,
 	TOKEN_L_OPERTATOR_OR:  TokenLOperatorOr,
+
+	// debug
+	TOKEN_DEBUG: TokenDebug,
 }
