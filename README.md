@@ -125,7 +125,7 @@ end
 ##### While
 
 ```pascal
-10 while dup > 0 do
+10 while dup 0 > do
     dup dump
     1 -
 end
